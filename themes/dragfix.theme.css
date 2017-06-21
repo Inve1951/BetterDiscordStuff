@@ -1,0 +1,16 @@
+//META{"name":"Drag-Fix","description":"Makes it way easier to move the window.","author":"square","version":"1.0.0"}*//
+
+.title-wrap > *, .search-bar > *, .title > *, .tab-bar > *, .bd-pfbtn, .btn-close, button, .header-toolbar, .topic > *
+{
+    -webkit-app-region: no-drag;
+}
+
+.title-wrap,
+.layer:not([style]) .search-bar,
+.layer:not([style]) .title:first-of-type,
+.layer:not([style]) .friends-header,
+.layer:not([style]) .topic
+{
+    -webkit-app-region: drag;
+    -webkit-user-select: none;
+}
