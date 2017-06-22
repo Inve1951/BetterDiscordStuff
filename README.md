@@ -17,6 +17,10 @@ themes:
   
     Makes it way easier to move the window.
 
+  **No-Pulsing-User-List**
+  
+    Removes the pulsing animation from the user list which normally is shown while the list is loading. Sometimes (in my case always on BD server) the list never loads.
+
 
 
 
