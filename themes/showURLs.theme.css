@@ -1,0 +1,40 @@
+//META{"name":"Show-URLs","description":"Shows a link's URL in bottom left corner much like a browser does.","author":"square","version":"1.0.0"}*//
+
+/*
+when used with my Drag-Fix theme:
+    because of the way how -webkit-app-region works the URL display can flicker for links in the title bar (channel topic) when you mouse out.
+    this is ugly but doesn't affect usability.
+*/
+
+
+.messages a:after,
+.topic a:after
+{
+    content: attr(href);
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    background: white;
+    color: black;
+    font-size: 13.5px;
+    line-height: 16.5px;
+    font-weight: 500;
+    padding: 1px 3px 2px 3px;
+    max-width: calc(100% - 240px);
+    transition: opacity .44s linear;
+    pointer-events: none;
+    opacity: 0;
+}
+
+.messages a:hover:after,
+.topic a:hover:after
+{
+    opacity: 1;
+    animation: fade .44s 10s forwards;
+}
+
+@keyframes fade{
+    to{ opacity: 0; }
+}
+
+/* not being restrictive on which 'a:whatever' are to be handled breaks scrollbars */
