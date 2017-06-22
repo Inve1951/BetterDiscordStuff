@@ -21,7 +21,9 @@ themes:
   
     Removes the pulsing animation from the user list which normally is shown while the list is loading. Sometimes (in my case always on BD server) the list never loads.
 
-
+  **Show-URLs**
+  
+    Shows a link's URL in bottom left corner much like a browser does.
 
 
 
