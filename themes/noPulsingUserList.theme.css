@@ -1,0 +1,5 @@
+//META{"name":"No-Pulsing-User-List","description":"Removes the pulsing animation from the user list which normally is shown while the list is loading. Sometimes (in my case always on BD server) the list never loads.","author":"square","version":"1.0.0"}*//
+
+.channel-members-loading > .background{
+    display: none;
+}
