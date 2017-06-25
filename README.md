@@ -3,6 +3,11 @@ my BD plugins & themes, focused on enhancing user experience
 
 plugins:
 
+  **[Restart-No-More](plugins/restartNoMore.plugin.js)** _alpha version_
+  
+    Abandons the need for restarting/reloading discord to get your new plugins and themes.
+	Especially useful for development.
+
   **[Force-Close](plugins/forceClose.plugin.js)**
   
     Actually closes discord when clicking the close button.
