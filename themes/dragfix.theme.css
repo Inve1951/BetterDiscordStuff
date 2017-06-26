@@ -1,4 +1,4 @@
-//META{"name":"Drag-Fix","description":"Makes it way easier to move the window.","author":"square","version":"1.0.0"}*//
+//META{"name":"Drag-Fix","description":"Makes it way easier to move the window.","author":"square","version":"1.0.1"}*//
 
 .title-wrap > *, .search-bar > *, .title > *, .tab-bar > *, .bd-pfbtn, .btn-close, button, .header-toolbar, .topic > *
 {
@@ -13,4 +13,15 @@
 {
     -webkit-app-region: drag;
     -webkit-user-select: none;
+}
+
+.title-wrap:before{
+	content: "";
+    -webkit-app-region: no-drag;
+	cursor: ns-resize;
+	height: 6px;
+	width: 100%;
+	position: absolute;
+	top: 0;
+	left: 0;
 }
