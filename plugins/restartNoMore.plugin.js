@@ -14,7 +14,7 @@ restartNoMore = (function() {
     }
 
     getVersion() {
-      return "0.0.1-alpha";
+      return "0.0.2-alpha";
     }
 
     getAuthor() {
@@ -308,7 +308,7 @@ restartNoMore = (function() {
     } else {
       t = bdthemes[header.name];
       if (themeCookie[header.name]) {
-        document.querySelector(`#${header.name}`).remove();
+        $(`#${header.name}`).remove();
       }
       delete bdthemes[header.name];
     }
