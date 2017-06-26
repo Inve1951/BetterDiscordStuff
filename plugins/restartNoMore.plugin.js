@@ -27,7 +27,7 @@ restartNoMore = (function() {
           case "win32":
             return path.resolve(process.env.appdata, "BetterDiscord/plugins/");
           case "darwin":
-            return path.resolve(process.env.HOME, "Library/Prefereces/", "BetterDiscord/plugins/");
+            return path.resolve(process.env.HOME, "Library/Preferences/", "BetterDiscord/plugins/");
           default:
             return path.resolve(process.env.HOME, ".config/", "BetterDiscord/plugins/");
         }
@@ -37,7 +37,7 @@ restartNoMore = (function() {
           case "win32":
             return path.resolve(process.env.appdata, "BetterDiscord/themes/");
           case "darwin":
-            return path.resolve(process.env.HOME, "Library/Prefereces/", "BetterDiscord/themes/");
+            return path.resolve(process.env.HOME, "Library/Preferences/", "BetterDiscord/themes/");
           default:
             return path.resolve(process.env.HOME, ".config/", "BetterDiscord/themes/");
         }
