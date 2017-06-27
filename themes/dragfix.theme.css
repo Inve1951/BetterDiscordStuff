@@ -1,6 +1,6 @@
-//META{"name":"Drag-Fix","description":"Makes it way easier to move the window.","author":"square","version":"1.0.1"}*//
+//META{"name":"Drag-Fix","description":"Makes it way easier to move the window.","author":"square","version":"1.0.2"}*//
 
-.title-wrap > *, .search-bar > *, .title > *, .tab-bar > *, .bd-pfbtn, .btn-close, button, .header-toolbar, .topic > *
+.title-wrap > *, .search-bar > *, .title > *:not([class="channel-name"]), .tab-bar > *, .bd-pfbtn, .btn-close, button, .header-toolbar, .topic > *
 {
     -webkit-app-region: no-drag;
 }
