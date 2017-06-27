@@ -2,7 +2,7 @@
 var restartNoMore;
 
 restartNoMore = (function() {
-  var EOL, cacheFile, crypto, end, execJs, fs, getDisplayName, getHeader, getMd5, load, log, patchSettingsPanel, path, start, unload;
+  var EOL, bw, cacheFile, crypto, end, execJs, fs, getDisplayName, getHeader, getMd5, load, log, patchSettingsPanel, path, start, unload;
 
   class restartNoMore {
     getName() {
@@ -14,7 +14,7 @@ restartNoMore = (function() {
     }
 
     getVersion() {
-      return "0.0.2-alpha";
+      return "0.0.3-alpha";
     }
 
     getAuthor() {
@@ -105,6 +105,7 @@ restartNoMore = (function() {
       if (this.wThemes == null) {
         log("Couldn't initialize themes watcher");
       }
+      bw = (require("electron")).remote.require("electron").BrowserWindow.getAllWindows()[0];
       results = [];
       for (k in bdplugins) {
         ({plugin} = bdplugins[k]);
@@ -175,6 +176,8 @@ restartNoMore = (function() {
 
   EOL = (require("os")).EOL;
 
+  bw = null;
+
   cacheFile = unload = load = start = end = log = null;
 
   cacheFile = function(init, filename) {
@@ -209,7 +212,9 @@ restartNoMore = (function() {
             return;
           }
           if (isPlugin) {
-            header.pname = getDisplayName(header.name, data);
+            if (header.pname == null) {
+              header.pname = getDisplayName(header.name, data);
+            }
             if (header.pname == null) {
               return end(filename, `couldn't gather plugin name from ${filename}`);
             }
@@ -235,7 +240,9 @@ restartNoMore = (function() {
                   return end(filename, `Skipped loading ${filename} because ${fnOld} already registered ${header.name}.`);
                 }
                 log("# can this even be reached?");
-                unload(fnOld, isPlugin);
+                if (false === unload(fnOld, isPlugin)) {
+                  return;
+                }
                 return end(filename, load(filename, data, isPlugin));
               });
             } else {
@@ -244,7 +251,9 @@ restartNoMore = (function() {
           } else if (((name = (ref1 = this._nameCache[filename]) != null ? ref1.name : void 0) != null) && this._md5Cache[name] === md5) {
             return end(filename, `Skipped loading ${filename} because it's unchanged.`);
           } else if (this._nameCache[filename] != null) {
-            unload(filename, isPlugin);
+            if (false === unload(filename, isPlugin)) {
+              return;
+            }
           }
           this._nameCache[filename] = header;
           this._md5Cache[header.name] = md5;
@@ -288,13 +297,17 @@ restartNoMore = (function() {
   };
 
   unload = function(filename, isPlugin) {
-    var header, p, t;
+    var header, p, ref, t;
     if (isPlugin !== !!isPlugin) {
       return log(new Error("Usage Error: isPlugin not provided."));
     }
     header = this._nameCache[filename];
     if (isPlugin) {
-      p = bdplugins[header.pname].plugin;
+      p = (ref = bdplugins[header.pname]) != null ? ref.plugin : void 0;
+      if (p == null) {
+        end(filename, `Please patch the META header to include \`\"pname\":\"Plugin Name As Shown In BD Plugin Settings\"\` in ${filename}`);
+        return false;
+      }
       if (pluginCookie[header.pname]) {
         p.stop();
       }
@@ -321,21 +334,29 @@ restartNoMore = (function() {
     var header, n;
     header = this._nameCache[filename];
     if (isPlugin) {
-      return execJs(`(function(){${data}\r\n})()`, () => {
-        return execJs(`new ${header.name}`, (plugin) => {
-          bdplugins[header.pname] = {
-            plugin: plugin,
-            enabled: false
-          };
-          if (header.pname in pluginCookie && pluginCookie[header.pname]) {
-            plugin.start();
-          } else {
-            pluginCookie[header.pname] = false;
-            pluginModule.savePluginData();
-          }
-          patchSettingsPanel(plugin);
-          return log(`Loaded ${filename}`);
-        });
+      return execJs("(function(){" + data + "\r\n;return(" + (function(__name, __pname, __filename) {
+        var plugin, pname;
+        plugin = new __name;
+        pname = plugin.getName();
+        if (pname !== __pname) {
+          console.log(`restartNoMore: Please patch the META header to include \`\"pname\":\"Plugin Name As Shown In BD Plugin Settings\"\` in ${__filename}`);
+        }
+        bdplugins[pname] = {
+          plugin: plugin,
+          enabled: false
+        };
+        return pname;
+      }).toString() + `)(${header.name}, '${header.pname}', '${filename}')})()`, (pname) => {
+        var plugin;
+        plugin = bdplugins[pname].plugin;
+        if (pname in pluginCookie && pluginCookie[pname]) {
+          plugin.start();
+        } else {
+          pluginCookie[pname] = false;
+          pluginModule.savePluginData();
+        }
+        patchSettingsPanel(plugin);
+        return log(`Loaded ${filename}`);
       });
     } else {
       data = data.split(EOL);
@@ -363,7 +384,7 @@ restartNoMore = (function() {
   };
 
   execJs = function(js, cb) {
-    return cb(eval.call(typeof window !== "undefined" && window !== null ? window : global, js));
+    return bw.webContents.executeJavaScript(js, false, cb);
   };
 
   patchSettingsPanel = function(plugin, remove = false) {
