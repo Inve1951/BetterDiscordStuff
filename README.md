@@ -35,7 +35,7 @@ themes:
   
     Shows a link's URL in bottom left corner much like a browser does.
 
-  **[Compact-User-List](/themes/compactUserList.theme.theme.css)**
+  **[Compact-User-List](/themes/compactUserList.theme.css)**
   
     Makes the user list look much like the server list.
 
