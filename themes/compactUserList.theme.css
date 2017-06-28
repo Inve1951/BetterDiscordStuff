@@ -1,0 +1,27 @@
+/*//META{"name":"Compact-User-List","description":"Makes the user list look much like the server list.","author":"square","version":"1.0.0"}*//
+
+.channel-members-wrap {
+    min-width: initial;
+}
+.channel-members-wrap .channel-members {
+    width: 76px;
+    padding: 0 0 18px 10px;
+}
+.channel-members h2 {
+    padding: 0;
+    margin: 9px 0 1px 0;
+    text-align: center;
+    word-wrap: break-word;
+}
+.member.member-status {
+    padding: 0;
+    padding-top: 8px;
+}
+.member.member-status .avatar-small {
+    width: 50px;
+    height: 50px;
+    background-size: 50px 50px;
+}
+.member.member-status .member-inner {
+    display: none;
+}
