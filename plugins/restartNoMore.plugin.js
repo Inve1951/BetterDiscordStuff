@@ -2,7 +2,7 @@
 var restartNoMore;
 
 restartNoMore = (function() {
-  var EOL, bw, cacheFile, crypto, end, execJs, fs, getDisplayName, getHeader, getMd5, load, log, patchSettingsPanel, path, start, unload;
+  var EOL, bw, cacheFile, crypto, end, execJs, fs, getDisplayName, getHeader, getMd5, getSettings, load, log, patchAllSettingsPanels, patchSettingsPanel, path, start, unload;
 
   class restartNoMore {
     getName() {
@@ -14,7 +14,7 @@ restartNoMore = (function() {
     }
 
     getVersion() {
-      return "0.0.3-alpha";
+      return "0.0.4-alpha";
     }
 
     getAuthor() {
@@ -84,7 +84,6 @@ restartNoMore = (function() {
     load() {}
 
     start() {
-      var k, plugin, results;
       this.wPlugins = fs.watch(this.pPlugins, {
         persistent: false
       }, (type, filename) => {
@@ -106,32 +105,21 @@ restartNoMore = (function() {
         log("Couldn't initialize themes watcher");
       }
       bw = (require("electron")).remote.require("electron").BrowserWindow.getAllWindows()[0];
-      results = [];
-      for (k in bdplugins) {
-        ({plugin} = bdplugins[k]);
-        results.push((function(k, plugin) {
-          return patchSettingsPanel(plugin);
-        })(k, plugin));
+      if (getSettings().patchSettings) {
+        return patchAllSettingsPanels();
       }
-      return results;
     }
 
     stop() {
-      var k, plugin, results;
       this.wPlugins.close();
       this.wThemes.close();
-      results = [];
-      for (k in bdplugins) {
-        ({plugin} = bdplugins[k]);
-        results.push((function(k, plugin) {
-          return patchSettingsPanel(plugin, true);
-        })(k, plugin));
+      if (getSettings().patchSettings) {
+        return patchAllSettingsPanels(true);
       }
-      return results;
     }
 
     getSettingsPanel() {
-      return "<button type=\"button\" onclick=\"restartNoMore.reloadAll()\">Reload all Plugins and Themes.</button>";
+      return `<button type=\"button\" onclick=\"restartNoMore.reloadAll()\">Reload all Plugins and Themes.</button>\n<input type=\"checkbox\" onchange=\"restartNoMore.updateSettings(this.parentNode)\" value=\"patchSettings\"${(getSettings().patchSettings ? " checked" : void 0)}> patch all plugin settings with a reload button.`;
     }
 
     static reloadAll() {
@@ -164,6 +152,23 @@ restartNoMore = (function() {
         return;
       }
       log(`Couldn't determine filename for requested reload: ${name}.`);
+    }
+
+    static updateSettings(container) {
+      var j, len, oldSettings, ref, settings, x;
+      oldSettings = getSettings();
+      settings = {};
+      ref = container.querySelectorAll("*");
+      for (j = 0, len = ref.length; j < len; j++) {
+        x = ref[j];
+        if (x.type === "checkbox") {
+          settings[x.value] = x.checked;
+        }
+      }
+      bdPluginStorage.set("restartNoMore", "settings", settings);
+      if (oldSettings.patchSettings !== settings.patchSettings) {
+        return patchAllSettingsPanels(!settings.patchSettings);
+      }
     }
 
   };
@@ -263,6 +268,18 @@ restartNoMore = (function() {
     });
   };
 
+  getSettings = function() {
+    var settings;
+    settings = bdPluginStorage.get("restartNoMore", "settings");
+    if (settings == null) {
+      settings = {
+        patchSettings: false
+      };
+      bdPluginStorage.set("restartNoMore", "settings", settings);
+    }
+    return settings;
+  };
+
   getHeader = function(filename, data, isPlugin) {
     var e, header;
     try {
@@ -335,19 +352,27 @@ restartNoMore = (function() {
     header = this._nameCache[filename];
     if (isPlugin) {
       return execJs("(function(){" + data + "\r\n;return(" + (function(__name, __pname, __filename) {
-        var plugin, pname;
-        plugin = new __name;
-        pname = plugin.getName();
-        if (pname !== __pname) {
-          console.log(`restartNoMore: Please patch the META header to include \`\"pname\":\"Plugin Name As Shown In BD Plugin Settings\"\` in ${__filename}`);
+        var e, plugin, pname;
+        try {
+          plugin = new __name;
+          pname = plugin.getName();
+          if (pname !== __pname) {
+            console.log(`restartNoMore: Please patch the META header to include \`\"pname\":\"Plugin Name As Shown In BD Plugin Settings\"\` in ${__filename}`);
+          }
+          bdplugins[pname] = {
+            plugin: plugin,
+            enabled: false
+          };
+          return pname;
+        } catch (error) {
+          e = error;
+          return e;
         }
-        bdplugins[pname] = {
-          plugin: plugin,
-          enabled: false
-        };
-        return pname;
-      }).toString() + `)(${header.name}, '${header.pname}', '${filename}')})()`, (pname) => {
+      }).toString() + `)(${header.name}, '${header.pname}', '${filename.replace(/\\/g, '\\\\')}')})()`, (pname) => {
         var plugin;
+        if (pname instanceof Error) {
+          return log(`Error initializing plugin ${header.name}, ${filename}`, pname);
+        }
         plugin = bdplugins[pname].plugin;
         if (pname in pluginCookie && pluginCookie[pname]) {
           plugin.start();
@@ -355,7 +380,9 @@ restartNoMore = (function() {
           pluginCookie[pname] = false;
           pluginModule.savePluginData();
         }
-        patchSettingsPanel(plugin);
+        if (getSettings().patchSettings) {
+          patchSettingsPanel(plugin);
+        }
         return log(`Loaded ${filename}`);
       });
     } else {
@@ -387,20 +414,43 @@ restartNoMore = (function() {
     return bw.webContents.executeJavaScript(js, false, cb);
   };
 
+  patchAllSettingsPanels = function(remove = false) {
+    var k, plugin, results;
+    results = [];
+    for (k in bdplugins) {
+      ({plugin} = bdplugins[k]);
+      results.push(patchSettingsPanel(plugin, remove));
+    }
+    return results;
+  };
+
   patchSettingsPanel = function(plugin, remove = false) {
-    var base, o;
-    switch (typeof (typeof (base = (o = plugin.getSettingsPanel)) === "function" ? base(remove) : void 0)) {
-      case "undefined":
-      case "string":
-        return plugin.getSettingsPanel = function(remove) {
-          if (!!remove === remove) {
-            if (remove) {
-              plugin.getSettingsPanel = o;
+    var base, e, name, o;
+    try {
+      switch (typeof (typeof (base = (o = plugin.getSettingsPanel)) === "function" ? base(remove) : void 0)) {
+        case "undefined":
+        case "string":
+          return plugin.getSettingsPanel = function(remove) {
+            if (!!remove === remove) {
+              if (remove) {
+                plugin.getSettingsPanel = o;
+              }
+              return 42;
             }
-            return 42;
-          }
-          return ((o != null ? o.apply : void 0) ? (o.apply(plugin, arguments)) + "<br>" : "") + `<button type=\"button\" onclick=\"restartNoMore.reload('${plugin.constructor.name}')\">Reload with Restart-No-More</button>`;
-        };
+            return ((o != null ? o.apply : void 0) ? (o.apply(plugin, arguments)) + "<br>" : "") + `<button type=\"button\" onclick=\"restartNoMore.reload('${plugin.constructor.name}')\">Reload with Restart-No-More</button>`;
+          };
+      }
+    } catch (error) {
+      e = error;
+      try {
+        name = plugin.getName();
+      } catch (error) {}
+      try {
+        if (name == null) {
+          name = plugin.constructor.name;
+        }
+      } catch (error) {}
+      return log(`Couldn't patch settings for ${name != null ? name : filename}.`, e);
     }
   };
 
@@ -440,7 +490,20 @@ restartNoMore = (function() {
   };
 
   log = function(...text) {
-    return console.log(`%c${this.getName()}: %c${text[0]}`, "color:#7e0e46;font-size:1.3em;font-weight:bold", ((text[0] instanceof Error) ? "" : "color:#005900;font-size:1.3em"), ...text.slice(1), "\t" + (new Date).toLocaleTimeString());
+    var i, j, len, msg, results;
+    results = [];
+    for (i = j = 0, len = text.length; j < len; i = ++j) {
+      msg = text[i];
+      if (msg instanceof Error) {
+        if (0 === i) {
+          log("Error:");
+        }
+        results.push(console.log(msg));
+      } else {
+        results.push(console.log(`%c${this.getName()}: %c${msg}`, "color:#7e0e46;font-size:1.3em;font-weight:bold", "color:#005900;font-size:1.3em", "\t" + (new Date).toLocaleTimeString()));
+      }
+    }
+    return results;
   };
 
   return restartNoMore;
