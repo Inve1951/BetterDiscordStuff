@@ -2,7 +2,7 @@
 var restartNoMore;
 
 restartNoMore = (function() {
-  var EOL, bw, cacheFile, crypto, end, execJs, fs, getDisplayName, getHeader, getMd5, getSettings, load, log, patchAllSettingsPanels, patchSettingsPanel, path, start, unload;
+  var EOL, _onstart, bw, cacheFile, crypto, end, execJs, fixLineEndings, fs, getDisplayName, getHeader, getMd5, getSettings, load, log, onstart, patchAllSettingsPanels, patchSettingsPanel, path, start, unload, wasStarted;
 
   class restartNoMore {
     getName() {
@@ -14,7 +14,7 @@ restartNoMore = (function() {
     }
 
     getVersion() {
-      return "0.0.4-alpha";
+      return "0.0.5-alpha";
     }
 
     getAuthor() {
@@ -84,6 +84,7 @@ restartNoMore = (function() {
     load() {}
 
     start() {
+      wasStarted = true;
       this.wPlugins = fs.watch(this.pPlugins, {
         persistent: false
       }, (type, filename) => {
@@ -105,12 +106,14 @@ restartNoMore = (function() {
         log("Couldn't initialize themes watcher");
       }
       bw = (require("electron")).remote.require("electron").BrowserWindow.getAllWindows()[0];
+      onstart();
       if (getSettings().patchSettings) {
         return patchAllSettingsPanels();
       }
     }
 
     stop() {
+      wasStarted = false;
       this.wPlugins.close();
       this.wThemes.close();
       if (getSettings().patchSettings) {
@@ -119,7 +122,7 @@ restartNoMore = (function() {
     }
 
     getSettingsPanel() {
-      return `<button type=\"button\" onclick=\"restartNoMore.reloadAll()\">Reload all Plugins and Themes.</button>\n<input type=\"checkbox\" onchange=\"restartNoMore.updateSettings(this.parentNode)\" value=\"patchSettings\"${(getSettings().patchSettings ? " checked" : void 0)}> patch all plugin settings with a reload button.`;
+      return `<input type=\"checkbox\" onchange=\"restartNoMore.updateSettings(this.parentNode)\" value=\"patchSettings\"${(getSettings().patchSettings ? " checked" : void 0)}> patch all plugin settings with a reload button.<br>\n<input type=\"checkbox\" onchange=\"restartNoMore.updateSettings(this.parentNode)\" value=\"fixLineEndings\"${(getSettings().fixLineEndings ? " checked" : void 0)}> Fixes your themes' line endings to ensure they work.<br>\n<button type=\"button\" onclick=\"restartNoMore.reloadAll()\">Reload all Plugins and Themes.</button>`;
     }
 
     static reloadAll() {
@@ -183,6 +186,8 @@ restartNoMore = (function() {
 
   bw = null;
 
+  wasStarted = false;
+
   cacheFile = unload = load = start = end = log = null;
 
   cacheFile = function(init, filename) {
@@ -227,7 +232,20 @@ restartNoMore = (function() {
           if (init) {
             this._nameCache[filename] = header;
             this._md5Cache[header.name] = getMd5(data);
-            return end(filename);
+            if (!isPlugin) {
+              onstart(start, filename);
+              onstart(fixLineEndings, filename, data, (newData) => {
+                if (data !== newData) {
+                  this._md5Cache[header.name] = getMd5(newData);
+                  unload(filename, isPlugin);
+                  load(filename, newData, isPlugin);
+                  return end(filename);
+                } else {
+                  return end(filename);
+                }
+              });
+            }
+            return end(filename, isPlugin);
           }
           md5 = getMd5(data);
           if ((this._nameCache[filename] == null) && (this._md5Cache[header.name] != null)) {
@@ -254,7 +272,7 @@ restartNoMore = (function() {
               return log("# shouldn't be reached.");
             }
           } else if (((name = (ref1 = this._nameCache[filename]) != null ? ref1.name : void 0) != null) && this._md5Cache[name] === md5) {
-            return end(filename, `Skipped loading ${filename} because it's unchanged.`);
+            return end(filename, `Skipped reloading ${filename} because it's unchanged.`);
           } else if (this._nameCache[filename] != null) {
             if (false === unload(filename, isPlugin)) {
               return;
@@ -269,12 +287,22 @@ restartNoMore = (function() {
   };
 
   getSettings = function() {
-    var settings;
+    var defaultSettings, k, needsRewrite, settings, v;
     settings = bdPluginStorage.get("restartNoMore", "settings");
-    if (settings == null) {
-      settings = {
-        patchSettings: false
-      };
+    needsRewrite = false;
+    defaultSettings = {
+      patchSettings: false,
+      fixLineEndings: true
+    };
+    for (k in defaultSettings) {
+      v = defaultSettings[k];
+      if (!(settings[k] == null)) {
+        continue;
+      }
+      settings[k] = v;
+      needsRewrite = true;
+    }
+    if (needsRewrite) {
       bdPluginStorage.set("restartNoMore", "settings", settings);
     }
     return settings;
@@ -348,7 +376,7 @@ restartNoMore = (function() {
   };
 
   load = function(filename, data, isPlugin) {
-    var header, n;
+    var header;
     header = this._nameCache[filename];
     if (isPlugin) {
       return execJs("(function(){" + data + "\r\n;return(" + (function(__name, __pname, __filename) {
@@ -386,27 +414,70 @@ restartNoMore = (function() {
         return log(`Loaded ${filename}`);
       });
     } else {
-      data = data.split(EOL);
-      data.shift();
-      data = data.join("");
-      bdthemes[header.name] = {
-        name: header.name,
-        description: header.description,
-        author: header.author,
-        version: header.version,
-        css: escape(data),
-        enabled: false
-      };
-      if (header.name in themeCookie && themeCookie[header.name]) {
-        n = document.createElement("style");
-        n.id = header.name;
-        n.innerHTML = data;
-        document.head.appendChild(n);
-      } else {
-        themeCookie[header.name] = false;
-        themeModule.saveThemeData();
+      fixLineEndings(filename, data, function(data) {
+        var n;
+        data = data.split(EOL);
+        data.shift();
+        data = data.join("");
+        bdthemes[header.name] = {
+          name: header.name,
+          description: header.description,
+          author: header.author,
+          version: header.version,
+          css: escape(data),
+          enabled: false
+        };
+        if (header.name in themeCookie && themeCookie[header.name]) {
+          n = document.createElement("style");
+          n.id = header.name;
+          n.innerHTML = data;
+          document.head.appendChild(n);
+        } else {
+          themeCookie[header.name] = false;
+          themeModule.saveThemeData();
+        }
+        return end(filename, `Loaded ${filename}`);
+      });
+      return false;
+    }
+  };
+
+  _onstart = [];
+
+  onstart = function(_function, ...args) {
+    var j, len;
+    if (arguments.length) {
+      _onstart.push([_function, args]);
+      if (!wasStarted) {
+        return;
       }
-      return log(`Loaded ${filename}`);
+    }
+    for (j = 0, len = _onstart.length; j < len; j++) {
+      [_function, args] = _onstart[j];
+      _function(...args);
+    }
+    return _onstart = [];
+  };
+
+  fixLineEndings = function(filename, data, cb) {
+    var newData;
+    if (!getSettings().fixLineEndings) {
+      return cb(data);
+    }
+    newData = data.replace(/\r?\n|\r/g, "\r\n");
+    if (data !== newData) {
+      return fs.writeFile(filename, newData, function(e) {
+        return setImmediate(function() {
+          if (e) {
+            log(`Couldn't write file with fixed line endings ${filename}`, e);
+          } else {
+            log(`Fixed line endings for ${filename}`);
+          }
+          return cb(newData);
+        });
+      });
+    } else {
+      return cb(data);
     }
   };
 
@@ -483,6 +554,9 @@ restartNoMore = (function() {
   };
 
   end = function(filename, e) {
+    if (!e && e === !!e) {
+      return;
+    }
     delete this._inProcess[filename];
     if ((e instanceof Error) || "string" === typeof e) {
       return log(e);
@@ -498,7 +572,10 @@ restartNoMore = (function() {
         if (0 === i) {
           log("Error:");
         }
-        results.push(console.log(msg));
+        try {
+          throw msg;
+        } catch (error) {}
+        results.push(console.error(msg));
       } else {
         results.push(console.log(`%c${this.getName()}: %c${msg}`, "color:#7e0e46;font-size:1.3em;font-weight:bold", "color:#005900;font-size:1.3em", "\t" + (new Date).toLocaleTimeString()));
       }
