@@ -2,7 +2,7 @@
 var restartNoMore;
 
 restartNoMore = (function() {
-  var EOL, _onstart, bw, cacheFile, crypto, end, execJs, fixLineEndings, fs, getDisplayName, getHeader, getMd5, getSettings, load, log, onstart, patchAllSettingsPanels, patchSettingsPanel, path, start, unload, wasStarted;
+  var EOL, _onstart, bw, cacheFile, crypto, end, execJs, fixLineEndings, fs, getDisplayName, getHeader, getMd5, getSettings, load, log, onstart, patchAllSettingsPanels, patchSettingsPanel, path, start, unload, util, wasStarted;
 
   class restartNoMore {
     getName() {
@@ -14,7 +14,7 @@ restartNoMore = (function() {
     }
 
     getVersion() {
-      return "0.0.5-alpha";
+      return "0.0.6-alpha";
     }
 
     getAuthor() {
@@ -182,6 +182,8 @@ restartNoMore = (function() {
 
   crypto = require("crypto");
 
+  util = require("util");
+
   EOL = (require("os")).EOL;
 
   bw = null;
@@ -289,6 +291,9 @@ restartNoMore = (function() {
   getSettings = function() {
     var defaultSettings, k, needsRewrite, settings, v;
     settings = bdPluginStorage.get("restartNoMore", "settings");
+    if (settings == null) {
+      settings = {};
+    }
     needsRewrite = false;
     defaultSettings = {
       patchSettings: false,
@@ -379,7 +384,7 @@ restartNoMore = (function() {
     var header;
     header = this._nameCache[filename];
     if (isPlugin) {
-      return execJs("(function(){" + data + "\r\n;return(" + (function(__name, __pname, __filename) {
+      return execJs("(function(){try{" + data + "\r\nreturn(" + (function(__name, __pname, __filename) {
         var e, plugin, pname;
         try {
           plugin = new __name;
@@ -396,10 +401,15 @@ restartNoMore = (function() {
           e = error;
           return e;
         }
-      }).toString() + `)(${header.name}, '${header.pname}', '${filename.replace(/\\/g, '\\\\')}')})()`, (pname) => {
+      }).toString() + `)(${header.name}, '${header.pname}', '${filename.replace(/\\/g, '\\\\')}')}catch(e){return e}})()`, (pname) => {
         var plugin;
-        if (pname instanceof Error) {
-          return log(`Error initializing plugin ${header.name}, ${filename}`, pname);
+        if ((pname instanceof Error) || "string" !== typeof pname) {
+          delete this._nameCache[filename];
+          delete this._md5Cache[header.name];
+          if (!(pname instanceof Error)) {
+            return log(`Error initializing plugin ${header.name}, ${filename}`, new Error("Sorry, got no better error message at this time."));
+          }
+          return log(`Error initializing plugin ${header.name}, ${filename}`);
         }
         plugin = bdplugins[pname].plugin;
         if (pname in pluginCookie && pluginCookie[pname]) {
@@ -482,7 +492,18 @@ restartNoMore = (function() {
   };
 
   execJs = function(js, cb) {
-    return bw.webContents.executeJavaScript(js, false, cb);
+
+    /* dirty workaround for lack of proper error handling on electron's `executeJavaScript` */
+    var _cb;
+    _cb = function(e) {
+      window.removeEventListener("error", _cb);
+      if (e instanceof ErrorEvent) {
+        return cb(new Error(`${e.type}: ${e.message}`));
+      }
+      return cb(...arguments);
+    };
+    window.addEventListener("error", _cb);
+    return bw.webContents.executeJavaScript(js, false, _cb);
   };
 
   patchAllSettingsPanels = function(remove = false) {
