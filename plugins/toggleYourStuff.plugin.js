@@ -14,7 +14,7 @@ toggleYourStuff = (function() {
     }
 
     getVersion() {
-      return "0.0.1";
+      return "0.0.2";
     }
 
     getAuthor() {
@@ -60,7 +60,10 @@ toggleYourStuff = (function() {
 
     static updateSettings(html) {
       var ctrl, hotkey, i, id, j, len, len1, plugin, ref, ref1, settings, shift, theme;
-      settings = getSettings();
+      settings = {
+        plugins: {},
+        themes: {}
+      };
       ref = html.querySelector("#tys-plugin-hotkeys").children;
       for (i = 0, len = ref.length; i < len; i++) {
         plugin = ref[i];
