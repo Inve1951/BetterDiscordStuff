@@ -20,6 +20,10 @@ plugins:
   
     Lets you click users' avatars on their profile page to view a bigger version in your browser.
 
+  **[Toggle-Your-Stuff](plugins/toggleYourStuff.plugin.js)**
+  
+    Toggle your plugins and themes using hotkeys.
+
 themes:
 
   **[Drag-Fix](themes/dragfix.theme.css)**
