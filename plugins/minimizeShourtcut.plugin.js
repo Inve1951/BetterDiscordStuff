@@ -1,6 +1,6 @@
-//////////META { "name": "minimizeShourtcut" } *//////////
+//////////META { "name": "minimizeShortcut" } *//////////
 
-var minimizeShourtcut = (function(){
+var minimizeShortcut = (function(){
   var win, globalShortcut, shortcut, minimizeToTray, listener;
   
 // CONFIG
@@ -8,7 +8,7 @@ var minimizeShourtcut = (function(){
   minimizeToTray = false;                     // true or false
 // CONFIG
   
-  class minimizeShourtcut {
+  class minimizeShortcut {
     getName(){return "Minimize-Shourtcut"}
     getDescription(){return "Provides you with a shortcut to show/hide/minimize discord. Edit the file to configure the plugin."}
     getVersion(){return "1.0.0"}
@@ -36,5 +36,5 @@ var minimizeShourtcut = (function(){
       win.show() || win.focus();
   }
   
-  return minimizeShourtcut;
+  return minimizeShortcut;
 })()
