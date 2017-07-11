@@ -9,7 +9,7 @@ var minimizeShortcut = (function(){
 // CONFIG
   
   class minimizeShortcut {
-    getName(){return "Minimize-Shourtcut"}
+    getName(){return "Minimize-Shortcut"}
     getDescription(){return "Provides you with a shortcut to show/hide/minimize discord. Edit the file to configure the plugin."}
     getVersion(){return "1.0.0"}
     getAuthor(){return "square"}
