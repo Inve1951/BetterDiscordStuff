@@ -24,6 +24,10 @@ plugins:
   
     Toggle your plugins and themes using hotkeys.
 
+  **[Minimize-Shourtcut](plugins/minimizeShourtcut.plugin.js)**
+  
+    Provides you with a shortcut to show/hide/minimize discord.
+
 themes:
 
   **[Drag-Fix](themes/dragfix.theme.css)**
