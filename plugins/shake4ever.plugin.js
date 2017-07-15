@@ -1,7 +1,39 @@
 //META{"name":"shake4ever"}*//
 
 shake4ever = (function(){
-	var getOwnerInstance = (function(){
+	var shaker, dur, getOwnerInstance;
+	
+	class shake4ever {
+		getName(){return"shake4ever"}
+		getAuthor(){return"square"}
+		getVersion(){return"1.0.0"}
+		getDescription(){return"You have to make your discord shake once before enabling this or it won't work. Do that by hitting Ctrl+Shift+Alt+DownArrow outside of the menu. React interface by noodlebox."}
+		
+		load(){}
+		
+		start(){
+			try{
+				shaker = getOwnerInstance(document.querySelector(".app")).refs.shakeable;
+				dur = shaker.animProps.duration;
+				shaker.animProps.duration = Infinity;
+				shaker.state.shaking = true;
+				shaker._animate();
+			} catch (e) {
+				shaker = null;
+				console.log("shake4ever is broken or misused.");
+			}
+		}
+		
+		stop(){
+			if( shaker != null ) {
+				shaker.animProps.duration = dur;
+				shaker.state.shaking = false;
+				shaker = null;
+			}
+		}
+	}
+	
+	getOwnerInstance = (function(){
 		// code in this closure by @noodlebox#0155
 		// https://gist.github.com/noodlebox/047a9f57a8a714d88ca4a60672a22c81
 		
@@ -61,39 +93,7 @@ shake4ever = (function(){
 		}
 		return getOwnerInstance
 	})();
-
-	var shaker, dur;
 	
-	class shake4ever {
-		getName(){return"shake4ever"}
-		getAuthor(){return"square"}
-		getVersion(){return"1.0.0"}
-		getDescription(){return"most code by @noodlebox#0155"}
-		
-		load(){}
-		
-		start(){
-			try{
-				shaker = getOwnerInstance(document.querySelector(".app")).refs.shakeable;
-				dur = shaker.animProps.duration;
-				shaker.animProps.duration = Infinity;
-				shaker.state.shaking = true;
-				shaker._animate();
-			} catch (e) {
-				shaker = null;
-				console.log("shake4ever is broken.");
-			}
-		}
-		
-		stop(){
-			if( shaker != null ) {
-				shaker.animProps.duration = dur;
-				shaker.state.shaking = false;
-				shaker = null;
-			}
-		}
-	}
-
 	return shake4ever;
 
 })()
