@@ -34,11 +34,6 @@ themes:
   
     Makes it way easier to move the window.
 
-  **[No-Pulsing-User-List](themes/noPulsingUserList.theme.css)**
-  
-    Removes the pulsing animation from the user list which normally is shown while the list is loading.
-	Sometimes (in my case on BD server when it's overloaded) the list never finishes loading.
-
   **[Show-URLs](/themes/showURLs.theme.css)**
   
     Shows a link's URL in bottom left corner much like a browser does.
