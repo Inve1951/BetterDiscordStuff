@@ -6,7 +6,11 @@ plugins:
   **[Restart-No-More](plugins/restartNoMore.plugin.js)** _alpha version_
   
     Abandons the need for restarting/reloading discord to get your new plugins and themes.
-	Especially useful for development.
+    Especially useful for development.
+
+  **[Direct-Download](plugins/directDownload.plugin.js)** _alpha version_
+  
+    Download attached files directly within discord.
 
   **[Force-Close](plugins/forceClose.plugin.js)**
   
