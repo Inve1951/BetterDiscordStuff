@@ -2,7 +2,7 @@
 var directDownload;
 
 directDownload = (function() {
-  var Download, download, fs, getSettings, https, installCss, installDownloadBar, installListener, installObserver, obs, path, settings, shell;
+  var Download, bw, dialog, fs, getSettings, https, installCss, installDownloadBar, listener, path, settings, shell;
 
   class directDownload {
     getName() {
@@ -18,51 +18,55 @@ directDownload = (function() {
     }
 
     getVersion() {
-      return "0.0.2-alpha";
+      return "0.0.3-alpha";
     }
 
     start() {
       getSettings();
       installCss();
       installDownloadBar();
-      installObserver();
-    }
-
-    onSwitch() {
-      installObserver();
+      document.addEventListener("click", listener, true);
     }
 
     stop() {
-      var i, len, ref, x;
       document.getElementById("files_directDownload").remove();
       document.getElementById("css_directDownload").remove();
-      if (typeof obs !== "undefined" && obs !== null) {
-        obs.disconnect();
-      }
-      ref = document.querySelectorAll(".messages .attachment > .icon-file");
-      for (i = 0, len = ref.length; i < len; i++) {
-        x = ref[i];
-        (x = x.parentNode).removeEventListener("click", x.dl);
-      }
+      document.removeEventListener("click", listener, true);
     }
 
     load() {}
 
     getSettingsPanel() {
       getSettings();
-      return `<div id=\"settings_directDownload\" style=\"color:#87909C\">\n  <span style=\"display:block;-webkit-user-select:text;height:1.2em\">Last selected: ${settings.dldir}</span>\n  <input name=\"dldir\" type=\"file\" webkitdirectory onchange=\"directDownload.updateSettings()\"></input>\n  <label><input name=\"autoopen\" type=\"checkbox\" ${(settings.autoopen ? "checked" : "")} onchange=\"directDownload.updateSettings()\"/>Open files after download.</label>\n  <label><input name=\"showinstead\" type=\"checkbox\" ${(settings.showinstead ? "checked" : "")} onchange=\"directDownload.updateSettings()\"/>Show in folder instead.</label>\n</div>`;
+      return `<div id=\"settings_directDownload\">\n  <style>\n    #settings_directDownload {\n      color: #87909C;\n    }\n    #settings_directDownload :-webkit-any(label, input) {\n      cursor: pointer;\n    }\n    #settings_directDownload button {\n      background: rgba(128,128,128,0.4);\n      width: calc(100% - 20px);\n      padding: 5px 10px;\n      box-sizing: content-box;\n      height: 1em;\n      font-size: 1em;\n      line-height: 0.1em;\n    }\n    #settings_directDownload button.invalid {\n      background: rgba(200,0,0,.5);\n      font-weight: 500;\n    }\n  </style>\n  <button name=\"dldir\" type=\"button\" onclick=\"directDownload.chooseDirectory()\">${settings.dldir}</button>\n  <label><input name=\"autoopen\" type=\"checkbox\" ${(settings.autoopen ? "checked" : "")} onchange=\"directDownload.updateSettings()\"/>Open files after download.</label>\n  <label><input name=\"showinstead\" type=\"checkbox\" ${(settings.showinstead ? "checked" : "")} onchange=\"directDownload.updateSettings()\"/>Show in folder instead.</label>\n  <label><input name=\"prompt\" type=\"checkbox\" ${(settings.prompt ? "checked" : "")} onchange=\"directDownload.updateSettings()\"/>Prompt for location.</label>\n</div>`;
+    }
+
+    static chooseDirectory(cb) {
+      return dialog.showOpenDialog(bw, {
+        defaulPath: settings.dldir,
+        buttonLabel: "Choose",
+        properties: ["openDirectory", "showHiddenFiles", "createDirectory", "promptToCreate", "noResolveAliases", "treatPackageAsDirectory"]
+      }, (selection) => {
+        var dir;
+        dir = selection != null ? selection[0] : void 0;
+        if (cb == null) {
+          (document.querySelector("#settings_directDownload button")).innerHTML = dir != null ? dir : "";
+          this.updateSettings();
+        } else {
+          cb(dir);
+        }
+      });
     }
 
     static updateSettings() {
-      var i, input, len, name, ref, ref1, type, value;
-      ref = document.querySelectorAll("#settings_directDownload input");
-      for (i = 0, len = ref.length; i < len; i++) {
-        input = ref[i];
+      var input, j, len, name, ref, type, value;
+      ref = document.querySelectorAll("#settings_directDownload :-webkit-any(input, button)");
+      for (j = 0, len = ref.length; j < len; j++) {
+        input = ref[j];
         ({name, type, value} = input);
-        if (type === "file") {
-          value = (ref1 = input.files[0]) != null ? ref1.path : void 0;
-        }
-        if (type === "checkbox") {
+        if (type === "button") {
+          value = input.innerHTML;
+        } else if (type = "checkbox") {
           value = input.checked;
         }
         if (((function() {
@@ -74,9 +78,12 @@ directDownload = (function() {
           }
         })())) {
           settings[name] = value;
-          input.style = "";
+          input.className = "";
         } else {
-          input.style = "background: rgba(200,0,0,.5);";
+          input.className = "invalid";
+          if (name === "dldir") {
+            input.innerHTML = "invalid path";
+          }
         }
       }
       bdPluginStorage.set("directDownload", "settings", settings);
@@ -107,73 +114,26 @@ directDownload = (function() {
 
   path = require("path");
 
-  ({shell} = (require("electron")).remote.require("electron"));
+  ({shell, dialog} = (require("electron")).remote);
+
+  bw = (require("electron")).remote.BrowserWindow.getAllWindows()[0];
 
   settings = {};
 
-  obs = null;
-
-  installListener = function(elem) {
-    var elems, i, len, x;
-    elems = elem != null ? [elem] : (function() {
-      var i, len, ref, results;
-      ref = document.querySelectorAll(".messages .attachment > .icon-file");
-      results = [];
-      for (i = 0, len = ref.length; i < len; i++) {
-        x = ref[i];
-        results.push(x.parentNode);
+  listener = function(ev) {
+    var elem, i, j, len, ref;
+    ref = ev.path;
+    for (i = j = 0, len = ref.length; j < len; i = ++j) {
+      elem = ref[i];
+      if (!(i < 3 && elem.className === "attachment" && ((elem.querySelector(".icon-file")) != null))) {
+        continue;
       }
-      return results;
-    })();
-    for (i = 0, len = elems.length; i < len; i++) {
-      elem = elems[i];
-      if (elem.dl == null) {
-        elem.addEventListener("click", download(elem));
-      }
-    }
-  };
-
-  installObserver = function() {
-    var chat, chatWrapper;
-    if (obs != null) {
-      obs.disconnect();
-    }
-    chatWrapper = document.querySelector(".chat > .content > div:not(.channel-members-wrap)");
-    chat = chatWrapper != null ? chatWrapper.querySelector(".messages-wrapper > .scroller-wrap > .messages") : void 0;
-    if (chat != null) {
-      (obs = function(mutations) {
-        var addedNodes, i, icon, j, l, len, len1, len2, node, ref;
-        for (i = 0, len = mutations.length; i < len; i++) {
-          ({addedNodes} = mutations[i]);
-          for (j = 0, len1 = addedNodes.length; j < len1; j++) {
-            node = addedNodes[j];
-            ref = node.querySelectorAll(".attachment > .icon-file");
-            for (l = 0, len2 = ref.length; l < len2; l++) {
-              icon = ref[l];
-              installListener(icon.parentNode);
-            }
-          }
-        }
-      })([
-        {
-          addedNodes: [chat]
-        }
-      ]);
-      obs = new MutationObserver(obs);
-      obs.observe(chat, {
-        childList: true
-      });
-    }
-  };
-
-  download = function(elem) {
-    return elem.dl = function(event) {
       if (elem.inProcess == null) {
         elem.inProcess = new Download(elem);
       }
       event.preventDefault();
       return false;
-    };
+    }
   };
 
   getSettings = function() {
@@ -182,7 +142,8 @@ directDownload = (function() {
     ref1 = {
       dldir: path.join(process.env[process.platform === "win32" ? "USERPROFILE" : "HOME"], "downloads"),
       autoopen: false,
-      showinstead: false
+      showinstead: false,
+      prompt: false
     };
     for (k in ref1) {
       v = ref1[k];
@@ -203,9 +164,12 @@ directDownload = (function() {
         this.started = this.finished = this.failed = false;
         this.openWhenFinished = settings.autoopen;
         this.showinstead = settings.showinstead;
+        this.prompt = settings.prompt;
         url = (a = this.att.querySelector("a")).href;
         this.filename = a.innerHTML;
-        this.filepath = path.join(settings.dldir, this.filename);
+        if (!this.prompt) {
+          this.filepath = path.join(settings.dldir, this.filename);
+        }
         this.filesize = this.bufpos = 0;
         req = this.buffer = a = null;
         this.start();
@@ -254,7 +218,9 @@ directDownload = (function() {
           if (this.finished) {
             this.open();
           } else {
-            this.elem.classList.toggle("will-open", (this.openWhenFinished = !this.openWhenFinished));
+            this.elem.classList.add("will-open");
+            this.openWhenFinished = true;
+            this.showinstead = false;
           }
           event.preventDefault();
           return false;
@@ -262,6 +228,9 @@ directDownload = (function() {
         span.oncontextmenu = (event) => {
           if (this.finished) {
             this.show();
+          } else {
+            this.elem.classList.add("will-open");
+            this.openWhenFinished = this.showinstead = true;
           }
           event.preventDefault();
           return false;
@@ -281,6 +250,17 @@ directDownload = (function() {
       }
 
       finish() {
+        if (this.prompt && !this.filepath) {
+          directDownload.chooseDirectory((dir) => {
+            if (!dir) {
+              this.fail();
+              return;
+            }
+            this.filepath = path.join(dir, this.filename);
+            this.finish();
+          });
+          return;
+        }
         fs.writeFile(this.filepath, this.buffer, (error) => {
           delete this.att.inProcess;
           if (error) {
@@ -303,6 +283,7 @@ directDownload = (function() {
       }
 
       fail() {
+        delete this.att.inProcess;
         this.failed = true;
         this.elem.classList.add("failed");
       }
@@ -323,7 +304,7 @@ directDownload = (function() {
 
     };
 
-    Download.css = "#files_directDownload {\n  position: fixed;\n  bottom: 0;\n  left: 310px;\n  width: calc(100% - 310px - 240px);\n  height: 25px;\n  overflow: hidden;\n  font-size: 0;\n}\n.bd-minimal #files_directDownload {\n  left: 275px;\n  width: calc(100% - 275px - 185px);\n}\n#files_directDownload .file {\n  height: 100%;\n  width: 200px;\n  min-width: 50px;\n  background: rgba(128,128,128,0.2);\n  display: inline-block;\n  margin-left: 2px;\n  box-shadow: inset 0 0 10px rgba(0,0,0,0.3);\n  border: 1px solid rgba(128,128,128,0.2);\n  border-bottom: none;\n  box-sizing: border-box;\n  position: relative;\n  cursor: pointer;\n}\n#files_directDownload .file:first-of-type {\n  border-top-left-radius: 4px;\n  margin: 0;\n}\n#files_directDownload .file:last-of-type {\n  border-top-right-radius: 4px;\n}\n#files_directDownload .file.done {\n  box-shadow: none;\n}\n#files_directDownload .file.will-open {\n  background: rgba(128,128,128,0.4);\n}\n#files_directDownload span {\n  width: calc(100% + 2px);\n  overflow: hidden;\n  text-overflow: ellipsis;\n  color: #87909C;\n  /*display: inline-block;*/\n  position: absolute;\n  left: -1px;\n  top: -1px;\n  font-size: 14px;\n  line-height: 23px;\n  padding: 0 18px 0 4px;\n  box-sizing: border-box;\n}\n#files_directDownload .file .progress-bar {\n  position:absolute;\n  height: 2px;\n  bottom: 0;\n  left: -1px;\n  background: rgb(32,196,64);\n}\n#files_directDownload .file.failed .progress-bar {\n  background: rgb(196,64,32);\n  min-width: calc(100% + 2px);\n}\n#files_directDownload .file svg {\n  fill: rgba(0,0,0,0.5);\n  position: absolute;\n  top: -1px;\n  right: -1px;\n  height: 23px;\n  width: 23px;\n}\n\n#settings_directDownload :-webkit-any(label, input) {\n  cursor: pointer;\n}\n#settings_directDownload [type=\"file\"] {\n  width: 100%;\n}\n\n.attachment {\n  cursor: pointer;\n}";
+    Download.css = "#files_directDownload {\n  position: fixed;\n  bottom: 0;\n  left: 310px;\n  width: calc(100% - 310px - 240px);\n  height: 25px;\n  overflow: hidden;\n  font-size: 0;\n}\n.bd-minimal #files_directDownload {\n  left: 275px;\n  width: calc(100% - 275px - 185px);\n}\n#files_directDownload .file {\n  height: 100%;\n  width: 200px;\n  min-width: 50px;\n  background: rgba(128,128,128,0.2);\n  display: inline-block;\n  margin-left: 2px;\n  box-shadow: inset 0 0 10px rgba(0,0,0,0.3);\n  border: 1px solid rgba(128,128,128,0.2);\n  border-bottom: none;\n  box-sizing: border-box;\n  position: relative;\n  cursor: pointer;\n}\n#files_directDownload .file:first-of-type {\n  border-top-left-radius: 4px;\n  margin: 0;\n}\n#files_directDownload .file:last-of-type {\n  border-top-right-radius: 4px;\n}\n#files_directDownload .file.done {\n  box-shadow: none;\n}\n#files_directDownload .file.will-open {\n  background: rgba(128,128,128,0.4);\n}\n#files_directDownload span {\n  width: calc(100% + 2px);\n  overflow: hidden;\n  text-overflow: ellipsis;\n  color: #87909C;\n  /*display: inline-block;*/\n  position: absolute;\n  left: -1px;\n  top: -1px;\n  font-size: 14px;\n  line-height: 23px;\n  padding: 0 18px 0 4px;\n  box-sizing: border-box;\n}\n#files_directDownload .file .progress-bar {\n  position:absolute;\n  height: 2px;\n  bottom: 0;\n  left: -1px;\n  background: rgb(32,196,64);\n}\n#files_directDownload .file.failed .progress-bar {\n  background: rgb(196,64,32);\n  min-width: calc(100% + 2px);\n}\n#files_directDownload .file svg {\n  fill: rgba(0,0,0,0.5);\n  position: absolute;\n  top: -1px;\n  right: -1px;\n  height: 23px;\n  width: 23px;\n}\n\n.attachment {\n  cursor: pointer;\n}";
 
     return Download;
 
