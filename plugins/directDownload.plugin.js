@@ -125,14 +125,16 @@ directDownload = (function() {
     ref = ev.path;
     for (i = j = 0, len = ref.length; j < len; i = ++j) {
       elem = ref[i];
-      if (!(i < 3 && elem.className === "attachment" && ((elem.querySelector(".icon-file")) != null))) {
-        continue;
+      if (i < 3 && elem.className === "attachment" && ((elem.querySelector(".icon-file")) != null)) {
+        if (elem.inProcess == null) {
+          elem.inProcess = new Download(elem);
+        }
+        event.preventDefault();
+        return false;
       }
-      if (elem.inProcess == null) {
-        elem.inProcess = new Download(elem);
+      if (i === 2) {
+        return;
       }
-      event.preventDefault();
-      return false;
     }
   };
 
