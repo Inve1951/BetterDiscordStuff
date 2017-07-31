@@ -18,7 +18,7 @@ directDownload = (function() {
     }
 
     getVersion() {
-      return "0.0.3-alpha";
+      return "0.0.4-alpha";
     }
 
     start() {
@@ -38,7 +38,7 @@ directDownload = (function() {
 
     getSettingsPanel() {
       getSettings();
-      return `<div id=\"settings_directDownload\">\n  <style>\n    #settings_directDownload {\n      color: #87909C;\n    }\n    #settings_directDownload :-webkit-any(label, input) {\n      cursor: pointer;\n    }\n    #settings_directDownload button {\n      background: rgba(128,128,128,0.4);\n      width: calc(100% - 20px);\n      padding: 5px 10px;\n      box-sizing: content-box;\n      height: 1em;\n      font-size: 1em;\n      line-height: 0.1em;\n    }\n    #settings_directDownload button.invalid {\n      background: rgba(200,0,0,.5);\n      font-weight: 500;\n    }\n  </style>\n  <button name=\"dldir\" type=\"button\" onclick=\"directDownload.chooseDirectory()\">${settings.dldir}</button>\n  <label><input name=\"autoopen\" type=\"checkbox\" ${(settings.autoopen ? "checked" : "")} onchange=\"directDownload.updateSettings()\"/>Open files after download.</label>\n  <label><input name=\"showinstead\" type=\"checkbox\" ${(settings.showinstead ? "checked" : "")} onchange=\"directDownload.updateSettings()\"/>Show in folder instead.</label>\n  <label><input name=\"prompt\" type=\"checkbox\" ${(settings.prompt ? "checked" : "")} onchange=\"directDownload.updateSettings()\"/>Prompt for location.</label>\n</div>`;
+      return `<div id=\"settings_directDownload\">\n  <style>\n    #settings_directDownload {\n      color: #87909C;\n    }\n    #settings_directDownload button {\n      background: rgba(128,128,128,0.4);\n      width: calc(100% - 20px);\n      padding: 5px 10px;\n      box-sizing: content-box;\n      height: 1em;\n      font-size: 1em;\n      line-height: 0.1em;\n    }\n    #settings_directDownload button.invalid {\n      background: rgba(200,0,0,.5);\n      font-weight: 500;\n    }\n    #settings_directDownload label {\n      display: inline-block;\n    }\n    #settings_directDownload :-webkit-any(label, input) {\n      cursor: pointer;\n    }\n    #settings_directDownload br + br {\n      content: \"\";\n      display: block;\n      margin-top: 5px;\n    }\n  </style>\n  <button name=\"dldir\" type=\"button\" onclick=\"directDownload.chooseDirectory()\">${settings.dldir}</button>\n  <br><br>\n  <label><input name=\"autoopen\" type=\"checkbox\" ${(settings.autoopen ? "checked" : "")} onchange=\"directDownload.updateSettings()\"/>Open files after download.</label>\n  <label><input name=\"showinstead\" type=\"checkbox\" ${(settings.showinstead ? "checked" : "")} onchange=\"directDownload.updateSettings()\"/>Show in folder instead.</label>\n  <br><br>\n  <label><input name=\"prompt\" type=\"checkbox\" ${(settings.prompt ? "checked" : "")} onchange=\"directDownload.updateSettings()\"/>Prompt for location.</label>\n  <label><input name=\"imagemodals\" type=\"checkbox\" ${(settings.imagemodals ? "checked" : "")} onchange=\"directDownload.updateSettings()\"/>Allow direct download for image modals.</label>\n</div>`;
     }
 
     static chooseDirectory(cb) {
@@ -121,7 +121,14 @@ directDownload = (function() {
   settings = {};
 
   listener = function(ev) {
-    var elem, i, j, len, ref;
+    var base, elem, i, j, len, ref;
+    if (settings.imagemodals && ev.target === document.querySelector(".callout-backdrop + div .modal-image img")) {
+      if ((base = ev.target).inProcess == null) {
+        base.inProcess = new Download(ev.target);
+      }
+      event.preventDefault();
+      return false;
+    }
     ref = ev.path;
     for (i = j = 0, len = ref.length; j < len; i = ++j) {
       elem = ref[i];
@@ -145,7 +152,8 @@ directDownload = (function() {
       dldir: path.join(process.env[process.platform === "win32" ? "USERPROFILE" : "HOME"], "downloads"),
       autoopen: false,
       showinstead: false,
-      prompt: false
+      prompt: false,
+      imagemodals: true
     };
     for (k in ref1) {
       v = ref1[k];
@@ -158,17 +166,22 @@ directDownload = (function() {
   Download = (function() {
     class Download {
       constructor(att) {
-        var a, buffer, bufpos, elem, req, url;
+        var a, buffer, bufpos, req, url;
         this.att = att;
         this.filename = this.filepath = "";
         this.filesize = bufpos = 0;
-        buffer = elem = this.pb = null;
+        buffer = this.elem = this.pb = null;
         this.started = this.finished = this.failed = false;
         this.openWhenFinished = settings.autoopen;
         this.showinstead = settings.showinstead;
         this.prompt = settings.prompt;
-        url = (a = this.att.querySelector("a")).href;
-        this.filename = a.innerHTML;
+        if (settings.imagemodals && this.att.nodeName === "IMG") {
+          url = (this.att.parentNode.querySelector("a")).href;
+          this.filename = (url.split("/")).pop();
+        } else {
+          url = (a = this.att.querySelector("a")).href;
+          this.filename = a.innerHTML;
+        }
         if (!this.prompt) {
           this.filepath = path.join(settings.dldir, this.filename);
         }
