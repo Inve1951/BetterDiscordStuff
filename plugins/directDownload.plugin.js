@@ -2,7 +2,7 @@
 var directDownload;
 
 directDownload = (function() {
-  var Download, bw, dialog, fs, getSettings, https, installCss, installDownloadBar, listener, path, settings, shell;
+  var Download, bw, clipboard, dialog, fs, getSettings, https, installCss, installDownloadBar, listener, nativeImage, path, remote, settings, shell;
 
   class directDownload {
     getName() {
@@ -10,7 +10,7 @@ directDownload = (function() {
     }
 
     getDescription() {
-      return "Download attached files directly within discord.";
+      return "Download attached files directly within discord. Usage note: Left click a tab to open the file, right click it to show in file manager.";
     }
 
     getAuthor() {
@@ -18,7 +18,7 @@ directDownload = (function() {
     }
 
     getVersion() {
-      return "0.0.4-alpha";
+      return "0.0.5-alpha";
     }
 
     start() {
@@ -38,7 +38,7 @@ directDownload = (function() {
 
     getSettingsPanel() {
       getSettings();
-      return `<div id=\"settings_directDownload\">\n  <style>\n    #settings_directDownload {\n      color: #87909C;\n    }\n    #settings_directDownload button {\n      background: rgba(128,128,128,0.4);\n      width: calc(100% - 20px);\n      padding: 5px 10px;\n      box-sizing: content-box;\n      height: 1em;\n      font-size: 1em;\n      line-height: 0.1em;\n    }\n    #settings_directDownload button.invalid {\n      background: rgba(200,0,0,.5);\n      font-weight: 500;\n    }\n    #settings_directDownload label {\n      display: inline-block;\n    }\n    #settings_directDownload :-webkit-any(label, input) {\n      cursor: pointer;\n    }\n    #settings_directDownload br + br {\n      content: \"\";\n      display: block;\n      margin-top: 5px;\n    }\n  </style>\n  <button name=\"dldir\" type=\"button\" onclick=\"directDownload.chooseDirectory()\">${settings.dldir}</button>\n  <br><br>\n  <label><input name=\"autoopen\" type=\"checkbox\" ${(settings.autoopen ? "checked" : "")} onchange=\"directDownload.updateSettings()\"/>Open files after download.</label>\n  <label><input name=\"showinstead\" type=\"checkbox\" ${(settings.showinstead ? "checked" : "")} onchange=\"directDownload.updateSettings()\"/>Show in folder instead.</label>\n  <br><br>\n  <label><input name=\"prompt\" type=\"checkbox\" ${(settings.prompt ? "checked" : "")} onchange=\"directDownload.updateSettings()\"/>Prompt for location.</label>\n  <label><input name=\"imagemodals\" type=\"checkbox\" ${(settings.imagemodals ? "checked" : "")} onchange=\"directDownload.updateSettings()\"/>Allow direct download for image modals.</label>\n</div>`;
+      return `<div id=\"settings_directDownload\">\n  <style>\n    #settings_directDownload {\n      color: #87909C;\n    }\n    #settings_directDownload button {\n      background: rgba(128,128,128,0.4);\n      width: calc(100% - 20px);\n      padding: 5px 10px;\n      box-sizing: content-box;\n      height: 1em;\n      font-size: 1em;\n      line-height: 0.1em;\n    }\n    #settings_directDownload button.invalid {\n      background: rgba(200,0,0,.5);\n      font-weight: 500;\n    }\n    #settings_directDownload label {\n      display: inline-block;\n    }\n    #settings_directDownload :-webkit-any(label, input) {\n      cursor: pointer;\n    }\n    #settings_directDownload br + br {\n      content: \"\";\n      display: block;\n      margin-top: 5px;\n    }\n  </style>\n  <button name=\"dldir\" type=\"button\" onclick=\"directDownload.chooseDirectory()\">${settings.dldir}</button>\n  <br><br>\n  <label><input name=\"autoopen\" type=\"checkbox\" ${(settings.autoopen ? "checked" : "")} onchange=\"directDownload.updateSettings()\"/>Open files after download.</label>\n  <label><input name=\"showinstead\" type=\"checkbox\" ${(settings.showinstead ? "checked" : "")} ${(settings.autoopen ? "" : "disabled")} onchange=\"directDownload.updateSettings()\"/>Show in folder instead.</label>\n  <br><br>\n  <label><input name=\"prompt\" type=\"checkbox\" ${(settings.prompt ? "checked" : "")} onchange=\"directDownload.updateSettings()\"/>Always ask where to save.</label>\n  <br><br>\n  <label><input name=\"imagemodals\" type=\"checkbox\" ${(settings.imagemodals ? "checked" : "")} onchange=\"directDownload.updateSettings()\"/>Allow direct download for image modals.</label>\n  <label><input name=\"copyimages\" type=\"checkbox\" ${(settings.copyimages ? "checked" : "")} ${(settings.imagemodals ? "" : "disabled")} onchange=\"directDownload.updateSettings()\"/>Copy the image to clipboard when download is done.</label>\n</div>`;
     }
 
     static chooseDirectory(cb) {
@@ -73,6 +73,12 @@ directDownload = (function() {
           switch (name) {
             case "dldir":
               return value && (path.isAbsolute(value)) && fs.existsSync(value);
+            case "showinstead":
+              input.disabled = !settings.autoopen;
+              return true;
+            case "copyimages":
+              input.disabled = !settings.imagemodals;
+              return true;
             default:
               return true;
           }
@@ -114,9 +120,11 @@ directDownload = (function() {
 
   path = require("path");
 
-  ({shell, dialog} = (require("electron")).remote);
+  ({clipboard, nativeImage, remote} = require("electron"));
 
-  bw = (require("electron")).remote.BrowserWindow.getAllWindows()[0];
+  ({shell, dialog} = remote);
+
+  bw = remote.BrowserWindow.getAllWindows()[0];
 
   settings = {};
 
@@ -175,7 +183,10 @@ directDownload = (function() {
         this.openWhenFinished = settings.autoopen;
         this.showinstead = settings.showinstead;
         this.prompt = settings.prompt;
+        this.copyWhenFinished = this.isImage = false;
         if (settings.imagemodals && this.att.nodeName === "IMG") {
+          this.copyWhenFinished = settings.copyimages;
+          this.isImage = true;
           url = (this.att.parentNode.querySelector("a")).href;
           this.filename = (url.split("/")).pop();
         } else {
@@ -265,6 +276,16 @@ directDownload = (function() {
       }
 
       finish() {
+
+        /* support for Zerebos' image to clipboard plugin */
+        if (this.isImage) {
+          this.att.dldone = this;
+        }
+        if (this.copyWhenFinished || this.zerebos) {
+          clipboard.write({
+            image: nativeImage.createFromBuffer(this.buffer)
+          });
+        }
         if (this.prompt && !this.filepath) {
           directDownload.chooseDirectory((dir) => {
             if (!dir) {
