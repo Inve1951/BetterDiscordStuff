@@ -15,7 +15,7 @@ autocompleteHoverFix = class autocompleteHoverFix {
   }
 
   getVersion() {
-    return "1.0.0";
+    return "1.0.1";
   }
 
   start() {}
@@ -38,8 +38,27 @@ autocompleteHoverFix = class autocompleteHoverFix {
       e = document.createElement("div");
       e.style = "position: absolute;\nwidth: 100%;\nheight: 100%;\ntop: 0; left: 0;";
       e.onmousemove = function({clientX, clientY}) {
-        if ((this.x != null) && (this.y != null) && this.x !== clientX && this.y !== clientY) {
-          e.remove();
+        if ((this.x != null) && (this.y != null) && (this.x !== clientX || this.y !== clientY)) {
+          this.remove();
+          e = document.elementFromPoint(clientX, clientY);
+          while (e !== document.body) {
+            if (-1 !== e.className.indexOf("selectable-")) {
+              e = e.parentNode;
+              break;
+            } else if (-1 !== e.className.indexOf("search-option")) {
+              break;
+            }
+            e = e.parentNode;
+          }
+          if (e === document.body) {
+            return;
+          }
+          e.dispatchEvent(new MouseEvent("mouseover", {
+            clientX,
+            clientY,
+            bubbles: true
+          }));
+          return;
         }
         this.x = clientX;
         this.y = clientY;
