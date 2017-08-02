@@ -7,7 +7,7 @@ autocompleteHoverFix = class autocompleteHoverFix {
   }
 
   getDescription() {
-    return "gg discord";
+    return "If the autocompletion menu selects entries without your doing then this is for you.";
   }
 
   getAuthor() {

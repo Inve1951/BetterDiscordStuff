@@ -34,7 +34,7 @@ plugins:
 
   **[Autocomplete-Hover-Fix](plugins/autocompleteHoverFix.plugin.js)**
   
-    gg discord
+    If the autocompletion menu selects entries without your doing then this is for you.
 
 themes:
 
