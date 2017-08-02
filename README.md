@@ -32,6 +32,10 @@ plugins:
   
     Provides you with a shortcut to show/hide/minimize discord.
 
+  **[Autocomplete-Hover-Fix](plugins/autocompleteHoverFix.plugin.js)**
+  
+    gg discord
+
 themes:
 
   **[Drag-Fix](themes/dragfix.theme.css)**
