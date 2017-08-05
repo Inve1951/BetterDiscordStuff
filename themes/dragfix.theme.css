@@ -2,7 +2,7 @@
 
 .title-wrap > *, .search-bar > *, .title > *:not([class="channel-name"]), .tab-bar > *, .bd-pfbtn, .btn-close, button, .header-toolbar, .topic > *, [class*="guild-settings"] [class^="scrollerWrap"] > [class^="scroller-"] > * > *
 {
-    -webkit-app-region: no-drag;
+  -webkit-app-region: no-drag;
 }
 
 .title-wrap,
@@ -11,17 +11,17 @@
 .layer:not([style]) .friends-header,
 .layer:not([style]) .topic
 {
-    -webkit-app-region: drag;
-    -webkit-user-select: none;
+  -webkit-app-region: drag;
+  -webkit-user-select: none;
 }
 
 .title-wrap:before{
-	content: "";
-    -webkit-app-region: no-drag;
-	cursor: ns-resize;
-	height: 6px;
-	width: 100%;
-	position: absolute;
-	top: 0;
-	left: 0;
+  content: "";
+  -webkit-app-region: no-drag;
+  cursor: ns-resize;
+  height: 6px;
+  width: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
 }
