@@ -171,12 +171,10 @@ directDownload = (function() {
   listener = function(ev) {
     var elem, i, j, len, ref;
     if (settings.imagemodals && ev.target === document.querySelector(".callout-backdrop + div .modal-image img")) {
-
-      /* ev.target.nodeName is "A" and ev.target.href.startsWith "https://betterdiscord.net/ghdl?" */
+      new Download(ev.target);
+      event.preventDefault();
+      return false;
     }
-    new Download(ev.target);
-    event.preventDefault();
-    return false;
     ref = ev.path;
     for (i = j = 0, len = ref.length; j < len; i = ++j) {
       elem = ref[i];
@@ -213,7 +211,7 @@ directDownload = (function() {
   Download = (function() {
     class Download {
       constructor(...args) {
-        var a;
+        var a, ref;
         this.filename = this.filepath = this.url = "";
         this.filesize = this.bufpos = 0;
         this.buffer = this.elem = this.pb = this.att = null;
@@ -256,7 +254,7 @@ directDownload = (function() {
           a = this.att.nodeName === "A" ? this.att : this.att.querySelector("a");
           this.install = a === this.att && settings.itp;
           this.url = a.href;
-          this.filename = a.innerHTML.startsWith("<!--") ? a.title : a.innerHTML;
+          this.filename = (ref = a.title) != null ? ref : a.innerHTML;
         }
         cache.get(this.url, (dl) => {
           if (dl != null) {
@@ -280,12 +278,12 @@ directDownload = (function() {
       }
 
       c2() {
-        var a, req;
+        var req;
         if (!this.prompt) {
           this.filepath = path.join(settings.dldir, this.filename);
         }
         this.filesize = this.bufpos = 0;
-        req = this.buffer = a = null;
+        req = this.buffer = null;
         this.start();
         req = (this.url.startsWith("https") ? https : http).get(this.url, (res) => {
           if (200 !== res.statusCode) {
@@ -330,7 +328,7 @@ directDownload = (function() {
           console.error(error);
           this.fail();
         });
-        return req.end();
+        req.end();
       }
 
       start(write = true) {
