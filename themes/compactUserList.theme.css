@@ -1,10 +1,10 @@
-/*//META{"name":"Compact-User-List","description":"Makes the user list look much like the server list.","author":"square","version":"1.0.0"}*//
+/*//META{"name":"Compact-User-List","description":"Makes the user list look much like the server list.","author":"square","version":"1.0.1"}*//
 
 .channel-members-wrap {
     min-width: initial;
 }
 .channel-members-wrap .channel-members {
-    width: 76px;
+    width: 78px;
     padding: 0 0 18px 10px;
 }
 .channel-members h2 {
@@ -14,7 +14,7 @@
     word-wrap: break-word;
 }
 .member.member-status {
-    padding: 0;
+    padding: 0 4px;
     padding-top: 8px;
 }
 .member.member-status .avatar-small {
@@ -24,4 +24,8 @@
 }
 .member.member-status .member-inner {
     display: none;
+}
+
+.channel-members::-webkit-scrollbar {
+  max-width: 10px;
 }
