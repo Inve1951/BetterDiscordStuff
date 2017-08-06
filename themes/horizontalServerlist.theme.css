@@ -1,0 +1,36 @@
+//META{"name":"Horizontal_Serverlist","description":"I've always wanted this :3","author":"square","version":"1.0.0"}*//
+
+.guilds-wrapper {
+  position: absolute;
+  transform: rotate(-90deg) translateX(-100vh);
+  transform-origin: top left;
+  height: 100vw;
+}
+.guilds-wrapper ~ div {
+  height: calc(100% - 70px);
+}
+.guilds .guild-inner, .badge {
+  transform: rotate(90deg);
+}
+.guilds-wrapper .guilds .friends-online {
+  direction: rtl;
+}
+
+
+#files_directDownload {
+  bottom: 70px;
+  left: 240px;
+  width: calc(100% - 240px - 240px);
+}
+
+
+
+.bd-minimal .guilds-wrapper ~ div {
+  height: calc(100% - 45px);
+}
+
+.bd-minimal #files_directDownload {
+  bottom: 45px;
+  left: 230px;
+  width: calc(100% - 230px - 185px)
+}

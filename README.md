@@ -38,17 +38,21 @@ plugins:
 
 themes:
 
-  **[Drag-Fix](themes/dragfix.theme.css)**
+  **[Drag-Fix](themes/dragfix.theme.css)** _mini-theme_
   
     Makes it way easier to move the window.
 
-  **[Show-URLs](/themes/showURLs.theme.css)**
+  **[Show-URLs](/themes/showURLs.theme.css)** _mini-theme_
   
     Shows a link's URL in bottom left corner much like a browser does.
 
-  **[Compact-User-List](/themes/compactUserList.theme.css)**
+  **[Compact-User-List](/themes/compactUserList.theme.css)** _mini-theme_
   
     Makes the user list look much like the server list.
+
+  **[Horizontal Serverlist](/themes/horizontalServerlist.theme.css)** _mini-theme_
+  
+    I've always wanted this :3
 
 
 
