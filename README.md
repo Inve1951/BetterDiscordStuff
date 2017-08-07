@@ -49,11 +49,12 @@ themes:
   **[Compact-User-List](/themes/compactUserList.theme.css)** _mini-theme_
   
     Makes the user list look much like the server list.
-	Works great with [RadialStatus](https://github.com/rauenzi/BetterDiscordAddons/tree/master/Themes/RadialStatus)
+    Works great with [RadialStatus](https://github.com/rauenzi/BetterDiscordAddons/tree/master/Themes/RadialStatus)
 
   **[Horizontal Serverlist](/themes/horizontalServerlist.theme.css)** _mini-theme_
   
     I've always wanted this :3
+    Server Grid support can be enabled in the file.
 
 
 

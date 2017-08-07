@@ -1,4 +1,9 @@
-//META{"name":"Horizontal_Serverlist","description":"I've always wanted this :3","author":"square","version":"1.0.0"}*//
+//META{"name":"Horizontal_Serverlist","description":"I've always wanted this :3","author":"square","version":"1.1.0"}*//
+
+:root {
+  /* for Jiiks' server grid */
+  --guild-column-count: 1;
+}
 
 .guilds-wrapper {
   position: absolute;
@@ -7,7 +12,7 @@
   height: 100vw;
 }
 .guilds-wrapper ~ div {
-  height: calc(100% - 70px);
+  height: calc(100% - var(--guild-column-count) * 70px + (var(--guild-column-count) - 1) * 15px);
 }
 .guilds .guild-inner, .badge {
   transform: rotate(90deg);
@@ -18,13 +23,13 @@
 
 
 #files_directDownload {
-  bottom: 70px;
+  bottom: calc(var(--guild-column-count) * 70px - (var(--guild-column-count) - 1) * 15px);
   left: 240px;
   width: calc(100% - 240px - 240px);
 }
 
 
-
+/* server grid does not support minimal mode, will fix if that changes */
 .bd-minimal .guilds-wrapper ~ div {
   height: calc(100% - 45px);
 }
