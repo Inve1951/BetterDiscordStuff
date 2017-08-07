@@ -1,4 +1,4 @@
-//META{"name":"Horizontal_Serverlist","description":"I've always wanted this :3","author":"square","version":"1.1.0"}*//
+//META{"name":"Horizontal_Serverlist","description":"I've always wanted this :3","author":"square","version":"1.1.1"}*//
 
 :root {
   /* for Jiiks' server grid */
@@ -14,7 +14,7 @@
 .guilds-wrapper ~ div {
   height: calc(100% - var(--guild-column-count) * 70px + (var(--guild-column-count) - 1) * 15px);
 }
-.guilds .guild-inner, .badge {
+.guilds .guild-inner:first-child, .badge {
   transform: rotate(90deg);
 }
 .guilds-wrapper .guilds .friends-online {
