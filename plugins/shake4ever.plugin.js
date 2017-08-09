@@ -1,7 +1,7 @@
 //META{"name":"shake4ever"}*//
 
 shake4ever = (function(){
-	var shaker, dur, getOwnerInstance;
+	var shaker, getOwnerInstance;
 	
 	class shake4ever {
 		getName(){return"shake4ever"}
@@ -13,11 +13,8 @@ shake4ever = (function(){
 		
 		start(){
 			try{
-				shaker = getOwnerInstance(document.querySelector(".app")).refs.shakeable;
-				dur = shaker.animProps.duration;
-				shaker.animProps.duration = Infinity;
-				shaker.state.shaking = true;
-				shaker._animate();
+				shaker = getOwnerInstance(document.querySelector(".app"), {include: ["Chat"]});
+				shaker.shake({duration: Infinity, intensity: 5});
 			} catch (e) {
 				shaker = null;
 				console.log("shake4ever is broken or misused.");
@@ -26,8 +23,7 @@ shake4ever = (function(){
 		
 		stop(){
 			if( shaker != null ) {
-				shaker.animProps.duration = dur;
-				shaker.state.shaking = false;
+				shaker.shake({duration: 0, intensity: 5});
 				shaker = null;
 			}
 		}
