@@ -1,6 +1,6 @@
-//META{"name":"Drag-Fix","description":"Makes it way easier to move the window.","author":"square","version":"1.0.3"}*//
+//META{"name":"Drag-Fix","description":"Makes it way easier to move the window.","author":"square","version":"1.0.4"}*//
 
-.title-wrap > *, .search-bar > *, .title > *:not([class="channel-name"]), .tab-bar > *, .bd-pfbtn, .btn-close, button, .header-toolbar, .topic > *, [class*="guild-settings"] [class^="scrollerWrap"] > [class^="scroller-"] > * > *
+.title-wrap > *, .search-bar > *, .title > *:not([class="channel-name"]), .tab-bar > *, .bd-pfbtn, .btn-close, button, .header-toolbar, .topic > *, [class*="guild-settings"] [class^="scrollerWrap"] > [class^="scroller-"] > * > *, .side-2nYO0F
 {
   -webkit-app-region: no-drag;
 }
