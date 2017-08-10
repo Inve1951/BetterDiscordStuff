@@ -2,25 +2,25 @@
 
 shake4ever = (function(){
 	var shaker, getOwnerInstance;
-	
+
 	class shake4ever {
 		getName(){return"shake4ever"}
 		getAuthor(){return"square"}
-		getVersion(){return"1.0.0"}
-		getDescription(){return"You have to make your discord shake once before enabling this or it won't work. Do that by hitting Ctrl+Shift+Alt+DownArrow outside of the menu. React interface by noodlebox."}
-		
+		getVersion(){return"1.1.0"}
+		getDescription(){return"React interface and August '17 fix by noodlebox."}
+
 		load(){}
-		
+
 		start(){
 			try{
 				shaker = getOwnerInstance(document.querySelector(".app"), {include: ["Chat"]});
 				shaker.shake({duration: Infinity, intensity: 5});
 			} catch (e) {
 				shaker = null;
-				console.log("shake4ever is broken or misused.");
+				console.log("shake4ever is broken.");
 			}
 		}
-		
+
 		stop(){
 			if( shaker != null ) {
 				shaker.shake({duration: 0, intensity: 5});
@@ -28,11 +28,11 @@ shake4ever = (function(){
 			}
 		}
 	}
-	
+
 	getOwnerInstance = (function(){
 		// code in this closure by @noodlebox#0155
 		// https://gist.github.com/noodlebox/047a9f57a8a714d88ca4a60672a22c81
-		
+
 		// This is super hackish, and will likely break as Discord's internal API changes
 		// Anything using this or what it returns should be prepared to catch some exceptions
 		const getInternalInstance = e => e[Object.keys(e).find(k => k.startsWith("__reactInternalInstance"))];
@@ -89,8 +89,7 @@ shake4ever = (function(){
 		}
 		return getOwnerInstance
 	})();
-	
+
 	return shake4ever;
 
 })()
-
