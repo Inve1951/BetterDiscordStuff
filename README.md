@@ -36,6 +36,16 @@ plugins:
   
     If the autocompletion menu selects entries without your doing then this is for you.
 
+  **[More obvious DMs](plugins/moreObviousDMs.plugin.js)**
+  
+    Flashes the discord taskbar icon and window upon receiving a DM until discord receives mouse or window focus.
+    This makes it easier to spot DMs after leaving a fullscreen application.
+
+  **[Status Css](plugins/statusCss.plugin.js)** _css helper_
+  
+    Adds your status to <body> class list so you can style with it.
+    `.own-status-online`, `.own-status-dnd`, etc.
+
 themes:
 
   **[Drag-Fix](themes/dragfix.theme.css)** _mini-theme_
