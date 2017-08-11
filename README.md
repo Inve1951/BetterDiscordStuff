@@ -46,6 +46,11 @@ plugins:
     Adds your status to <body> class list so you can style with it.
     `.own-status-online`, `.own-status-dnd`, etc.
 
+  **[Discord Experiments](plugins/discordexperiments.plugin.js)**
+  
+    Enables the experiments tab in discord's settings.
+    Depends on samogot's Discord Internals Library, so install that too. (https://github.com/samogot/betterdiscord-plugins/blob/master/v1/1lib_discord_internals.plugin.js)
+
 themes:
 
   **[Drag-Fix](themes/dragfix.theme.css)** _mini-theme_
@@ -59,7 +64,7 @@ themes:
   **[Compact-User-List](/themes/compactUserList.theme.css)** _mini-theme_
   
     Makes the user list look much like the server list.
-    Works great with [RadialStatus](https://github.com/rauenzi/BetterDiscordAddons/tree/master/Themes/RadialStatus)
+    Works great with RadialStatus. (https://github.com/rauenzi/BetterDiscordAddons/tree/master/Themes/RadialStatus)
 
   **[Horizontal Serverlist](/themes/horizontalServerlist.theme.css)** _mini-theme_
   
