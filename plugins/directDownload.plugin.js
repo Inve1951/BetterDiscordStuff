@@ -339,11 +339,12 @@ directDownload = (function() {
         }
         this.elem = document.createElement("div");
         this.elem.className = "file";
-        this.elem.textContent = `<span>${this.filename}</span>\n<svg viewBox=\"0 0 26 26\">\n    <path d=\"M20 7.41L18.59 6 13 11.59 7.41 6 6 7.41 11.59 13 6 18.59 7.41 20 13 14.41 18.59 20 20 18.59 14.41 13 20 7.41z\"/>\n</svg>`;
+        this.elem.innerHTML = "<span></span>\n<svg viewBox=\"0 0 26 26\">\n    <path d=\"M20 7.41L18.59 6 13 11.59 7.41 6 6 7.41 11.59 13 6 18.59 7.41 20 13 14.41 18.59 20 20 18.59 14.41 13 20 7.41z\"/>\n</svg>";
         this.pb = document.createElement("div");
         this.pb.className = "progress-bar";
         this.elem.appendChild(this.pb);
         span = this.elem.querySelector("span");
+        span.textContent = this.filename;
         svg = this.elem.querySelector("svg");
         span.onclick = (event) => {
           if (this.finished) {
