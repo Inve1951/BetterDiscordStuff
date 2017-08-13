@@ -1,5 +1,6 @@
 //META{"name":"directDownload"}*//;
-var directDownload;
+var directDownload,
+  indexOf = [].indexOf;
 
 directDownload = (function() {
   var Download, _fr, bw, cache, clipboard, dialog, fs, getSettings, http, https, installCss, installDownloadBar, listener, nativeImage, pPlugins, pThemes, path, remote, settings, shell;
@@ -18,7 +19,7 @@ directDownload = (function() {
     }
 
     getVersion() {
-      return "0.0.6-alpha";
+      return "0.1.0-alpha";
     }
 
     start() {
@@ -38,14 +39,14 @@ directDownload = (function() {
 
     getSettingsPanel() {
       getSettings();
-      return `<div id=\"settings_directDownload\">\n  <style>\n    #settings_directDownload {\n      color: #87909C;\n    }\n    #settings_directDownload button {\n      background: rgba(128,128,128,0.4);\n      width: calc(100% - 20px);\n      padding: 5px 10px;\n      box-sizing: content-box;\n      height: 1em;\n      font-size: 1em;\n      line-height: 0.1em;\n    }\n    #settings_directDownload button.invalid {\n      background: rgba(200,0,0,.5);\n      font-weight: 500;\n    }\n    #settings_directDownload label {\n      display: inline-block;\n    }\n    #settings_directDownload :-webkit-any(label, input) {\n      cursor: pointer;\n    }\n    #settings_directDownload br + br {\n      content: \"\";\n      display: block;\n      margin-top: 5px;\n    }\n  </style>\n  <button name=\"dldir\" type=\"button\" onclick=\"directDownload.chooseDirectory()\">${settings.dldir}</button>\n  <br><br>\n  <label><input name=\"autoopen\" type=\"checkbox\" ${(settings.autoopen ? "checked" : "")} onchange=\"directDownload.updateSettings()\"/>Open files after download.</label>\n  <label><input name=\"showinstead\" type=\"checkbox\" ${(settings.showinstead ? "checked" : "")} ${(settings.autoopen ? "" : "disabled")} onchange=\"directDownload.updateSettings()\"/>Show in folder instead.</label>\n  <br><br>\n  <label><input name=\"prompt\" type=\"checkbox\" ${(settings.prompt ? "checked" : "")} onchange=\"directDownload.updateSettings()\"/>Always ask where to save.</label>\n  <br><br>\n  <label><input name=\"imagemodals\" type=\"checkbox\" ${(settings.imagemodals ? "checked" : "")} onchange=\"directDownload.updateSettings()\"/>Allow direct download for image modals.</label>\n  <label><input name=\"copyimages\" type=\"checkbox\" ${(settings.copyimages ? "checked" : "")} ${(settings.imagemodals ? "" : "disabled")} onchange=\"directDownload.updateSettings()\"/>Copy the image to clipboard when download is done.</label>\n  <br><br>\n  <!--<label><input name=\"itp\" type=\"checkbox\" ${(settings.itp ? "checked" : "")} onchange=\"directDownload.updateSettings()\"/>Install themes and plugins downlaoded from betterdiscord.net.</label>-->\n</div>`;
+      return `<div id=\"settings_directDownload\">\n  <style>\n    #settings_directDownload {\n      color: #87909C;\n    }\n    #settings_directDownload button {\n      background: rgba(128,128,128,0.4);\n      width: calc(100% - 20px);\n      padding: 5px 10px;\n      box-sizing: content-box;\n      height: 1em;\n      font-size: 1em;\n      line-height: 0.1em;\n    }\n    #settings_directDownload button.invalid {\n      background: rgba(200,0,0,.5);\n      font-weight: 500;\n    }\n    #settings_directDownload label {\n      display: inline-block;\n    }\n    #settings_directDownload :-webkit-any(label, input) {\n      cursor: pointer;\n    }\n    #settings_directDownload br + br {\n      content: \"\";\n      display: block;\n      margin-top: 5px;\n    }\n  </style>\n  <button name=\"dldir\" type=\"button\" onclick=\"directDownload.chooseDirectory()\">${settings.dldir}</button>\n  <br><br>\n  <label><input name=\"autoopen\" type=\"checkbox\" ${(settings.autoopen ? "checked" : "")} onchange=\"directDownload.updateSettings()\"/>Open files after download.</label>\n  <label><input name=\"showinstead\" type=\"checkbox\" ${(settings.showinstead ? "checked" : "")} ${(settings.autoopen ? "" : "disabled")} onchange=\"directDownload.updateSettings()\"/>Show in folder instead.</label>\n  <br><br>\n  <label><input name=\"overwrite\" type=\"checkbox\" ${(!settings.overwrite ? "checked" : "")} onchange=\"directDownload.updateSettings()\"/>Ask for path if file exists.</label>\n  <label><input name=\"prompt\" type=\"checkbox\" ${(settings.prompt ? "checked" : "")} ${(settings.overwrite ? "disabled" : "")} onchange=\"directDownload.updateSettings()\"/>Always ask.</label>\n  <br><br>\n  <label><input name=\"imagemodals\" type=\"checkbox\" ${(settings.imagemodals ? "checked" : "")} onchange=\"directDownload.updateSettings()\"/>Allow direct download for image modals.</label>\n  <label><input name=\"copyimages\" type=\"checkbox\" ${(settings.copyimages ? "checked" : "")} ${(settings.imagemodals ? "" : "disabled")} onchange=\"directDownload.updateSettings()\"/>Copy the image to clipboard when download is done.</label>\n  <br><br>\n  <label><input name=\"itp\" type=\"checkbox\" ${(settings.itp ? "checked" : "")} onchange=\"directDownload.updateSettings()\"/>Install themes and plugins downlaoded from betterdiscord.net (will always overwrite).</label>\n</div>`;
     }
 
     static chooseDirectory(cb) {
       return dialog.showOpenDialog(bw, {
         defaulPath: settings.dldir,
         buttonLabel: "Choose",
-        properties: ["openDirectory", "showHiddenFiles", "createDirectory", "promptToCreate", "noResolveAliases", "treatPackageAsDirectory"]
+        properties: ["openDirectory", "showHiddenFiles", "createDirectory", "noResolveAliases", "treatPackageAsDirectory"]
       }, (selection) => {
         var dir;
         dir = selection != null ? selection[0] : void 0;
@@ -55,6 +56,20 @@ directDownload = (function() {
         } else {
           cb(dir);
         }
+      });
+    }
+
+    static chooseFile(defaultpath, cb) {
+      if (cb == null) {
+        cb = defaultpath;
+        defaultpath = "";
+      }
+      return dialog.showOpenDialog(bw, {
+        defaulPath: defaultpath,
+        buttonLabel: "Choose",
+        properties: ["openFile", "showHiddenFiles", "createDirectory", "noResolveAliases", "treatPackageAsDirectory"]
+      }, (selection) => {
+        cb(selection != null ? selection[0] : void 0);
       });
     }
 
@@ -78,6 +93,12 @@ directDownload = (function() {
               return true;
             case "copyimages":
               input.disabled = !settings.imagemodals;
+              return true;
+            case "overwrite":
+              value = !value;
+              return true;
+            case "prompt":
+              input.disabled = settings.overwrite;
               return true;
             default:
               return true;
@@ -169,15 +190,15 @@ directDownload = (function() {
   })();
 
   listener = function(ev) {
-    var elem, i, j, len, ref;
-    if (settings.imagemodals && ev.target === document.querySelector(".callout-backdrop + div .modal-image img")) {
+    var elem, i, j, len, ref, ref1;
+    if ((settings.imagemodals && (ref = ev.target, indexOf.call(document.querySelectorAll(".callout-backdrop + div .modal-image :-webkit-any(img,span)"), ref) >= 0)) || ev.target.nodeName === "A" && ev.target.href.startsWith("https://betterdiscord.net/ghdl?")) {
       new Download(ev.target);
       event.preventDefault();
       return false;
     }
-    ref = ev.path;
-    for (i = j = 0, len = ref.length; j < len; i = ++j) {
-      elem = ref[i];
+    ref1 = ev.path;
+    for (i = j = 0, len = ref1.length; j < len; i = ++j) {
+      elem = ref1[i];
       if (i < 3 && elem.className === "attachment" && ((elem.querySelector(".icon-file")) != null)) {
         new Download(elem);
         event.preventDefault();
@@ -196,8 +217,10 @@ directDownload = (function() {
       dldir: path.join(process.env[process.platform === "win32" ? "USERPROFILE" : "HOME"], "downloads"),
       autoopen: false,
       showinstead: false,
+      overwrite: true,
       prompt: false,
       imagemodals: true,
+      copyimages: false,
       itp: true
     };
     for (k in ref1) {
@@ -214,12 +237,13 @@ directDownload = (function() {
         var a, ref;
         this.filename = this.filepath = this.url = "";
         this.filesize = this.bufpos = 0;
-        this.buffer = this.elem = this.pb = this.att = null;
+        this.buffer = this.elem = this.pb = this.att = this.buffers = null;
         this.started = this.finished = this.failed = false;
         this.openWhenFinished = settings.autoopen;
-        this.showinstead = settings.showinstead;
-        this.prompt = settings.prompt;
-        this.copyWhenFinished = this.isImage = this.install = false;
+        this.showinstead = this.openWhenFinished && settings.showinstead;
+        this.overwrite = settings.overwrite;
+        this.prompt = !this.overwrite && settings.prompt;
+        this.copyWhenFinished = this.isImage = this.install = this.stream = false;
         if (args.length > 1) {
           this.buffer = args[0];
           this.filesize = this.bufpos = Buffer.byteLength(this.buffer);
@@ -245,16 +269,19 @@ directDownload = (function() {
           return;
         }
         this.att = args[0];
-        if (settings.imagemodals && this.att.nodeName === "IMG") {
+        if (settings.imagemodals && (this.att.nodeName === "IMG" || this.att.nodeName === "SPAN")) {
           this.copyWhenFinished = settings.copyimages;
           this.isImage = true;
+          if (this.att.parentNode.nodeName === "SPAN") {
+            this.att = this.att.parentNode;
+          }
           this.url = (this.att.parentNode.querySelector("a")).href;
-          this.filename = (this.url.split("/")).pop();
+          this.filename = path.basename((this.url.split("/")).pop());
         } else {
           a = this.att.nodeName === "A" ? this.att : this.att.querySelector("a");
           this.install = a === this.att && settings.itp;
           this.url = a.href;
-          this.filename = (ref = a.title) != null ? ref : a.innerHTML;
+          this.filename = path.basename((ref = a.title) != null ? ref : a.innerHTML);
         }
         cache.get(this.url, (dl) => {
           if (dl != null) {
@@ -286,6 +313,7 @@ directDownload = (function() {
         req = this.buffer = null;
         this.start();
         req = (this.url.startsWith("https") ? https : http).get(this.url, (res) => {
+          this.buffers = [];
           if (200 !== res.statusCode) {
             res.destroy();
             console.error(`Download failed for ${this.filename} with code ${res.statusCode}:\n${res.statusMessage}`);
@@ -293,25 +321,16 @@ directDownload = (function() {
             return;
           }
           if (!path.extname(this.filename)) {
-            this.filename = res.headers["content-disposition"].split("filename=")[1];
+            this.filename = path.basename(res.headers["content-disposition"].split("filename=")[1]);
             if (!this.prompt) {
               this.filepath = path.join(settings.dldir, this.filename);
             }
             (this.elem.querySelector("span")).textContent = this.filename;
           }
           this.filesize = 0 | res.headers["content-length"];
-          this.buffer = Buffer.alloc(this.filesize);
           this.progress();
           res.on("data", (chunk) => {
-            chunk.copy(this.buffer, this.bufpos);
-
-            /*
-            if (chunk.copy @buffer, @bufpos) isnt Buffer.byteLength chunk
-              do res.destroy
-              console.error "Download failed: something weird happened"
-              do @fail
-              return
-             */
+            this.buffers.push(chunk);
             this.bufpos += Buffer.byteLength(chunk);
             this.progress();
           });
@@ -321,6 +340,9 @@ directDownload = (function() {
               this.fail();
               return;
             }
+            this.buffer = Buffer.concat(this.buffers, this.bufpos);
+            this.filesize = this.bufpos;
+            delete this.buffers;
             this.finish();
           });
         });
@@ -388,17 +410,6 @@ directDownload = (function() {
             image: nativeImage.createFromBuffer(this.buffer)
           });
         }
-        if (this.prompt && !this.filepath) {
-          directDownload.chooseDirectory((dir) => {
-            if (!dir) {
-              this.fail();
-              return;
-            }
-            this.filepath = path.join(dir, this.filename);
-            this.finish();
-          });
-          return;
-        }
         if (write) {
           if (this.install) {
             this.filepath = (function() {
@@ -408,9 +419,21 @@ directDownload = (function() {
                 case ".theme.css":
                   return path.join(pThemes, this.filename);
                 default:
+                  this.install = false;
                   return this.filepath;
               }
             }).call(this);
+          }
+          if ((1 !== write) && !this.install && ((this.prompt && !this.filepath) || (!this.overwrite && fs.existsSync(this.filepath)))) {
+            directDownload.chooseFile(this.filepath, (file) => {
+              if (!file) {
+                this.fail();
+                return;
+              }
+              this.filepath = file;
+              this.finish(1);
+            });
+            return;
           }
           fs.writeFile(this.filepath, this.buffer, (error) => {
             if (error) {
@@ -422,7 +445,11 @@ directDownload = (function() {
             this.elem.classList.add("done");
             this.finished = true;
             console.log(`File saved to ${this.filepath}.`);
-            cache.set(this.url, this);
+            if (this.install) {
+              cache.clear(this.url);
+            } else {
+              cache.set(this.url, this);
+            }
             if (this.openWhenFinished) {
               if (!this.showinstead) {
                 this.open();

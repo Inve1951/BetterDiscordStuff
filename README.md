@@ -11,6 +11,7 @@ plugins:
   **[Direct-Download](plugins/directDownload.plugin.js)** _alpha version_
   
     Download attached files directly within discord.
+	New: download and install themes and plugins from `betterdiscord.net` links.
 
   **[Force-Close](plugins/forceClose.plugin.js)**
   
