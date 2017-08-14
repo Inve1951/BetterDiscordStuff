@@ -3,7 +3,7 @@ var directDownload,
   indexOf = [].indexOf;
 
 directDownload = (function() {
-  var Download, _fr, bw, cache, clipboard, dialog, fs, getSettings, http, https, installCss, installDownloadBar, listener, nativeImage, pPlugins, pThemes, path, remote, settings, shell;
+  var Download, _fr, bw, cache, clipboard, dialog, fs, getSettings, http, https, installCss, installDownloadBar, lastButOneIndexOf, listener, nativeImage, pPlugins, pThemes, path, remote, settings, shell;
 
   class directDownload {
     getName() {
@@ -19,7 +19,7 @@ directDownload = (function() {
     }
 
     getVersion() {
-      return "0.1.0-alpha";
+      return "0.1.1-alpha";
     }
 
     start() {
@@ -194,6 +194,7 @@ directDownload = (function() {
     if ((settings.imagemodals && (ref = ev.target, indexOf.call(document.querySelectorAll(".callout-backdrop + div .modal-image :-webkit-any(img,span)"), ref) >= 0)) || ev.target.nodeName === "A" && ev.target.href.startsWith("https://betterdiscord.net/ghdl?")) {
       new Download(ev.target);
       event.preventDefault();
+      event.stopImmediatePropagation();
       return false;
     }
     ref1 = ev.path;
@@ -202,12 +203,17 @@ directDownload = (function() {
       if (i < 3 && elem.className === "attachment" && ((elem.querySelector(".icon-file")) != null)) {
         new Download(elem);
         event.preventDefault();
+        event.stopImmediatePropagation();
         return false;
       }
       if (i === 2) {
         return;
       }
     }
+  };
+
+  lastButOneIndexOf = function(h, n) {
+    return h.slice(0, h.lastIndexOf(n)).lastIndexOf(n);
   };
 
   getSettings = function() {
@@ -413,7 +419,7 @@ directDownload = (function() {
         if (write) {
           if (this.install) {
             this.filepath = (function() {
-              switch (this.filename.slice(this.filename.indexOf("."))) {
+              switch (this.filename.slice(lastButOneIndexOf(this.filename, "."))) {
                 case ".plugin.js":
                   return path.join(pPlugins, this.filename);
                 case ".theme.css":
