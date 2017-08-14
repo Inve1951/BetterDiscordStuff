@@ -14,7 +14,7 @@ toggleYourStuff = (function() {
     }
 
     getVersion() {
-      return "1.1.0";
+      return "1.1.1";
     }
 
     getAuthor() {
@@ -198,16 +198,16 @@ toggleYourStuff = (function() {
   settings = {};
 
   getSettings = function() {
-    var k, ref, v;
-    settings = bdPluginStorage.get("toggleYourStuff", "settings");
-    ref = {
+    var k, ref, ref1, v;
+    settings = (ref = bdPluginStorage.get("toggleYourStuff", "settings")) != null ? ref : {};
+    ref1 = {
       cancelDefault: false,
       dontSave: false,
       plugins: {},
       themes: {}
     };
-    for (k in ref) {
-      v = ref[k];
+    for (k in ref1) {
+      v = ref1[k];
       if (settings[k] == null) {
         settings[k] = v;
       }
