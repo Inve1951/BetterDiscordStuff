@@ -1,4 +1,4 @@
-//META{"name":"Horizontal_Serverlist","description":"I've always wanted this :3","author":"square","version":"1.2.0"}*//
+//META{"name":"Horizontal_Serverlist","description":"I've always wanted this :3","author":"square","version":"1.2.1"}*//
 
 :root {
   /* for Jiiks' server grid */
@@ -6,8 +6,14 @@
   --public-button-in-use: 0;  /* 0 or 1, unfortuantely css can't detect it where it's required */
 }
 
+.app {
+  /* so other css can easily detect it, define your default on :root as 0 */
+  --horizontal-serverlist: 1;
+}
+
 .guilds-wrapper {
-  position: absolute;
+  position: fixed;
+  top: 0;
   transform: rotate(-90deg) translateX(-100vh);
   transform-origin: top left;
   height: 100vw;
