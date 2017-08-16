@@ -19,7 +19,7 @@ directDownload = (function() {
     }
 
     getVersion() {
-      return "0.1.1-alpha";
+      return "0.1.2-alpha";
     }
 
     start() {
@@ -43,8 +43,8 @@ directDownload = (function() {
     }
 
     static chooseDirectory(cb) {
-      return dialog.showOpenDialog(bw, {
-        defaulPath: settings.dldir,
+      dialog.showOpenDialog(bw, {
+        defaultPath: settings.dldir,
         buttonLabel: "Choose",
         properties: ["openDirectory", "showHiddenFiles", "createDirectory", "noResolveAliases", "treatPackageAsDirectory"]
       }, (selection) => {
@@ -59,17 +59,24 @@ directDownload = (function() {
       });
     }
 
-    static chooseFile(defaultpath, cb) {
+    static chooseFile(defaultPath, cb) {
+      var ext, filters;
       if (cb == null) {
-        cb = defaultpath;
-        defaultpath = "";
+        cb = defaultPath;
+        defaultPath = "";
       }
-      return dialog.showOpenDialog(bw, {
-        defaulPath: defaultpath,
-        buttonLabel: "Choose",
-        properties: ["openFile", "showHiddenFiles", "createDirectory", "noResolveAliases", "treatPackageAsDirectory"]
-      }, (selection) => {
-        cb(selection != null ? selection[0] : void 0);
+      ext = (path.extname(defaultPath)).slice(1);
+      filters = ext ? [
+        {
+          name: ext.toUpperCase(),
+          extensions: [ext]
+        }, {
+          name: "All Files",
+          extensions: ["*"]
+        }
+      ] : [];
+      dialog.showSaveDialog(bw, {defaultPath, filters}, function(selection) {
+        cb(selection);
       });
     }
 
@@ -431,7 +438,7 @@ directDownload = (function() {
             }).call(this);
           }
           if ((1 !== write) && !this.install && ((this.prompt && !this.filepath) || (!this.overwrite && fs.existsSync(this.filepath)))) {
-            directDownload.chooseFile(this.filepath, (file) => {
+            directDownload.chooseFile(this.filepath || path.join(settings.dldir, this.filename), (file) => {
               if (!file) {
                 this.fail();
                 return;
