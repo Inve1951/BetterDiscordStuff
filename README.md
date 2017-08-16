@@ -11,7 +11,7 @@ plugins:
   **[Direct-Download](plugins/directDownload.plugin.js)** _alpha version_
   
     Download attached files directly within discord.
-	New: download and install themes and plugins from `betterdiscord.net` links.
+    New: download and install themes and plugins from `betterdiscord.net` links.
 
   **[Force-Close](plugins/forceClose.plugin.js)**
   
@@ -51,6 +51,11 @@ plugins:
   
     Enables the experiments tab in discord's settings.
     Depends on samogot's Discord Internals Library, so install that too. (https://github.com/samogot/betterdiscord-plugins/blob/master/v1/1lib_discord_internals.plugin.js)
+
+  **[Enable React-Devtools](plugins/enableReactDevtools.plugin.js)**
+  
+    Automatically loads the React Devtools for you.
+    Requires React-Devtools being installed in your chrome browser (https://chrome.google.com/webstore/detail/react-developer-tools/fmkadmapgofadopljbjfkapdkoienihi)
 
 themes:
 
