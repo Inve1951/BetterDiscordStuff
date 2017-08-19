@@ -10,7 +10,7 @@ var charCounter = (function (){
 
     getAuthor() { return "Jiiks, square"; };
 
-    getVersion() { return "1.0.0"; }
+    getVersion() { return "1.0.1"; }
 
     load(){}
 
@@ -32,7 +32,10 @@ var charCounter = (function (){
   injectCss = function() {
     BdApi.clearCSS("charCounter");
     BdApi.injectCSS("charCounter",
-      `#charcounter {
+      `.chat form > :first-child {
+        z-index: 1;
+      }
+      #charcounter {
         display: block;
         position: absolute;
         right: 0; bottom: -1.1em;
