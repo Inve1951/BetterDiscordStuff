@@ -3,7 +3,7 @@ var directDownload,
   indexOf = [].indexOf;
 
 directDownload = (function() {
-  var Download, _fr, bw, cache, clipboard, dialog, fs, getSettings, http, https, installCss, installDownloadBar, lastButOneIndexOf, listener, nativeImage, pPlugins, pThemes, path, remote, settings, shell;
+  var Download, _fr, bw, cache, clipboard, dialog, downloadbar, fs, getSettings, http, https, initSwitchFix, installCss, installDownloadBar, lastButOneIndexOf, listener, nativeImage, pPlugins, pThemes, path, remote, settings, shell;
 
   class directDownload {
     getName() {
@@ -19,13 +19,14 @@ directDownload = (function() {
     }
 
     getVersion() {
-      return "0.1.2-alpha";
+      return "0.2.0-alpha";
     }
 
     start() {
       getSettings();
       installCss();
       installDownloadBar();
+      initSwitchFix.call(this);
       document.addEventListener("click", listener, true);
     }
 
@@ -33,6 +34,7 @@ directDownload = (function() {
       document.getElementById("files_directDownload").remove();
       document.getElementById("css_directDownload").remove();
       document.removeEventListener("click", listener, true);
+      this.switchFix.disconnect();
     }
 
     load() {}
@@ -153,13 +155,41 @@ directDownload = (function() {
     document.head.appendChild(style);
   };
 
+  downloadbar = null;
+
   installDownloadBar = function() {
-    var div, style;
-    div = document.createElement("div");
-    div.id = "files_directDownload";
-    style = document.createElement("style");
-    div.appendChild(style);
-    (document.querySelector(".app .layers .layer section")).appendChild(div);
+    var container, ref, style;
+    if (downloadbar == null) {
+      downloadbar = document.createElement("div");
+      downloadbar.id = "files_directDownload";
+      style = document.createElement("style");
+      downloadbar.appendChild(style);
+    }
+    if ((document.getElementById("files_directDownload")) == null) {
+      container = (ref = document.querySelector(".chat .content > :first-child")) != null ? ref : document.getElementById("friends");
+      container.appendChild(downloadbar);
+    }
+  };
+
+  directDownload.prototype.onSwitch = installDownloadBar;
+
+  initSwitchFix = function() {
+    this.switchFix = new MutationObserver((mutations) => {
+      var addedNodes, id, j, l, len, len1, ref, removedNodes;
+      for (j = 0, len = mutations.length; j < len; j++) {
+        ({addedNodes, removedNodes} = mutations[j]);
+        ref = [...addedNodes, ...removedNodes];
+        for (l = 0, len1 = ref.length; l < len1; l++) {
+          ({id} = ref[l]);
+          if (id === "friends") {
+            return this.onSwitch();
+          }
+        }
+      }
+    });
+    this.switchFix.observe((document.querySelector(":-webkit-any(.chat, #friends)")).parentNode, {
+      childList: true
+    });
   };
 
   fs = require("fs");
@@ -247,7 +277,7 @@ directDownload = (function() {
   Download = (function() {
     class Download {
       constructor(...args) {
-        var a, ref;
+        var a;
         this.filename = this.filepath = this.url = "";
         this.filesize = this.bufpos = 0;
         this.buffer = this.elem = this.pb = this.att = this.buffers = null;
@@ -294,7 +324,7 @@ directDownload = (function() {
           a = this.att.nodeName === "A" ? this.att : this.att.querySelector("a");
           this.install = a === this.att && settings.itp;
           this.url = a.href;
-          this.filename = path.basename((ref = a.title) != null ? ref : a.innerHTML);
+          this.filename = path.basename(a.title || a.innerHTML);
         }
         cache.get(this.url, (dl) => {
           if (dl != null) {
@@ -444,6 +474,8 @@ directDownload = (function() {
                 return;
               }
               this.filepath = file;
+              this.filename = path.basename(file);
+              (this.elem.querySelector("span")).textContent = this.filename;
               this.finish(1);
             });
             return;
@@ -506,7 +538,7 @@ directDownload = (function() {
 
     };
 
-    Download.css = "#files_directDownload {\n  position: fixed;\n  bottom: 0;\n  left: 310px;\n  width: calc(100% - 310px - 240px);\n  height: 25px;\n  overflow: hidden;\n  font-size: 0;\n}\n.bd-minimal #files_directDownload {\n  left: 275px;\n  width: calc(100% - 275px - 185px);\n}\n#files_directDownload .file {\n  height: 100%;\n  width: 200px;\n  min-width: 50px;\n  background: rgba(128,128,128,0.2);\n  display: inline-block;\n  margin-left: 2px;\n  box-shadow: inset 0 0 10px rgba(0,0,0,0.3);\n  border: 1px solid rgba(128,128,128,0.2);\n  border-bottom: none;\n  box-sizing: border-box;\n  position: relative;\n  cursor: pointer;\n}\n#files_directDownload .file:first-of-type {\n  border-top-left-radius: 4px;\n  margin: 0;\n}\n#files_directDownload .file:last-of-type {\n  border-top-right-radius: 4px;\n}\n#files_directDownload .file.will-open {\n  background: rgba(128,128,128,0.4);\n}\n#files_directDownload span {\n  width: calc(100% + 2px);\n  overflow: hidden;\n  text-overflow: ellipsis;\n  color: #87909C;\n  /*display: inline-block;*/\n  position: absolute;\n  left: -1px;\n  top: -1px;\n  font-size: 14px;\n  line-height: 23px;\n  padding: 0 18px 0 4px;\n  box-sizing: border-box;\n}\n#files_directDownload .file .progress-bar {\n  position:absolute;\n  height: 2px;\n  bottom: 0;\n  left: -1px;\n  background: rgb(32,196,64);\n}\n#files_directDownload .file.failed .progress-bar {\n  background: rgb(196,64,32);\n  min-width: calc(100% + 2px);\n}\n#files_directDownload .file.done .progress-bar {\n  min-width: calc(100% + 2px);\n}\n#files_directDownload .file svg {\n  fill: rgba(0,0,0,0.5);\n  position: absolute;\n  top: -1px;\n  right: -1px;\n  height: 23px;\n  width: 23px;\n}\n\n.attachment {\n  cursor: pointer;\n}";
+    Download.css = "#files_directDownload {\n  position: absolute;\n  bottom: 0;\n  width: 100%;\n  height: 25px;\n  overflow: hidden;\n  font-size: 0;\n}\n#files_directDownload .file {\n  height: 100%;\n  width: 200px;\n  min-width: 50px;\n  background: rgba(128,128,128,0.2);\n  display: inline-block;\n  margin-left: 2px;\n  box-shadow: inset 0 0 10px rgba(0,0,0,0.3);\n  border: 1px solid rgba(128,128,128,0.2);\n  border-bottom: none;\n  box-sizing: border-box;\n  position: relative;\n  cursor: pointer;\n}\n#files_directDownload .file:first-of-type {\n  border-top-left-radius: 4px;\n  margin: 0;\n}\n#files_directDownload .file:last-of-type {\n  border-top-right-radius: 4px;\n}\n#files_directDownload .file.will-open {\n  background: rgba(128,128,128,0.4);\n}\n#files_directDownload span {\n  width: calc(100% + 2px);\n  overflow: hidden;\n  text-overflow: ellipsis;\n  color: #87909C;\n  /*display: inline-block;*/\n  position: absolute;\n  left: -1px;\n  top: -1px;\n  font-size: 14px;\n  line-height: 23px;\n  padding: 0 18px 0 4px;\n  box-sizing: border-box;\n}\n#files_directDownload .file .progress-bar {\n  position:absolute;\n  height: 2px;\n  bottom: 0;\n  left: -1px;\n  background: rgb(32,196,64);\n}\n#files_directDownload .file.failed .progress-bar {\n  background: rgb(196,64,32);\n  min-width: calc(100% + 2px);\n}\n#files_directDownload .file.done .progress-bar {\n  min-width: calc(100% + 2px);\n}\n#files_directDownload .file svg {\n  fill: rgba(0,0,0,0.5);\n  position: absolute;\n  top: -1px;\n  right: -1px;\n  height: 23px;\n  width: 23px;\n}\n\n#friends {\n  position: relative;\n}\n\n.attachment, .callout-backdrop + div .modal-image :-webkit-any(img,span) {\n  cursor: pointer;\n}";
 
     return Download;
 
