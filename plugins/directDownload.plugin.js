@@ -19,7 +19,7 @@ directDownload = (function() {
     }
 
     getVersion() {
-      return "0.2.0-alpha";
+      return "0.3.0-alpha";
     }
 
     start() {
@@ -31,7 +31,7 @@ directDownload = (function() {
     }
 
     stop() {
-      document.getElementById("files_directDownload").remove();
+      downloadbar.remove();
       document.getElementById("css_directDownload").remove();
       document.removeEventListener("click", listener, true);
       this.switchFix.disconnect();
@@ -138,6 +138,9 @@ directDownload = (function() {
           clipboard.write({
             image: nativeImage.createFromBuffer(dl.buffer)
           });
+          if (!dl.elem.inDOM) {
+            delete dl.buffer;
+          }
         } else {
           dl.copyWhenFinished = true;
         }
@@ -147,6 +150,8 @@ directDownload = (function() {
 
   };
 
+  downloadbar = null;
+
   installCss = function() {
     var style;
     style = document.createElement("style");
@@ -154,8 +159,6 @@ directDownload = (function() {
     style.innerHTML = Download.css;
     document.head.appendChild(style);
   };
-
-  downloadbar = null;
 
   installDownloadBar = function() {
     var container, ref, style;
@@ -329,13 +332,14 @@ directDownload = (function() {
         cache.get(this.url, (dl) => {
           if (dl != null) {
             cache.verify(dl.url, (valid) => {
+              var ref;
               if (valid) {
-                if (dl.elem != null) {
-                  return;
-                }
                 dl.openWhenFinished = settings.autoopen;
                 dl.showinstead = settings.showinstead;
-                dl.start(false);
+                dl.copyWhenFinished = dl.isImage && settings.copyimages;
+                if (!((ref = dl.elem) != null ? ref.inDOM : void 0)) {
+                  dl.start(false);
+                }
                 dl.finish(false);
                 return;
               }
@@ -434,12 +438,16 @@ directDownload = (function() {
         };
         svg.onclick = (event) => {
           this.elem.remove();
-          delete this.elem;
+          this.elem.inDOM = false;
+          if (this.finished) {
+            delete this.buffer;
+          }
           Download.updateFileWidth();
           event.preventDefault();
           return false;
         };
-        (document.getElementById("files_directDownload")).appendChild(this.elem);
+        downloadbar.appendChild(this.elem);
+        this.elem.inDOM = true;
         Download.updateFileWidth();
       }
 
@@ -489,6 +497,9 @@ directDownload = (function() {
             this.elem.classList.remove("will-open");
             this.elem.classList.add("done");
             this.finished = true;
+            if (!this.elem.inDOM) {
+              delete this.buffer;
+            }
             console.log(`File saved to ${this.filepath}.`);
             if (this.install) {
               cache.clear(this.url);
@@ -507,6 +518,9 @@ directDownload = (function() {
         }
         this.elem.classList.remove("will-open");
         this.elem.classList.add("done");
+        if (!this.elem.inDOM) {
+          delete this.buffer;
+        }
         if (this.openWhenFinished) {
           if (!this.showinstead) {
             this.open();
@@ -532,8 +546,8 @@ directDownload = (function() {
 
       static updateFileWidth() {
         var numFiles;
-        numFiles = (document.querySelectorAll("#files_directDownload .file")).length;
-        (document.querySelector("#files_directDownload style")).innerHTML = `#files_directDownload .file{max-width: calc((100% + 2px) / ${numFiles} - 2px);}`;
+        numFiles = (downloadbar.querySelectorAll(".file")).length;
+        (downloadbar.querySelector("style")).innerHTML = `#files_directDownload .file{max-width: calc((100% + 2px) / ${numFiles} - 2px);}`;
       }
 
     };
@@ -564,12 +578,12 @@ directDownload = (function() {
       }
 
       get(url, cb) {
-        var f;
+        var f, ref;
         if ((f = _cache[url]) == null) {
           cb();
           return;
         }
-        if (f.dl != null) {
+        if (((ref = f.dl) != null ? ref.buffer : void 0) != null) {
           cb(f.dl);
           return;
         }
