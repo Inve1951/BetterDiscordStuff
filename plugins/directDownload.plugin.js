@@ -130,6 +130,7 @@ directDownload = (function() {
 
     static toClipboard(url, cb) {
       cache.get(url, function(dl) {
+        var ref;
         if ((dl == null) || !dl.isImage) {
           cb(false);
           return;
@@ -138,7 +139,7 @@ directDownload = (function() {
           clipboard.write({
             image: nativeImage.createFromBuffer(dl.buffer)
           });
-          if (!dl.elem.inDOM) {
+          if (!((ref = dl.elem) != null ? ref.inDOM : void 0)) {
             delete dl.buffer;
           }
         } else {
