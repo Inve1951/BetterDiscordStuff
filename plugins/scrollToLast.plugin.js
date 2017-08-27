@@ -5,7 +5,7 @@ var scrollToLast = (function(){
     getName() { return "Scroll-To-Last" }
     getDescription() { return "Always scroll to last message." }
     getAuthor() { return "square" }
-    getVersion() { return "0.0.1" }
+    getVersion() { return "0.0.2" }
 
     start(){}
     stop(){}
@@ -13,7 +13,7 @@ var scrollToLast = (function(){
 
     onSwitch() {
       var ref;
-      if((ref = document.querySelectorAll(".message-group")) != null)
+      if((ref = document.querySelectorAll(".message-group")) != null && ref.length)
         ref[ref.length-1].scrollIntoView();
     }
   }
