@@ -19,7 +19,7 @@ directDownload = (function() {
     }
 
     getVersion() {
-      return "0.3.0-alpha";
+      return "0.3.1-alpha";
     }
 
     start() {
@@ -41,14 +41,20 @@ directDownload = (function() {
 
     getSettingsPanel() {
       getSettings();
-      return `<div id=\"settings_directDownload\">\n  <style>\n    #settings_directDownload {\n      color: #87909C;\n    }\n    #settings_directDownload button {\n      background: rgba(128,128,128,0.4);\n      width: calc(100% - 20px);\n      padding: 5px 10px;\n      box-sizing: content-box;\n      height: 1em;\n      font-size: 1em;\n      line-height: 0.1em;\n    }\n    #settings_directDownload button.invalid {\n      background: rgba(200,0,0,.5);\n      font-weight: 500;\n    }\n    #settings_directDownload label {\n      display: inline-block;\n    }\n    #settings_directDownload :-webkit-any(label, input) {\n      cursor: pointer;\n    }\n    #settings_directDownload br + br {\n      content: \"\";\n      display: block;\n      margin-top: 5px;\n    }\n  </style>\n  <button name=\"dldir\" type=\"button\" onclick=\"directDownload.chooseDirectory()\">${settings.dldir}</button>\n  <br><br>\n  <label><input name=\"autoopen\" type=\"checkbox\" ${(settings.autoopen ? "checked" : "")} onchange=\"directDownload.updateSettings()\"/>Open files after download.</label>\n  <label><input name=\"showinstead\" type=\"checkbox\" ${(settings.showinstead ? "checked" : "")} ${(settings.autoopen ? "" : "disabled")} onchange=\"directDownload.updateSettings()\"/>Show in folder instead.</label>\n  <br><br>\n  <label><input name=\"overwrite\" type=\"checkbox\" ${(!settings.overwrite ? "checked" : "")} onchange=\"directDownload.updateSettings()\"/>Ask for path if file exists.</label>\n  <label><input name=\"prompt\" type=\"checkbox\" ${(settings.prompt ? "checked" : "")} ${(settings.overwrite ? "disabled" : "")} onchange=\"directDownload.updateSettings()\"/>Always ask.</label>\n  <br><br>\n  <label><input name=\"imagemodals\" type=\"checkbox\" ${(settings.imagemodals ? "checked" : "")} onchange=\"directDownload.updateSettings()\"/>Allow direct download for image modals.</label>\n  <label><input name=\"copyimages\" type=\"checkbox\" ${(settings.copyimages ? "checked" : "")} ${(settings.imagemodals ? "" : "disabled")} onchange=\"directDownload.updateSettings()\"/>Copy the image to clipboard when download is done.</label>\n  <br><br>\n  <label><input name=\"itp\" type=\"checkbox\" ${(settings.itp ? "checked" : "")} onchange=\"directDownload.updateSettings()\"/>Install themes and plugins downlaoded from betterdiscord.net (will always overwrite).</label>\n</div>`;
+      return `<div id="settings_directDownload">\n  <style>\n    #settings_directDownload {\n      color: #87909C;\n    }\n    #settings_directDownload button {\n      background: rgba(128,128,128,0.4);\n      width: calc(100% - 20px);\n      padding: 5px 10px;\n      box-sizing: content-box;\n      height: 1em;\n      font-size: 1em;\n      line-height: 0.1em;\n    }\n    #settings_directDownload button.invalid {\n      background: rgba(200,0,0,.5);\n      font-weight: 500;\n    }\n    #settings_directDownload label {\n      display: inline-block;\n    }\n    #settings_directDownload :-webkit-any(label, input) {\n      cursor: pointer;\n    }\n    #settings_directDownload br + br {\n      content: "";\n      display: block;\n      margin-top: 5px;\n    }\n  </style>\n  <button name="dldir" type="button" onclick="directDownload.chooseDirectory()">${settings.dldir}</button>\n  <br><br>\n  <label><input name="autoopen" type="checkbox" ${(settings.autoopen ? "checked" : "")} onchange="directDownload.updateSettings()"/>Open files after download.</label>\n  <label><input name="showinstead" type="checkbox" ${(settings.showinstead ? "checked" : "")} ${(settings.autoopen ? "" : "disabled")} onchange="directDownload.updateSettings()"/>Show in folder instead.</label>\n  <br><br>\n  <label><input name="overwrite" type="checkbox" ${(!settings.overwrite ? "checked" : "")} onchange="directDownload.updateSettings()"/>Ask for path if file exists.</label>\n  <label><input name="prompt" type="checkbox" ${(settings.prompt ? "checked" : "")} ${(settings.overwrite ? "disabled" : "")} onchange="directDownload.updateSettings()"/>Always ask.</label>\n  <br><br>\n  <label><input name="imagemodals" type="checkbox" ${(settings.imagemodals ? "checked" : "")} onchange="directDownload.updateSettings()"/>Allow direct download for image modals.</label>\n  <label><input name="copyimages" type="checkbox" ${(settings.copyimages ? "checked" : "")} ${(settings.imagemodals ? "" : "disabled")} onchange="directDownload.updateSettings()"/>Copy the image to clipboard when download is done.</label>\n  <br><br>\n  <label><input name="itp" type="checkbox" ${(settings.itp ? "checked" : "")} onchange="directDownload.updateSettings()"/>Install themes and plugins downloaded from betterdiscord.net (will always overwrite).</label>\n</div>`;
     }
 
     static chooseDirectory(cb) {
       dialog.showOpenDialog(bw, {
         defaultPath: settings.dldir,
         buttonLabel: "Choose",
-        properties: ["openDirectory", "showHiddenFiles", "createDirectory", "noResolveAliases", "treatPackageAsDirectory"]
+        properties: [
+          "openDirectory",
+          "showHiddenFiles",
+          "createDirectory",
+          "noResolveAliases",
+          "treatPackageAsDirectory" // "promptToCreate",
+        ]
       }, (selection) => {
         var dir;
         dir = selection != null ? selection[0] : void 0;
@@ -72,7 +78,8 @@ directDownload = (function() {
         {
           name: ext.toUpperCase(),
           extensions: [ext]
-        }, {
+        },
+        {
           name: "All Files",
           extensions: ["*"]
         }
@@ -125,9 +132,7 @@ directDownload = (function() {
       bdPluginStorage.set("directDownload", "settings", settings);
     }
 
-
     /* for Zerebos */
-
     static toClipboard(url, cb) {
       cache.get(url, function(dl) {
         var ref;
@@ -168,6 +173,7 @@ directDownload = (function() {
       downloadbar.id = "files_directDownload";
       style = document.createElement("style");
       downloadbar.appendChild(style);
+      downloadbar.classList.add("empty");
     }
     if ((document.getElementById("files_directDownload")) == null) {
       container = (ref = document.querySelector(".chat .content > :first-child")) != null ? ref : document.getElementById("friends");
@@ -307,7 +313,7 @@ directDownload = (function() {
               case ".gif":
               case ".bmp":
               case ".ico":
-                return true;
+                return true; // copying to clipboard will silently fail for _unsupported_ formats
               default:
                 return false;
             }
@@ -334,7 +340,7 @@ directDownload = (function() {
           if (dl != null) {
             cache.verify(dl.url, (valid) => {
               var ref;
-              if (valid) {
+              if (valid) { // then restore tab
                 dl.openWhenFinished = settings.autoopen;
                 dl.showinstead = settings.showinstead;
                 dl.copyWhenFinished = dl.isImage && settings.copyimages;
@@ -401,6 +407,7 @@ directDownload = (function() {
         req.end();
       }
 
+      // cunstructor
       start(write = true) {
         var span, svg;
         this.started = true;
@@ -452,6 +459,7 @@ directDownload = (function() {
         Download.updateFileWidth();
       }
 
+      // start
       progress() {
         this.pb.style = `width: calc((100% + 2px) * ${this.bufpos / this.filesize});`;
       }
@@ -503,7 +511,7 @@ directDownload = (function() {
             }
             console.log(`File saved to ${this.filepath}.`);
             if (this.install) {
-              cache.clear(this.url);
+              cache.clear(this.url); // so you can update with the same url
             } else {
               cache.set(this.url, this);
             }
@@ -549,22 +557,25 @@ directDownload = (function() {
         var numFiles;
         numFiles = (downloadbar.querySelectorAll(".file")).length;
         (downloadbar.querySelector("style")).innerHTML = `#files_directDownload .file{max-width: calc((100% + 2px) / ${numFiles} - 2px);}`;
+        downloadbar.classList.toggle("empty", !numFiles);
       }
 
     };
 
-    Download.css = "#files_directDownload {\n  position: absolute;\n  bottom: 0;\n  width: 100%;\n  height: 25px;\n  overflow: hidden;\n  font-size: 0;\n}\n#files_directDownload .file {\n  height: 100%;\n  width: 200px;\n  min-width: 50px;\n  background: rgba(128,128,128,0.2);\n  display: inline-block;\n  margin-left: 2px;\n  box-shadow: inset 0 0 10px rgba(0,0,0,0.3);\n  border: 1px solid rgba(128,128,128,0.2);\n  border-bottom: none;\n  box-sizing: border-box;\n  position: relative;\n  cursor: pointer;\n}\n#files_directDownload .file:first-of-type {\n  border-top-left-radius: 4px;\n  margin: 0;\n}\n#files_directDownload .file:last-of-type {\n  border-top-right-radius: 4px;\n}\n#files_directDownload .file.will-open {\n  background: rgba(128,128,128,0.4);\n}\n#files_directDownload span {\n  width: calc(100% + 2px);\n  overflow: hidden;\n  text-overflow: ellipsis;\n  color: #87909C;\n  /*display: inline-block;*/\n  position: absolute;\n  left: -1px;\n  top: -1px;\n  font-size: 14px;\n  line-height: 23px;\n  padding: 0 18px 0 4px;\n  box-sizing: border-box;\n}\n#files_directDownload .file .progress-bar {\n  position:absolute;\n  height: 2px;\n  bottom: 0;\n  left: -1px;\n  background: rgb(32,196,64);\n}\n#files_directDownload .file.failed .progress-bar {\n  background: rgb(196,64,32);\n  min-width: calc(100% + 2px);\n}\n#files_directDownload .file.done .progress-bar {\n  min-width: calc(100% + 2px);\n}\n#files_directDownload .file svg {\n  fill: rgba(0,0,0,0.5);\n  position: absolute;\n  top: -1px;\n  right: -1px;\n  height: 23px;\n  width: 23px;\n}\n\n#friends {\n  position: relative;\n}\n\n.attachment, .callout-backdrop + div .modal-image :-webkit-any(img,span) {\n  cursor: pointer;\n}";
+    Download.css = "#files_directDownload {\n  position: absolute;\n  bottom: 0;\n  width: 100%;\n  height: 25px;\n  overflow: hidden;\n  font-size: 0;\n}\n#files_directDownload.empty {\n  display: none;\n}\n#files_directDownload .file {\n  height: 100%;\n  width: 200px;\n  min-width: 50px;\n  background: rgba(128,128,128,0.2);\n  display: inline-block;\n  margin-left: 2px;\n  box-shadow: inset 0 0 10px rgba(0,0,0,0.3);\n  border: 1px solid rgba(128,128,128,0.2);\n  border-bottom: none;\n  box-sizing: border-box;\n  position: relative;\n  cursor: pointer;\n}\n#files_directDownload .file:first-of-type {\n  border-top-left-radius: 4px;\n  margin: 0;\n}\n#files_directDownload .file:last-of-type {\n  border-top-right-radius: 4px;\n}\n#files_directDownload .file.will-open {\n  background: rgba(128,128,128,0.4);\n}\n#files_directDownload span {\n  width: calc(100% + 2px);\n  overflow: hidden;\n  text-overflow: ellipsis;\n  color: #87909C;\n  /*display: inline-block;*/\n  position: absolute;\n  left: -1px;\n  top: -1px;\n  font-size: 14px;\n  line-height: 23px;\n  padding: 0 18px 0 4px;\n  box-sizing: border-box;\n}\n#files_directDownload .file .progress-bar {\n  position:absolute;\n  height: 2px;\n  bottom: 0;\n  left: -1px;\n  background: rgb(32,196,64);\n}\n#files_directDownload .file.failed .progress-bar {\n  background: rgb(196,64,32);\n  min-width: calc(100% + 2px);\n}\n#files_directDownload .file.done .progress-bar {\n  min-width: calc(100% + 2px);\n}\n#files_directDownload .file svg {\n  fill: rgba(0,0,0,0.5);\n  position: absolute;\n  top: -1px;\n  right: -1px;\n  height: 23px;\n  width: 23px;\n}\n\n#friends {\n  position: relative;\n}\n\n.attachment, .callout-backdrop + div .modal-image :-webkit-any(img,span) {\n  cursor: pointer;\n}";
 
     return Download;
 
   })();
 
+  // Download
   cache = new ((function() {
     var CacheEntry, _Class, _cache, _cacheLs, cachepath, e, updateLs, url;
 
     _Class = class {
       constructor() {
         var count, needsUpdate, url;
+        // clean cache on startup
         count = 0;
         needsUpdate = false;
         for (url in _cache) {
@@ -631,6 +642,7 @@ directDownload = (function() {
 
     };
 
+    // _cacheLs = localStorage.directDownloadCache or {}
     cachepath = (function() {
       switch (process.platform) {
         case "win32":
@@ -671,6 +683,7 @@ directDownload = (function() {
         }
         _cacheLs[url] = fLs;
       }
+      // localStorage.directDownloadCache = _cacheLs
       fs.writeFileSync(cachepath, JSON.stringify(_cacheLs));
     };
 
@@ -698,12 +711,12 @@ directDownload = (function() {
 
   })());
 
+  // cache
   _fr = {
     exports: {}
-
-    /* https://github.com/olalonde/follow-redirects */
   };
 
+  /* https://github.com/olalonde/follow-redirects */
   ({http, https} = _fr = (function(exports, module){
     'use strict';
     var url = require('url');
