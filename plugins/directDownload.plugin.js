@@ -1,4 +1,4 @@
-//META{"name":"directDownload"}*//;
+  //META{"name":"directDownload"}*//
 var directDownload,
   indexOf = [].indexOf;
 
@@ -19,7 +19,7 @@ directDownload = (function() {
     }
 
     getVersion() {
-      return "0.3.1-alpha";
+      return "0.3.2-alpha";
     }
 
     start() {
@@ -247,7 +247,7 @@ directDownload = (function() {
     ref1 = ev.path;
     for (i = j = 0, len = ref1.length; j < len; i = ++j) {
       elem = ref1[i];
-      if (i < 3 && elem.className === "attachment" && ((elem.querySelector(".icon-file")) != null)) {
+      if ((elem.classList.contains("attachment")) && ((elem.querySelector(".icon-file")) != null)) {
         new Download(elem);
         event.preventDefault();
         event.stopImmediatePropagation();
