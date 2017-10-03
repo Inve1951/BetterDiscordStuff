@@ -1,4 +1,3 @@
-// build with --no-header and --bare
 //META{"name":"restartNoMore"}*//;
 var restartNoMore;
 
