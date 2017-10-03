@@ -1,8 +1,9 @@
+// build with --no-header and --bare
 //META{"name":"restartNoMore"}*//;
 var restartNoMore;
 
 restartNoMore = (function() {
-  var EOL, _onstart, bw, cacheFile, crypto, end, execJs, fixLineEndings, fs, getDisplayName, getHeader, getMd5, getSettings, load, log, onstart, patchAllSettingsPanels, patchSettingsPanel, path, start, unload, util, wasStarted;
+  var EOL, _onstart, bw, cacheFile, crypto, end, execJs, fixLineEndings, fs, getDisplayName, getHeader, getMd5, getSettings, load, log, onstart, patchAllSettingsPanels, patchSettingsPanel, path, start, trim, unload, util, wasStarted;
 
   class restartNoMore {
     getName() {
@@ -14,7 +15,7 @@ restartNoMore = (function() {
     }
 
     getVersion() {
-      return "0.0.6-alpha";
+      return "0.0.7-alpha";
     }
 
     getAuthor() {
@@ -42,15 +43,19 @@ restartNoMore = (function() {
             return path.resolve(process.env.HOME, ".config/", "BetterDiscord/themes/");
         }
       })();
-      this._inProcess = {};
-      this._nameCache = {};
-      this._md5Cache = {};
+      this._inProcess = {}; // filename: true/undefined
+      this._nameCache = {}; // holds header and pname: displayName if isPlugin
+      this._md5Cache = {}; // cname: md5
       cacheFile = cacheFile.bind(this);
       unload = unload.bind(this);
       load = load.bind(this);
       start = start.bind(this);
       end = end.bind(this);
       log = log.bind(this);
+      // getHeader
+      // getMd5              don't need the bind
+      // getDisplayName
+      // execJs
       fs.readdir(this.pPlugins, (e, files) => {
         var f, j, len, results;
         if (e) {
@@ -83,8 +88,10 @@ restartNoMore = (function() {
 
     load() {}
 
+    //unload: ->
     start() {
       wasStarted = true;
+      //pluginModule
       this.wPlugins = fs.watch(this.pPlugins, {
         persistent: false
       }, (type, filename) => {
@@ -116,13 +123,18 @@ restartNoMore = (function() {
       wasStarted = false;
       this.wPlugins.close();
       this.wThemes.close();
+      //@_inProcess = {}
       if (getSettings().patchSettings) {
         return patchAllSettingsPanels(true);
       }
     }
 
+    //observer: (mutation) ->
+    //onSwitch: ->
+    //onMessage: -> # gets called for all plugins when pluginModule.newMessage() is called
+    //socketEvent: (data) ->
     getSettingsPanel() {
-      return `<input type=\"checkbox\" onchange=\"restartNoMore.updateSettings(this.parentNode)\" value=\"patchSettings\"${(getSettings().patchSettings ? " checked" : void 0)}> patch all plugin settings with a reload button.<br>\n<input type=\"checkbox\" onchange=\"restartNoMore.updateSettings(this.parentNode)\" value=\"fixLineEndings\"${(getSettings().fixLineEndings ? " checked" : void 0)}> Fixes your themes' line endings to ensure they work.<br>\n<button type=\"button\" onclick=\"restartNoMore.reloadAll()\">Reload all Plugins and Themes.</button>`;
+      return `<input type="checkbox" onchange="restartNoMore.updateSettings(this.parentNode)" value="patchSettings"${(getSettings().patchSettings ? " checked" : void 0)}> patch all plugin settings with a reload button.<br>\n<input type="checkbox" onchange="restartNoMore.updateSettings(this.parentNode)" value="fixLineEndings"${(getSettings().fixLineEndings ? " checked" : void 0)}> Fixes your themes' line endings to ensure they work.<br>\n<button type="button" onclick="restartNoMore.reloadAll()">Reload all Plugins and Themes.</button>`;
     }
 
     static reloadAll() {
@@ -184,13 +196,13 @@ restartNoMore = (function() {
 
   util = require("util");
 
-  EOL = (require("os")).EOL;
+  EOL = (require("os")).EOL; // so buggy o_O
 
   bw = null;
 
   wasStarted = false;
 
-  cacheFile = unload = load = start = end = log = null;
+  cacheFile = unload = load = start = end = log = null; // predeclare private bound functions
 
   cacheFile = function(init, filename) {
     var isPlugin;
@@ -215,7 +227,7 @@ restartNoMore = (function() {
         return end(filename);
       }
       return setImmediate(() => {
-        return fs.readFile(filename, "utf8", (e, data) => {
+        return fs.readFile(filename, "utf8", (e, data) => { // give piping buildtools 1 more chance to finish
           var fnOld, header, k, md5, name, ref, ref1, v;
           if (e) {
             return end(filename, e);
@@ -228,7 +240,7 @@ restartNoMore = (function() {
               header.pname = getDisplayName(header.name, data);
             }
             if (header.pname == null) {
-              return end(filename, `couldn't gather plugin name from ${filename}`);
+              return end(filename, `couldn't gather plugin name from ${trim(filename)}`);
             }
           }
           if (init) {
@@ -262,8 +274,9 @@ restartNoMore = (function() {
             if (fnOld != null) {
               fs.lstat(fnOld, function(e) {
                 if ("ENOENT" !== e.code) {
-                  return end(filename, `Skipped loading ${filename} because ${fnOld} already registered ${header.name}.`);
+                  return end(filename, `Skipped loading ${trim(filename)} because ${trim(fnOld)} already registered ${header.name}.`);
                 }
+                // old file is gone but loaded
                 log("# can this even be reached?");
                 if (false === unload(fnOld, isPlugin)) {
                   return;
@@ -273,8 +286,8 @@ restartNoMore = (function() {
             } else {
               return log("# shouldn't be reached.");
             }
-          } else if (((name = (ref1 = this._nameCache[filename]) != null ? ref1.name : void 0) != null) && this._md5Cache[name] === md5) {
-            return end(filename, `Skipped reloading ${filename} because it's unchanged.`);
+          } else if (((name = (ref1 = this._nameCache[filename]) != null ? ref1.name : void 0) != null) && this._md5Cache[name] === md5) { // registered but unchanged
+            return end(filename, `Skipped reloading ${trim(filename)} because it's unchanged.`);
           } else if (this._nameCache[filename] != null) {
             if (false === unload(filename, isPlugin)) {
               return;
@@ -288,6 +301,7 @@ restartNoMore = (function() {
     });
   };
 
+  // cacheFile() end
   getSettings = function() {
     var defaultSettings, k, needsRewrite, settings, v;
     settings = bdPluginStorage.get("restartNoMore", "settings");
@@ -325,7 +339,7 @@ restartNoMore = (function() {
       return false;
     }
     if ((header.name == null) && (isPlugin || !((header.author != null) && (header.description != null) && (header.version != null)))) {
-      end(filename, "Invalid META header in " + filename);
+      end(filename, "Invalid META header in " + trim(filename));
       return false;
     }
     return header;
@@ -340,8 +354,8 @@ restartNoMore = (function() {
 
   getDisplayName = function(name, data) {
     var m, pp;
-    pp = "[\\s\\S]";
-    if ((m = data.match(RegExp(`^${pp}*?(?:\\r?\\n)${pp}*?${name}${pp}*?getName${pp}+?('|\")((?:\\\\\\1|[^\\1])*?)\\1`))) != null) {
+    pp = "[\\s\\S]"; // like '.' but allows \r and \n
+    if ((m = data.match(RegExp(`^${pp}*?(?:\\r?\\n)${pp}*?${name}${pp}*?getName${pp}+?('|")((?:\\\\\\1|[^\\1])*?)\\1`))) != null) {
       return m[2].split("\\" + m[1]).join(m[1]);
     }
   };
@@ -355,7 +369,7 @@ restartNoMore = (function() {
     if (isPlugin) {
       p = (ref = bdplugins[header.pname]) != null ? ref.plugin : void 0;
       if (p == null) {
-        end(filename, `Please patch the META header to include \`\"pname\":\"Plugin Name As Shown In BD Plugin Settings\"\` in ${filename}`);
+        end(filename, `Please patch the META header to include \`"pname":"Plugin Name As Shown In BD Plugin Settings"\` in ${trim(filename)}`);
         return false;
       }
       if (pluginCookie[header.pname]) {
@@ -377,7 +391,7 @@ restartNoMore = (function() {
     }
     delete this._md5Cache[header.name];
     delete this._nameCache[filename];
-    return log(`Unloaded ${filename}`);
+    return log(`Unloaded ${trim(filename)}`);
   };
 
   load = function(filename, data, isPlugin) {
@@ -388,9 +402,10 @@ restartNoMore = (function() {
         var e, plugin, pname;
         try {
           plugin = new __name;
+          plugin.load();
           pname = plugin.getName();
           if (pname !== __pname) {
-            console.log(`restartNoMore: Please patch the META header to include \`\"pname\":\"Plugin Name As Shown In BD Plugin Settings\"\` in ${__filename}`);
+            console.log(`restartNoMore: Please patch the META header to include \`"pname":"Plugin Name As Shown In BD Plugin Settings"\` in ${__filename}`);
           }
           bdplugins[pname] = {
             plugin: plugin,
@@ -407,9 +422,9 @@ restartNoMore = (function() {
           delete this._nameCache[filename];
           delete this._md5Cache[header.name];
           if (!(pname instanceof Error)) {
-            return log(`Error initializing plugin ${header.name}, ${filename}`, new Error("Sorry, got no better error message at this time."));
+            return log(`Error initializing plugin ${header.name}, ${trim(filename)}`, new Error("Sorry, got no better error message at this time."));
           }
-          return log(`Error initializing plugin ${header.name}, ${filename}`);
+          return log(`Error initializing plugin ${header.name}, ${trim(filename)}`, pname);
         }
         plugin = bdplugins[pname].plugin;
         if (pname in pluginCookie && pluginCookie[pname]) {
@@ -421,13 +436,13 @@ restartNoMore = (function() {
         if (getSettings().patchSettings) {
           patchSettingsPanel(plugin);
         }
-        return log(`Loaded ${filename}`);
+        return log(`Loaded ${trim(filename)}`);
       });
     } else {
       fixLineEndings(filename, data, function(data) {
         var n;
-        data = data.split(EOL);
-        data.shift();
+        data = data.split(EOL); // that's how BD does it ¯\_(ツ)_/¯
+        data.shift(); //[0] = "/*#{data[0]}*/"
         data = data.join("");
         bdthemes[header.name] = {
           name: header.name,
@@ -446,7 +461,7 @@ restartNoMore = (function() {
           themeCookie[header.name] = false;
           themeModule.saveThemeData();
         }
-        return end(filename, `Loaded ${filename}`);
+        return end(filename, `Loaded ${trim(filename)}`);
       });
       return false;
     }
@@ -479,9 +494,9 @@ restartNoMore = (function() {
       return fs.writeFile(filename, newData, function(e) {
         return setImmediate(function() {
           if (e) {
-            log(`Couldn't write file with fixed line endings ${filename}`, e);
+            log(`Couldn't write file with fixed line endings ${trim(filename)}`, e);
           } else {
-            log(`Fixed line endings for ${filename}`);
+            log(`Fixed line endings for ${trim(filename)}`);
           }
           return cb(newData);
         });
@@ -492,9 +507,8 @@ restartNoMore = (function() {
   };
 
   execJs = function(js, cb) {
-
-    /* dirty workaround for lack of proper error handling on electron's `executeJavaScript` */
     var _cb;
+    /* dirty workaround for lack of proper error handling on electron's `executeJavaScript`*/
     _cb = function(e) {
       window.removeEventListener("error", _cb);
       if (e instanceof ErrorEvent) {
@@ -529,7 +543,7 @@ restartNoMore = (function() {
               }
               return 42;
             }
-            return ((o != null ? o.apply : void 0) ? (o.apply(plugin, arguments)) + "<br>" : "") + `<button type=\"button\" onclick=\"restartNoMore.reload('${plugin.constructor.name}')\">Reload with Restart-No-More</button>`;
+            return ((o != null ? o.apply : void 0) ? (o.apply(plugin, arguments)) + "<br>" : "") + `<button type="button" onclick="restartNoMore.reload('${plugin.constructor.name}')">Reload with Restart-No-More</button>`;
           };
       }
     } catch (error) {
@@ -542,7 +556,7 @@ restartNoMore = (function() {
           name = plugin.constructor.name;
         }
       } catch (error) {}
-      return log(`Couldn't patch settings for ${name != null ? name : filename}.`, e);
+      return log(`Couldn't patch settings for ${name != null ? name : trim(filename)}.`, e);
     }
   };
 
@@ -602,6 +616,10 @@ restartNoMore = (function() {
       }
     }
     return results;
+  };
+
+  trim = function(filename) {
+    return path.basename(filename);
   };
 
   return restartNoMore;
