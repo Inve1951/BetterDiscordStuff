@@ -7,7 +7,7 @@ var enableReactDevtools = (function(){
     getName() { return "Enable React-Devtools" }
     getDescription() { return "Automatically loads the React Devtools for you. Big thanks to Natsulus who helped figgure this out!" }
     getAuthor() { return "square" }
-    getVersion() { return "0.0.2" }
+    getVersion() { return "0.0.3" }
 
     start(){
       bw = require("electron").remote.BrowserWindow.getAllWindows()[0];
@@ -22,9 +22,20 @@ var enableReactDevtools = (function(){
   }
 
   try {
-    path = require("path").resolve(
-      process.env.LOCALAPPDATA, "Google/Chrome/User Data/Default/Extensions/fmkadmapgofadopljbjfkapdkoienihi/"
-    )
+    switch(process.platform){
+    case 'win32':
+      path = require("path").resolve(process.env.LOCALAPPDATA, "Google/Chrome/User Data");
+      break;
+    case 'linux':
+      path = require("path").resolve(process.env.HOME, ".config/google-chrome");
+      break;
+    case 'darwin':
+      path = require("path").resolve(process.env.HOME, "Library/Application Support/Google/Chrome");
+      break;
+    default:
+      console.error("Unsupported platform: " + process.platform);
+    }
+    path += "/Default/Extensions/fmkadmapgofadopljbjfkapdkoienihi/";
     versions = require("fs").readdirSync( path );
     path = require("path").resolve( path, versions[versions.length - 1] )
   } catch (e) {
