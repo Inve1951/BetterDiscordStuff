@@ -7,13 +7,13 @@ forceClose.prototype.getVersion = function(){ return "1.0.0" };
 forceClose.prototype.getAuthor = function(){ return "square" };
 
 forceClose.prototype.start = function(){
-	document.querySelector(".win-close").onclick = function(){
+	document.querySelector('[class*="winButtonClose"]').onclick = function(){
 		require("electron").remote.require("electron").app.quit();
 	};
 };
 
 forceClose.prototype.stop = function(){
-	document.querySelector(".win-close").onclick = void 0;
+	document.querySelector('[class*="winButtonClose"]').onclick = void 0;
 };
 
 forceClose.prototype.load =
