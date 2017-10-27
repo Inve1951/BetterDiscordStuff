@@ -1,22 +1,25 @@
 //META{"name":"forceClose"}*//
-function forceClose() {};
 
-forceClose.prototype.getName = function(){ return "Force-Close" };
-forceClose.prototype.getDescription = function(){ return "Actually closes discord when clicking the close button." };
-forceClose.prototype.getVersion = function(){ return "1.0.0" };
-forceClose.prototype.getAuthor = function(){ return "square" };
+var forceClose = (function(){
+	var listener, _remote;
+	return class forceClose {
+		getName(){ return "Force-Close" }
+		getDescription(){ return "Actually closes discord when clicking the close button." }
+		getVersion(){ return "1.1.0" }
+		getAuthor(){ return "square" }
 
-forceClose.prototype.start = function(){
-	document.querySelector(".win-close").onclick = function(){
-		require("electron").remote.require("electron").app.quit();
-	};
-};
+		start(){
+			listener =_=> _remote.app.quit()
+			_remote = require("electron").remote;
+			try { document.querySelector("svg[name=TitleBarClose]").parentElement.addEventListener("click", listener); }
+			catch(e){ _remote.getCurrentWindow().on("hide", listener); }
+		}
 
-forceClose.prototype.stop = function(){
-	document.querySelector(".win-close").onclick = void 0;
-};
+		stop(){
+			try { document.querySelector("svg[name=TitleBarClose]").parentElement.removeEventListener("click", listener); }
+			catch(e){ _remote.getCurrentWindow().removeListener(listener); }
+		}
 
-forceClose.prototype.load =
-forceClose.prototype.unload =
-forceClose.prototype.onSwitch =
-forceClose.prototype.observer = function(){};
+		load(){};
+	}
+})();
