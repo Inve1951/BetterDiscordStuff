@@ -3,7 +3,7 @@ var directDownload,
   indexOf = [].indexOf;
 
 directDownload = (function() {
-  var Download, _fr, bw, cache, clipboard, dialog, downloadbar, fs, getSettings, http, https, initSwitchFix, installCss, installDownloadBar, lastButOneIndexOf, listener, nativeImage, pPlugins, pThemes, path, remote, settings, shell;
+  var Download, _fr, activityClassName, bw, cache, clipboard, dialog, downloadbar, fs, getSettings, http, https, initSwitchFix, installCss, installDownloadBar, lastButOneIndexOf, listener, nativeImage, pPlugins, pThemes, path, remote, settings, shell;
 
   class directDownload {
     getName() {
@@ -19,7 +19,7 @@ directDownload = (function() {
     }
 
     getVersion() {
-      return "0.3.2-alpha";
+      return "0.3.3-alpha";
     }
 
     start() {
@@ -158,6 +158,8 @@ directDownload = (function() {
 
   downloadbar = null;
 
+  activityClassName = "activityFeed-HeiGwL";
+
   installCss = function() {
     var style;
     style = document.createElement("style");
@@ -167,7 +169,7 @@ directDownload = (function() {
   };
 
   installDownloadBar = function() {
-    var container, ref, style;
+    var container, e, style;
     if (downloadbar == null) {
       downloadbar = document.createElement("div");
       downloadbar.id = "files_directDownload";
@@ -176,30 +178,41 @@ directDownload = (function() {
       downloadbar.classList.add("empty");
     }
     if ((document.getElementById("files_directDownload")) == null) {
-      container = (ref = document.querySelector(".chat .content > :first-child")) != null ? ref : document.getElementById("friends");
-      container.appendChild(downloadbar);
+      container = document.querySelector(`.chat .content > :first-child, #friends, .${activityClassName}`);
+      try {
+        container.appendChild(downloadbar);
+      } catch (error1) {
+        e = error1;
+        console.error(e);
+      }
     }
   };
 
   directDownload.prototype.onSwitch = installDownloadBar;
 
   initSwitchFix = function() {
+    var e;
     this.switchFix = new MutationObserver((mutations) => {
-      var addedNodes, id, j, l, len, len1, ref, removedNodes;
+      var addedNodes, className, id, j, l, len, len1, ref, removedNodes;
       for (j = 0, len = mutations.length; j < len; j++) {
         ({addedNodes, removedNodes} = mutations[j]);
         ref = [...addedNodes, ...removedNodes];
         for (l = 0, len1 = ref.length; l < len1; l++) {
-          ({id} = ref[l]);
-          if (id === "friends") {
+          ({id, className} = ref[l]);
+          if (id === "friends" || -1 !== className.indexOf(activityClassName)) {
             return this.onSwitch();
           }
         }
       }
     });
-    this.switchFix.observe((document.querySelector(":-webkit-any(.chat, #friends)")).parentNode, {
-      childList: true
-    });
+    try {
+      this.switchFix.observe((document.querySelector(`.guilds-wrapper + div :-webkit-any(.chat, #friends, .${activityClassName})`)).parentNode, {
+        childList: true
+      });
+    } catch (error1) {
+      e = error1;
+      console.error(e);
+    }
   };
 
   fs = require("fs");
@@ -237,16 +250,16 @@ directDownload = (function() {
   })();
 
   listener = function(ev) {
-    var elem, i, j, len, ref, ref1;
-    if ((settings.imagemodals && (ref = ev.target, indexOf.call(document.querySelectorAll(".callout-backdrop + div .modal-image :-webkit-any(img,span)"), ref) >= 0)) || ev.target.nodeName === "A" && ev.target.href.startsWith("https://betterdiscord.net/ghdl?")) {
+    var elem, i, j, len, ref, ref1, ref2, ref3;
+    if (settings.imagemodals && (ref = ev.target, indexOf.call((ref1 = (ref2 = document.querySelector("div.modal-image")) != null ? ref2.querySelectorAll(":-webkit-any(img,span)") : void 0) != null ? ref1 : [], ref) >= 0) || ev.target.nodeName === "A" && ev.target.href.startsWith("https://betterdiscord.net/ghdl?")) {
       new Download(ev.target);
       event.preventDefault();
       event.stopImmediatePropagation();
       return false;
     }
-    ref1 = ev.path;
-    for (i = j = 0, len = ref1.length; j < len; i = ++j) {
-      elem = ref1[i];
+    ref3 = ev.path;
+    for (i = j = 0, len = ref3.length; j < len; i = ++j) {
+      elem = ref3[i];
       if ((elem.classList.contains("attachment")) && ((elem.querySelector(".icon-file")) != null)) {
         new Download(elem);
         event.preventDefault();
