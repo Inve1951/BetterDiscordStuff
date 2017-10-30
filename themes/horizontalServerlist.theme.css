@@ -1,85 +1,188 @@
-//META{"name":"Horizontal_Serverlist","description":"I've always wanted this :3","author":"square","version":"1.2.2"}*//
+/* //META { "name": "Horizontal_Serverlist", "description": "I've always wanted this :3", "author": "square", "version": "2.0.0-pre"} *//**/
 
 :root {
-  /* for Jiiks' server grid */
-  --guild-column-count: 1;
-  --public-button-in-use: 0;  /* 0 or 1, unfortuantely css can't detect it where it's required */
+  --height-titlebar: 22px;
+  --guild-row-count: 1;
+  /*--DM-column-count: 1;*/
+  --show-unread-indicator: 1;
 }
 
-.app {
-  /* so other css can easily detect it, define your default on :root as 0 */
-  --horizontal-serverlist: 1;
+
+.layers > .layer:first-child > :first-child {
+  flex-flow: row wrap;
+  --height-serverlist: calc(70px * var(--guild-row-count) - 10px * (var(--guild-row-count) - 1));
+}
+
+.layers > .layer:first-child > :first-child > * {
+  flex: 1 100%;
 }
 
 .guilds-wrapper {
-  position: fixed;
-  top: 0;
-  transform: rotate(-90deg) translateX(-100vh);
-  transform-origin: top left;
-  height: 100vw;
+  order: 42;
 }
-.guilds-wrapper ~ div {
-  height: calc(100% - var(--guild-column-count) * 70px + (var(--guild-column-count) - 1) * 15px);
+
+.guilds-wrapper ~ * {
+  height: calc(100vh - var(--height-titlebar) - var(--height-serverlist));
 }
-.guilds .guild:not(#bd-pub-li) .guild-inner:first-child, .badge, .guild.guilds-add, .guilds-error {
-  transform: rotate(90deg);
+
+.guilds-wrapper .scroller-wrap {
+  display: flex;
+  width: 100vw;
+  height: var(--height-serverlist);
+  overflow-x: auto;
+  overflow-y: hidden;
 }
+
+.guilds-wrapper .guilds {
+  width: 100%;
+  height: var(--height-serverlist);
+  padding: 10px 0 0 0;
+  box-sizing: border-box;
+  margin: 0 0 0 68px;
+  display: flex;
+  flex-flow: row wrap;
+  align-items: center;
+  justify-content: flex-start;
+  overflow-y: auto;
+}
+
+.guilds-wrapper .guilds .guild, .guilds-wrapper .guilds .guild + .guild {
+  display: inline-flex;
+  margin: 0 0 10px 8px;
+  padding: 0;
+  order: 3;
+  /*max-width: 50px;
+  max-height: 50px;*/
+}
+
+.guilds-wrapper .guilds > * > * {
+  flex: 1 0 auto;
+}
+
+.guilds-wrapper .guilds > .guild:first-child,
+.guilds-wrapper .guilds .friends-online,
+.guilds-wrapper .guilds .guild-separator {
+  position: absolute;
+}
+
 .guilds-wrapper .guilds > .guild:first-child {
-  margin-top: calc(12px * var(--public-button-in-use));
-}
-.dms {
-  padding-top: calc(7px * (var(--guild-column-count) - 1) / (var(--guild-column-count) - 1));
-  margin-left: -8px;
-  padding-left: calc(8px * (var(--guild-column-count) - 1) / (var(--guild-column-count) - 1));
-}
-.dms .guild {
-  display: inline-block;
-}
-.app .guilds-wrapper .guilds .dms .guild {
-  margin: 8px 0 0 8px;
-}
-.app .guilds-wrapper .guilds .friends-online {
+  left: 8px; top: calc(50% - 25px);
   margin: 0;
-  line-height: 0;
-  transform-origin: 50% -25px;
-  transform: rotate(90deg) translateY(calc(5px * (var(--guild-column-count) - 1) + 5px));
-}
-.app #bd-pub-li {
-  text-transform: uppercase;
-  position: absolute;
-  top: 5px;
-  margin: 0 auto;
-  left: calc((var(--guild-column-count) * 70px - (var(--guild-column-count) - 1) * 15px) / 2 - 25px)
 }
 
-#files_directDownload {
-  bottom: calc(var(--guild-column-count) * 70px - (var(--guild-column-count) - 1) * 15px);
-  left: 240px;
-  width: calc(100% - 240px - 240px);
+.guilds-wrapper .guilds .friends-online {
+  left: 8px; top: calc(50% + 23px);
+  margin: 0;
+  display: block;
+}
+
+.guilds-wrapper .guilds .guild-separator {
+  left: 66px;
+  top: 10px;
+  width: 2px;
+  height: calc(100% - 20px);
+  margin: 0;
+}
+.guilds-wrapper .guilds .guild-separator:after {
+  left: unset; right: unset;
+  top: 0; bottom: 0;
+  width: 100%; height: 100%;
+}
+
+.dms:empty { display: none; }
+
+.guilds-wrapper .guilds .guild.selected:before,
+.guilds-wrapper .guilds .guild.unread:before {
+  top: unset;
+  left: 50%;
+  bottom: -10px;
+  margin: 0;
+  height: 5px;
+  border-radius: 0;
+  clip-path: polygon(50% 0, 100% 100%, 0 100%);
+}
+
+.guilds-wrapper .guilds .guild.unread:before {
+  width: 10px;
+  margin-left: -5px;
+}
+
+.guilds-wrapper .guilds .guild.selected:before {
+  width: 40px;
+  margin-left: -20px;
+  transition: all .25s;
+}
+
+#bd-pub-li {
+  order: 2;
+}
+
+.guilds-wrapper .guilds .dms {
+  display: inline-flex;
+  order: 1;
+  flex: unset;
+  /*height: 100%;*/
+  overflow-x: hidden;
+  overflow-y: auto;
+  margin: 0;
+  flex-flow: row wrap;
+  align-items: center;
+  justify-content: center;
+  /*max-width: calc(58px * var(--DM-column-count));*/
+  margin-right: -10px;
+}
+
+.guilds-wrapper .guilds .dms > :last-child {
+  margin-right: 10px;
+}
+
+.guilds-wrapper .guilds .dms::-webkit-scrollbar,
+.guilds-wrapper .guilds.scroller::-webkit-scrollbar {
+  max-width: 0;
+}
+
+.unread-mentions-indicator-bottom .unread-mentions-bar:before,
+.unread-mentions-indicator-top .unread-mentions-bar:before {
+  content: unset;
+}
+
+.unread-mentions-indicator-bottom,
+.unread-mentions-indicator-top {
+  padding: 0;
+  top: 0;
+  bottom: unset;
+  height: 10px;
+  pointer-events: none;
+  -webkit-mask-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, rgba(1,1,1,var(--show-unread-indicator))), color-stop(1, transparent));
+}
+
+.unread-mentions-indicator-bottom *,
+.unread-mentions-indicator-top * {
+  pointer-events: none;
+}
+
+.unread-mentions-indicator-bottom .unread-mentions-bar,
+.unread-mentions-indicator-top .unread-mentions-bar {
+  height: 10px;
+  border-radius: 0;
+}
+
+.unread-mentions-indicator-bottom .unread-mentions-bar svg,
+.unread-mentions-indicator-top .unread-mentions-bar svg{
+  display: none;
 }
 
 
-/* server grid does not support minimal mode, will fix if that changes */
-.bd-minimal .guilds-wrapper ~ div {
-  height: calc(100% - 45px);
-}
-.bd-minimal .guilds-wrapper .guilds .friends-online {
-  width: 35px;
-  transform-origin: 50% -10px;
-  transform: rotate(90deg) translateY(12px);
-}
-.bd-minimal .app #bd-pub-li {
-  position: absolute;
-  top: 5px;
-  margin: 0 auto;
-  left: calc((var(--guild-column-count) * 70px - (var(--guild-column-count) - 1) * 15px) / 2 - 25px)
-}
-.bd-minimal .dms {
-  width: 45px;
-}
 
-.bd-minimal #files_directDownload {
-  bottom: 45px;
-  left: 230px;
-  width: calc(100% - 230px - 185px)
-}
+
+
+
+
+
+
+
+
+
+
+
+/**/
