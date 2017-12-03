@@ -3,7 +3,7 @@ my BD plugins & themes, focused on enhancing user experience
 
 plugins:
 
-  **[Restart-No-More](plugins/restartNoMore.plugin.js)** _alpha version_
+  **[Restart No More](plugins/restartNoMore.plugin.js)** _alpha version_
   
     Live-updates your themes and plugins. Especially useful during development.
 
@@ -55,6 +55,15 @@ plugins:
   
     Automatically loads the React Devtools for you.
     Requires React-Devtools being installed in your chrome browser (https://chrome.google.com/webstore/detail/react-developer-tools/fmkadmapgofadopljbjfkapdkoienihi)
+
+  **[Scroll-To-Last](plugins/scrollToLast.plugin.js)**
+  
+    Always scroll to last message when entering a channel.
+
+  **[Bot Info](plugins/botInfo.plugin.js)**
+  
+    Shows bots' infos from `discordbots.org`.
+    Depends on samogot's Discord Internals Library, so install that too. (https://github.com/samogot/betterdiscord-plugins/blob/master/v1/1lib_discord_internals.plugin.js)
 
 themes:
 
