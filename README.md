@@ -65,6 +65,10 @@ plugins:
     Shows bots' infos from `discordbots.org`.
     Depends on samogot's Discord Internals Library, so install that too. (https://github.com/samogot/betterdiscord-plugins/blob/master/v1/1lib_discord_internals.plugin.js)
 
+  **[Local File Server](plugins/localFileServer.plugin.js)**
+  
+    Hosts a selected folder so you can use local files in your theme.
+
 themes:
 
   **[Drag-Fix](themes/dragfix.theme.css)** _mini-theme_
