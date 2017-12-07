@@ -190,7 +190,7 @@ localFileServer = function () {
           res.writeHead(200, {
             "Content-Type": "text/html"
           });
-          res.write(`<html><head><title>Local File Server</title><base href="${req.url[req.url.length] === "/" ? req.url : req.url + "/"}" /><style>\n  a { float: left; margin: 5px; display: inline-block; }\n  br { clear: left; }\n  .image { width: 100%; max-width: 300px; height: 200px; background: #20242a 50%/contain no-repeat; border: solid 1px black; }\n</style></head><body>`);
+          res.write(`<html><head><title>Local File Server</title><base href="${req.url[req.url.length - 1] === "/" ? req.url : req.url + "/"}" /><style>\n  a { float: left; margin: 5px; display: inline-block; }\n  br { clear: left; }\n  .image { width: 100%; max-width: 300px; height: 200px; background: #20242a 50%/contain no-repeat; border: solid 1px black; }\n</style></head><body>`);
           if (_path !== settings.folder) {
             files.unshift("..");
           }
