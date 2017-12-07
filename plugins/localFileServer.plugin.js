@@ -18,7 +18,7 @@ localFileServer = function () {
     }
 
     getVersion() {
-      return "1.0.1";
+      return "1.0.2";
     }
 
     load() {}
@@ -206,7 +206,7 @@ localFileServer = function () {
           res.write("<br/>");
           for (j = 0, len1 = images.length; j < len1; j++) {
             image = images[j];
-            res.write(`<a href="${encoded = encodeURIComponent(image)}" class="image" style="background-image: url(${encoded});" />`);
+            res.write(`<a href="${encoded = encodeURIComponent(image)}" class="image" style="background-image: url('${encoded}');" />`);
           }
           res.end("</body></html>");
         });
