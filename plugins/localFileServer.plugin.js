@@ -18,7 +18,7 @@ localFileServer = function () {
     }
 
     getVersion() {
-      return "1.0.0";
+      return "1.0.1";
     }
 
     load() {}
@@ -159,7 +159,7 @@ localFileServer = function () {
       res.end(favicon);
       return;
     }
-    _path = path.normalize(path.join(settings.folder, decodeURI(url.parse(req.url).pathname)));
+    _path = path.normalize(path.join(settings.folder, decodeURIComponent(url.parse(req.url).path)));
     if (_path[_path.length - 1] === path.sep) {
       _path = _path.slice(0, -1);
     }
@@ -190,7 +190,7 @@ localFileServer = function () {
           res.writeHead(200, {
             "Content-Type": "text/html"
           });
-          res.write("<html><head><title>Local File Server</title><style>\n  a { float: left; margin: 5px; display: inline-block; }\n  br { clear: left; }\n  .image { width: 100%; max-width: 300px; height: 200px; background: #20242a 50%/contain no-repeat; border: solid 1px black; }\n</style></head><body>");
+          res.write(`<html><head><title>Local File Server</title><base href="${req.url[req.url.length] === "/" ? req.url : req.url + "/"}" /><style>\n  a { float: left; margin: 5px; display: inline-block; }\n  br { clear: left; }\n  .image { width: 100%; max-width: 300px; height: 200px; background: #20242a 50%/contain no-repeat; border: solid 1px black; }\n</style></head><body>`);
           if (_path !== settings.folder) {
             files.unshift("..");
           }
@@ -201,12 +201,12 @@ localFileServer = function () {
               images.push(file);
               continue;
             }
-            res.write(`<a href="./${encodeURI(file)}">${file}</a>`);
+            res.write(`<a href="${encodeURIComponent(file)}">${file}</a>`);
           }
           res.write("<br/>");
           for (j = 0, len1 = images.length; j < len1; j++) {
             image = images[j];
-            res.write(`<a href="${encoded = encodeURI(image)}" class="image" style="background-image: url(${encoded});" />`);
+            res.write(`<a href="${encoded = encodeURIComponent(image)}" class="image" style="background-image: url(${encoded});" />`);
           }
           res.end("</body></html>");
         });
