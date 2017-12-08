@@ -1,7 +1,19 @@
 # BetterDiscordStuff
 my BD plugins & themes, focused on enhancing user experience
 
-plugins:
+------------------------
+
+I mostly write my plugins in [coffeescript](http://coffeescript.org/).<br/>
+I will release the source of fully featured (finished) code in [coffee/](coffee/).
+
+available source files:
+* [Bot Info](plugins/botInfo.plugin.coffee)
+* [Local File Server](plugins/localFileServer.plugin.coffee)
+* [Toggle-Your-Stuff](plugins/toggleYourStuff.plugin.coffee)
+
+------------------------
+
+## plugins:
 
   **[Restart No More](plugins/restartNoMore.plugin.js)** _alpha version_
   
@@ -69,11 +81,14 @@ plugins:
   
     Hosts a selected folder so you can use local files in your theme.
 
-themes:
+------------------------
+
+## themes:
 
   **[Drag-Fix](themes/dragfix.theme.css)** _mini-theme_
   
     Makes it way easier to move the window.
+    Obsolete since the titlebar update but still useful together with the old-titlebar plugin (https://github.com/mwittrien/BetterDiscordAddons/tree/master/Plugins/OldTitleBar)
 
   **[Show-URLs](/themes/showURLs.theme.css)** _mini-theme_
   
