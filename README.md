@@ -7,9 +7,9 @@ I mostly write my plugins in [coffeescript](http://coffeescript.org/).<br/>
 I will release the source of fully featured (finished) code in [coffee/](coffee/).
 
 available source files:
-* [Bot Info](plugins/botInfo.plugin.coffee)
-* [Local File Server](plugins/localFileServer.plugin.coffee)
-* [Toggle-Your-Stuff](plugins/toggleYourStuff.plugin.coffee)
+* [Bot Info](coffee/botInfo.plugin.coffee)
+* [Local File Server](coffee/localFileServer.plugin.coffee)
+* [Toggle-Your-Stuff](coffee/toggleYourStuff.plugin.coffee)
 
 ------------------------
 
