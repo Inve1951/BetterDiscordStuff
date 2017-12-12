@@ -27,6 +27,7 @@ available source files:
   **[Force-Close](plugins/forceClose.plugin.js)**
   
     Actually closes discord when clicking the close button.
+    Obsolete as of 12.12.17. Discord got this built-in now. See window settings in client.
 
   **[Clear-Input-on-Escape](plugins/clearInputOnEsc.plugin.js)**
   
