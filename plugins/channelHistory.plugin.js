@@ -1,21 +1,21 @@
 //META{"name":"channelHistory"}*//
 
 var channelHistory = (function(listener, bw){
-	class channelHistory {
+  class channelHistory {
     getName(){return "Channel History"}
-		getDescription(){return "Allows you to switch channels using mouse 4 & 5 buttons."}
-		getVersion(){return "1.0.0"}
-		getAuthor(){return "square"}
+    getDescription(){return "Allows you to switch channels using mouse 4 & 5 buttons."}
+    getVersion(){return "1.0.0"}
+    getAuthor(){return "square"}
 
-		start(){
+    start(){
       bw = require("electron").remote.getCurrentWindow();
       bw.on("app-command", listener);
     }
 
-		stop(){ bw.removeListener("app-command", listener); }
+    stop(){ bw.removeListener("app-command", listener); }
 
-		load(){}
-	}
+    load(){}
+  }
 
   listener = (e, cmd) => {
     if (cmd === 'browser-backward' && bw.webContents.canGoBack())
@@ -24,5 +24,5 @@ var channelHistory = (function(listener, bw){
       bw.webContents.goForward();
   };
 
-	return channelHistory;
+  return channelHistory;
 })()
