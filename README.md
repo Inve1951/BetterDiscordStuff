@@ -82,6 +82,10 @@ available source files:
   
     Hosts a selected folder so you can use local files in your theme.
 
+  **[Channel History](plugins/channelHistory.plugin.js)**
+  
+    Allows you to switch channels using mouse 4 & 5 buttons.
+
 ------------------------
 
 ## themes:
