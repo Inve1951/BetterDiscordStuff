@@ -86,7 +86,7 @@ var channelHistory = (function(listener, bw, wc, buttons, buttonsClone, buttonsF
       order: 0;
     }
     #app-mount > .hidden:first-child + * .channelHistoryButtons.clone {
-      display: static;
+      display: inline-block;
     }
     .channelHistoryButtons .btn {
       display: inline-block;
