@@ -4,15 +4,16 @@ var channelHistory = (function(listener, bw, wc, buttons, buttonsClone, buttonsF
   class channelHistory {
     getName(){ return "Channel History" }
     getDescription(){ return "Allows you to switch channels using mouse 4 & 5 or the added GUI buttons." }
-    getVersion(){ return "1.1.0" }
+    getVersion(){ return "1.1.1" }
     getAuthor(){ return "square" }
 
     start(){
       bw = require("electron").remote.getCurrentWindow();
+      wc = bw.webContents;
       bw.on("app-command", listener);
       BdApi.injectCSS("css-channelHistory", css);
       attach();
-      attachClone();
+      this.onSwitch();
     }
 
     stop(){
@@ -24,24 +25,20 @@ var channelHistory = (function(listener, bw, wc, buttons, buttonsClone, buttonsF
 
     load(){}
 
-    onSwitch(){
+    onSwitch(can){
       attachClone();
+      can = wc.canGoBack();
+      buttonsBackward.forEach(button => button.classList.toggle("cant", !can));
+      can = wc.canGoForward();
+      buttonsForward.forEach(button => button.classList.toggle("cant", !can));
     }
   }
 
-  listener = (ev, cmd, can) => {
-    wc = bw.webContents;
-    if (cmd === 'browser-backward' && wc.canGoBack()) {
+  listener = (ev, cmd) => {
+    if (cmd === 'browser-backward' && wc.canGoBack())
       wc.goBack();
-      can = wc.canGoBack();
-      buttonsBackward.forEach(button => button.classList.toggle("cant", !can));
-      buttonsForward.forEach(button => button.classList.remove("cant"));
-    } else if (cmd === 'browser-forward' && wc.canGoForward()) {
+    else if (cmd === 'browser-forward' && wc.canGoForward())
       wc.goForward();
-      can = wc.canGoForward();
-      buttonsForward.forEach(button => button.classList.toggle("cant", !can));
-      buttonsBackward.forEach(button => button.classList.remove("cant"));
-    }
   };
 
   buttons = document.createElement("div");
