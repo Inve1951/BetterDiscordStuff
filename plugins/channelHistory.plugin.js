@@ -4,7 +4,7 @@ var channelHistory = (function(listener, bw, wc, buttons, buttonsClone, buttonsF
   class channelHistory {
     getName(){ return "Channel History" }
     getDescription(){ return "Allows you to switch channels using mouse 4 & 5 or the added GUI buttons." }
-    getVersion(){ return "1.1.1" }
+    getVersion(){ return "1.1.2" }
     getAuthor(){ return "square" }
 
     start(){
@@ -91,6 +91,9 @@ var channelHistory = (function(listener, bw, wc, buttons, buttonsClone, buttonsF
       -webkit-app-region: no-drag;
       cursor: pointer;
       padding: 0 2px;
+    }
+    .channelHistoryButtons .btn:hover:not(.cant) {
+      color: #ddd;
     }
     .channelHistoryButtons .cant {
       opacity: 0.5;
