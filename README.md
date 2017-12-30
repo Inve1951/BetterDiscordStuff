@@ -84,7 +84,7 @@ available source files:
 
   **[Channel History](plugins/channelHistory.plugin.js)**
   
-    Allows you to switch channels using mouse 4 & 5 buttons.
+    Allows you to switch channels using mouse 4 & 5 or the added GUI buttons.
 
 ------------------------
 
