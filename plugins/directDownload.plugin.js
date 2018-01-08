@@ -3,7 +3,6 @@ var directDownload,
     indexOf = [].indexOf;
 
 directDownload = function () {
-  /* https://github.com/olalonde/follow-redirects */
   var Download, _fr, activityClassName, bw, cache, clipboard, dialog, downloadbar, fs, getSettings, http, https, initSwitchFix, installCss, installDownloadBar, lastButOneIndexOf, listener, nativeImage, pPlugins, pThemes, path, remote, settings, shell;
 
   class directDownload {
@@ -727,6 +726,7 @@ directDownload = function () {
   };
 
   ({ http, https } = _fr = function (exports, module) {
+    /* https://github.com/olalonde/follow-redirects */
     'use strict';
 
     var url = require('url');
