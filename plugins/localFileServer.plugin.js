@@ -2,7 +2,7 @@
 var localFileServer;
 
 localFileServer = function () {
-  var app, assertMainProcJsPatch, bw, dialog, favicon, fs, getSettings, https, isImage, onRequest, path, pfx, remote, server, settings, shell, startServer, stopServer, url;
+  var app, assertMainProcJsPatch, bw, dialog, favicon, findPatchRelaunch, fn, fs, fs2, func, getSettings, https, i, isImage, len, onRequest, path, pfx, ref, remote, server, settings, shell, startServer, stopServer, url;
 
   class localFileServer {
     getName() {
@@ -18,7 +18,7 @@ localFileServer = function () {
     }
 
     getVersion() {
-      return "1.0.2";
+      return "1.1.0";
     }
 
     load() {}
@@ -214,36 +214,68 @@ localFileServer = function () {
     });
   };
 
-  assertMainProcJsPatch = function () {
-    var _path, mainjs, split;
+  assertMainProcJsPatch = async function () {
+    var _path, e, mainjs, split;
+    try {
+      split = "_electron = require('electron');";
+      mainjs = "\r\n\r\n// localFileServer plugin start     #ref1#\nglobal.localFileServerMainProcObj={port:null};\n_electron.app.commandLine.appendSwitch(\"allow-insecure-localhost\");\n_electron.app.on(\"certificate-error\",(ev,x,url,y,z,cb)=>(new RegExp(`https://(localhost|127\\\\.0\\\\.0\\\\.1)${localFileServerMainProcObj.port}/`)).test(url)?(ev.preventDefault(),cb(!0)):cb(!1));\n// localFileServer plugin end\r\n";
+      _path = path.join(remote.require(path.join(app.getAppPath(), "common/paths.js")).getUserDataVersioned(), "modules/discord_desktop_core/core/app/mainscreen.js");
+      return await findPatchRelaunch(_path, split, mainjs);
+    } catch (error) {
+      e = error;
+      console.error(e);
+    }
+    // 0.0.300 changes didn't make it to osx at time of writing
     split = "app.setVersion(discordVersion);";
-    mainjs = "\r\n\r\n// localFileServer plugin start     #ref1#\nglobal.localFileServerMainProcObj={port:null};\napp.commandLine.appendSwitch(\"allow-insecure-localhost\");\napp.on(\"certificate-error\",(ev,x,url,y,z,cb)=>(new RegExp(`https://(localhost|127\\\\.0\\\\.0\\\\.1)${localFileServerMainProcObj.port}/`)).test(url)?(ev.preventDefault(),cb(!0)):cb(!1));\n// localFileServer plugin end\r\n";
     _path = path.join(app.getAppPath(), "index.js");
-    fs.readFile(_path, "utf8", function (e, data) {
-      var newData;
-      if (e != null) {
-        return console.error(e);
-      }
-      if (-1 !== data.indexOf(mainjs)) {
-        return;
-      }
-      newData = data.split(split).join(`${split}${mainjs}`);
-      if (data.length + mainjs.length !== newData.length) {
-        throw "localFileServer needs fixing!";
-      }
-      fs.writeFile(_path, newData, function (e) {
-        if (e != null) {
-          return console.error(e);
-        }
-        app.relaunch();
-        app.quit();
-      });
-    });
+    mainjs = mainjs.split("_electron.").join("");
+    try {
+      await findPatchRelaunch(_path, split, mainjs);
+    } catch (error) {
+      e = error;
+      console.error(e);
+    }
   };
 
+  findPatchRelaunch = async function (_path, split, mainjs) {
+    var data, newData;
+    data = await fs2.readFile(_path, "utf8");
+    if (-1 !== data.indexOf(mainjs)) {
+      return;
+    }
+    newData = data.split(split).join(`${split}${mainjs}`);
+    if (data.length + mainjs.length !== newData.length) {
+      throw "localFileServer needs fixing!";
+    }
+    await fs2.writeFile(_path, newData);
+    app.relaunch();
+    app.quit();
+  };
+
+  fs2 = {};
+
+  ref = ["readFile", "writeFile"];
+  fn = function (func) {
+    return fs2[func] = function (...args) {
+      return new Promise(function (c, r) {
+        return fs[func](...args, function (e, res) {
+          if (e != null) {
+            return r(e);
+          } else {
+            return c(res);
+          }
+        });
+      });
+    };
+  };
+  for (i = 0, len = ref.length; i < len; i++) {
+    func = ref[i];
+    fn(func);
+  }
+
   isImage = function (filename) {
-    var ref;
-    return (ref = filename.slice(filename.lastIndexOf("."))) === ".png" || ref === ".jpeg" || ref === ".jpg" || ref === ".bmp" || ref === ".gif" || ref === ".webp" || ref === ".svg" || ref === ".tiff" || ref === ".apng";
+    var ref1;
+    return (ref1 = filename.slice(filename.lastIndexOf("."))) === ".png" || ref1 === ".jpeg" || ref1 === ".jpg" || ref1 === ".bmp" || ref1 === ".gif" || ref1 === ".webp" || ref1 === ".svg" || ref1 === ".tiff" || ref1 === ".apng";
   };
 
   favicon = Buffer.from("AAABAAEAEBAQAAEABAAoAQAAFgAAACgAAAAQAAAAIAAAAAEABAAAAAAAgAAAAMMOAADDDgAAEAAAABAAAAAAAAAAL2sUAEyxIgAXNgoA////AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAASIiIiIiEAACEDIAIwEgAAIDIxEyMCAAAjIAAAAjIAACIQEREBIgAAIDAQAQMCAAAgMBABAwIAACIQEREBIgAAIyAAAAIyAAAgMjETIwIAACEDIAIwEgAAEiIiIiIhAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "base64");

@@ -4,7 +4,7 @@ class localFileServer
   getName: -> "Local File Server"
   getDescription: -> "Hosts a selected folder so you can use local files in your theme. Has to restart discord first time enabling."
   getAuthor: -> "square"
-  getVersion: -> "1.0.2"
+  getVersion: -> "1.1.0"
 
   load: ->
 
@@ -174,30 +174,43 @@ class localFileServer
     return
 
   assertMainProcJsPatch = ->
+
+    try
+      split = "_electron = require('electron');"
+      mainjs =
+        """
+          \r\n\r\n// localFileServer plugin start     #ref1#
+          global.localFileServerMainProcObj={port:null};
+          _electron.app.commandLine.appendSwitch("allow-insecure-localhost");
+          _electron.app.on("certificate-error",(ev,x,url,y,z,cb)=>(new RegExp(`https://(localhost|127\\\\.0\\\\.0\\\\.1)${localFileServerMainProcObj.port}/`)).test(url)?(ev.preventDefault(),cb(!0)):cb(!1));
+          // localFileServer plugin end\r\n
+        """
+      _path = path.join remote.require(path.join app.getAppPath(), "common/paths.js").getUserDataVersioned(), "modules/discord_desktop_core/core/app/mainscreen.js"
+      return await findPatchRelaunch _path, split, mainjs
+    catch e then console.error e
+
+    # 0.0.300 changes didn't make it to osx at time of writing
     split = "app.setVersion(discordVersion);"
-    mainjs =
-      """
-        \r\n\r\n// localFileServer plugin start     #ref1#
-        global.localFileServerMainProcObj={port:null};
-        app.commandLine.appendSwitch("allow-insecure-localhost");
-        app.on("certificate-error",(ev,x,url,y,z,cb)=>(new RegExp(`https://(localhost|127\\\\.0\\\\.0\\\\.1)${localFileServerMainProcObj.port}/`)).test(url)?(ev.preventDefault(),cb(!0)):cb(!1));
-        // localFileServer plugin end\r\n
-      """
-
     _path = path.join app.getAppPath(), "index.js"
-    fs.readFile _path, "utf8", (e, data) ->
-      return console.error e if e?
-      return if -1 isnt data.indexOf mainjs
-      newData = data.split(split).join "#{split}#{mainjs}"
-      throw "localFileServer needs fixing!" if data.length + mainjs.length isnt newData.length
-      fs.writeFile _path, newData, (e) ->
-        return console.error e if e?
-        app.relaunch()
-        app.quit()
-        return
-      return
+    mainjs = mainjs.split("_electron.").join ""
 
+    try await findPatchRelaunch _path, split, mainjs
+    catch e then console.error e
     return
+
+  findPatchRelaunch = (_path, split, mainjs) ->
+    data = await fs2.readFile _path, "utf8"
+    return if -1 isnt data.indexOf mainjs
+    newData = data.split(split).join "#{split}#{mainjs}"
+    throw "localFileServer needs fixing!" if data.length + mainjs.length isnt newData.length
+    await fs2.writeFile _path, newData
+    app.relaunch()
+    app.quit()
+    return
+
+  fs2 = {}
+  for func in ["readFile", "writeFile"] then do (func) ->
+    fs2[func] = (args...) -> new Promise (c, r) -> fs[func] args..., (e, res) -> if e? then r e else c res
 
   isImage = (filename) -> filename[filename.lastIndexOf(".")...] in [".png",".jpeg", ".jpg", ".bmp", ".gif", ".webp", ".svg", ".tiff", ".apng"]
 
