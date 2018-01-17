@@ -1,19 +1,19 @@
-/* //META { "name": "Horizontal_Serverlist", "description": "I've always wanted this :3", "author": "square", "version": "2.0.0-pre"} *//**/
+/* //META { "name": "Horizontal_Serverlist", "description": "I've always wanted this :3", "author": "square", "version": "2.0.1-pre"} *//**/
 
 :root {
   --height-titlebar: 22px;
   --guild-row-count: 1;
-  /*--DM-column-count: 1;*/
+  --DM-column-count: 1;
   --show-unread-indicator: 1;
 }
 
 
-.layers > .layer:first-child > :first-child {
+.layers-20RVFW > .layer-kosS71:first-child > :first-child {
   flex-flow: row wrap;
   --height-serverlist: calc(70px * var(--guild-row-count) - 10px * (var(--guild-row-count) - 1));
 }
 
-.layers > .layer:first-child > :first-child > * {
+.layers-20RVFW > .layer-kosS71:first-child > :first-child > * {
   flex: 1 100%;
 }
 
@@ -118,22 +118,28 @@
 }
 
 .guilds-wrapper .guilds .dms {
-  display: inline-flex;
+  display: block;
   order: 1;
   flex: unset;
-  /*height: 100%;*/
+  height: 100%;
   overflow-x: hidden;
   overflow-y: auto;
-  margin: 0;
+  margin: 0 -10px 0 0;
   flex-flow: row wrap;
   align-items: center;
   justify-content: center;
-  /*max-width: calc(58px * var(--DM-column-count));*/
-  margin-right: -10px;
+  max-width: calc(58px * var(--DM-column-count));
+  padding-right: 10px;
+  counter-reset: guilds-dms;
 }
 
-.guilds-wrapper .guilds .dms > :last-child {
-  margin-right: 10px;
+.guilds-wrapper .guilds .dms .guild {
+  counter-increment: guilds-dms;
+}
+
+.guilds-wrapper .guilds .dms:after {/*
+  content: counter(guilds-dms);
+  width: calc(counter(guilds-dms) * 158px);*/
 }
 
 .guilds-wrapper .guilds .dms::-webkit-scrollbar,
