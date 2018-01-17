@@ -195,13 +195,13 @@ directDownload = function () {
   initSwitchFix = function () {
     var e;
     this.switchFix = new MutationObserver(mutations => {
-      var addedNodes, className, i, id, j, len, len1, ref, removedNodes;
+      var addedNodes, classList, i, id, j, len, len1, ref, removedNodes;
       for (i = 0, len = mutations.length; i < len; i++) {
         ({ addedNodes, removedNodes } = mutations[i]);
         ref = [...addedNodes, ...removedNodes];
         for (j = 0, len1 = ref.length; j < len1; j++) {
-          ({ id, className } = ref[j]);
-          if (id === "friends" || -1 !== className.indexOf(classNames.activity)) {
+          ({ id, classList } = ref[j]);
+          if (classList && (id === "friends" || classList.contains(classNames.activity) || classList.contains(classNames.lfg))) {
             return this.onSwitch();
           }
         }
