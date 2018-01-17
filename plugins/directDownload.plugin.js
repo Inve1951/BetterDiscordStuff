@@ -1,9 +1,8 @@
 //META{"name":"directDownload"}*//
-var directDownload,
-    indexOf = [].indexOf;
+var directDownload;
 
 directDownload = function () {
-  var Download, _fr, activityClassName, bw, cache, clipboard, dialog, downloadbar, fs, getSettings, http, https, initSwitchFix, installCss, installDownloadBar, lastButOneIndexOf, listener, nativeImage, pPlugins, pThemes, path, remote, settings, shell;
+  var Download, _fr, bw, cache, classNames, clipboard, dialog, downloadbar, fs, getSettings, http, https, initSwitchFix, installCss, installDownloadBar, lastButOneIndexOf, listener, nativeImage, pPlugins, pThemes, path, remote, settings, shell;
 
   class directDownload {
     getName() {
@@ -19,7 +18,7 @@ directDownload = function () {
     }
 
     getVersion() {
-      return "0.3.4-alpha";
+      return "0.3.5-alpha";
     }
 
     start() {
@@ -87,10 +86,10 @@ directDownload = function () {
     }
 
     static updateSettings() {
-      var input, j, len, name, ref, type, value;
+      var i, input, len, name, ref, type, value;
       ref = document.querySelectorAll("#settings_directDownload :-webkit-any(input, button)");
-      for (j = 0, len = ref.length; j < len; j++) {
-        input = ref[j];
+      for (i = 0, len = ref.length; i < len; i++) {
+        input = ref[i];
         ({ name, type, value } = input);
         if (type === "button") {
           value = input.innerHTML;
@@ -129,7 +128,7 @@ directDownload = function () {
       bdPluginStorage.set("directDownload", "settings", settings);
     }
 
-    /* for Zerebos */
+    // for Zerebos
     static toClipboard(url, cb) {
       cache.get(url, function (dl) {
         var ref;
@@ -155,7 +154,13 @@ directDownload = function () {
 
   downloadbar = null;
 
-  activityClassName = "activityFeed-HeiGwL";
+  classNames = {
+    activity: "activityFeed-HeiGwL",
+    attachment: "attachment-1Vom9D",
+    iconFile: "icon-3cn2VC",
+    imageWrapper: "imageWrapper-38T7d9",
+    lfg: "lfg-3xoFkI"
+  };
 
   installCss = function () {
     var style;
@@ -175,7 +180,7 @@ directDownload = function () {
       downloadbar.setAttribute("deprecation-warning", ".empty will be removed in next version update, use :empty pseudo class instead");
     }
     if (document.getElementById("files_directDownload") == null) {
-      container = document.querySelector(`.chat .content > :first-child, #friends, .${activityClassName}`);
+      container = document.querySelector(`.chat .content > :first-child, #friends, .${classNames.activity}, .${classNames.lfg}`);
       try {
         container.appendChild(downloadbar);
       } catch (error1) {
@@ -190,20 +195,20 @@ directDownload = function () {
   initSwitchFix = function () {
     var e;
     this.switchFix = new MutationObserver(mutations => {
-      var addedNodes, className, id, j, l, len, len1, ref, removedNodes;
-      for (j = 0, len = mutations.length; j < len; j++) {
-        ({ addedNodes, removedNodes } = mutations[j]);
+      var addedNodes, className, i, id, j, len, len1, ref, removedNodes;
+      for (i = 0, len = mutations.length; i < len; i++) {
+        ({ addedNodes, removedNodes } = mutations[i]);
         ref = [...addedNodes, ...removedNodes];
-        for (l = 0, len1 = ref.length; l < len1; l++) {
-          ({ id, className } = ref[l]);
-          if (id === "friends" || -1 !== className.indexOf(activityClassName)) {
+        for (j = 0, len1 = ref.length; j < len1; j++) {
+          ({ id, className } = ref[j]);
+          if (id === "friends" || -1 !== className.indexOf(classNames.activity)) {
             return this.onSwitch();
           }
         }
       }
     });
     try {
-      this.switchFix.observe(document.querySelector(`.guilds-wrapper + div :-webkit-any(.chat, #friends, .${activityClassName})`).parentNode, {
+      this.switchFix.observe(document.querySelector(`.guilds-wrapper + div :-webkit-any(.chat, #friends, .${classNames.activity}, .${classNames.lfg})`).parentNode, {
         childList: true
       });
     } catch (error1) {
@@ -247,26 +252,31 @@ directDownload = function () {
   }();
 
   listener = function (ev) {
-    var elem, i, j, len, ref, ref1, ref2, ref3;
-    if (settings.imagemodals && (ref = ev.target, indexOf.call((ref1 = (ref2 = document.querySelector("div.modal-image")) != null ? ref2.querySelectorAll(":-webkit-any(img,span)") : void 0) != null ? ref1 : [], ref) >= 0) || ev.target.nodeName === "A" && ev.target.href.startsWith("https://betterdiscord.net/ghdl?")) {
-      new Download(ev.target);
-      event.preventDefault();
-      event.stopImmediatePropagation();
-      return false;
+    var elem, i, len, ok, ref;
+    ok = false;
+    if (ev.target.nodeName === "A" && ev.target.href.startsWith("https://betterdiscord.net/ghdl?")) {
+      ok = true;
+      elem = ev.target;
     }
-    ref3 = ev.path;
-    for (i = j = 0, len = ref3.length; j < len; i = ++j) {
-      elem = ref3[i];
-      if (elem.classList.contains("attachment") && elem.querySelector(".icon-file") != null) {
-        new Download(elem);
-        event.preventDefault();
-        event.stopImmediatePropagation();
-        return false;
-      }
-      if (i === 2) {
-        return;
+    if (!ok) {
+      ref = ev.path;
+      for (i = 0, len = ref.length; i < len; i++) {
+        elem = ref[i];
+        if (elem.classList) {
+          if (settings.imagemodals && elem.classList.contains(classNames.imageWrapper) && !elem.parentNode.classList.contains("accessory") || elem.classList.contains(classNames.attachment) && elem.querySelector(`.${classNames.iconFile}`) != null) {
+            ok = true;
+            break;
+          }
+        }
       }
     }
+    if (!ok) {
+      return;
+    }
+    new Download(elem);
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    return false;
   };
 
   lastButOneIndexOf = function (h, n) {
@@ -332,13 +342,11 @@ directDownload = function () {
           return;
         }
         this.att = args[0];
-        if (settings.imagemodals && (this.att.nodeName === "IMG" || this.att.nodeName === "SPAN")) {
+        if (settings.imagemodals && this.att.classList.contains(classNames.imageWrapper)) {
           this.copyWhenFinished = settings.copyimages;
           this.isImage = true;
-          if (this.att.parentNode.nodeName === "SPAN") {
-            this.att = this.att.parentNode;
-          }
-          this.url = this.att.parentNode.querySelector("a").href;
+          this.att = this.att.parentNode.lastChild.querySelector("a");
+          this.url = this.att.href;
           this.filename = path.basename(this.url.split("/").pop());
         } else {
           a = this.att.nodeName === "A" ? this.att : this.att.querySelector("a");
@@ -573,7 +581,7 @@ directDownload = function () {
 
     };
 
-    Download.css = "#files_directDownload {\n  position: absolute;\n  bottom: 0;\n  width: 100%;\n  height: 25px;\n  overflow: hidden;\n  font-size: 0;\n}\n#files_directDownload.empty {\n  display: none;\n}\n#files_directDownload .file {\n  height: 100%;\n  width: 200px;\n  min-width: 50px;\n  max-width: calc((100% + 2px) / var(--numFiles) - 2px);\n  background: rgba(128,128,128,0.2);\n  display: inline-block;\n  margin-left: 2px;\n  box-shadow: inset 0 0 10px rgba(0,0,0,0.3);\n  border: 1px solid rgba(128,128,128,0.2);\n  border-bottom: none;\n  box-sizing: border-box;\n  position: relative;\n  cursor: pointer;\n}\n#files_directDownload .file:first-of-type {\n  border-top-left-radius: 4px;\n  margin: 0;\n}\n#files_directDownload .file:last-of-type {\n  border-top-right-radius: 4px;\n}\n#files_directDownload .file.will-open {\n  background: rgba(128,128,128,0.4);\n}\n#files_directDownload span {\n  width: calc(100% + 2px);\n  overflow: hidden;\n  text-overflow: ellipsis;\n  color: #87909C;\n  /*display: inline-block;*/\n  position: absolute;\n  left: -1px;\n  top: -1px;\n  font-size: 14px;\n  line-height: 23px;\n  padding: 0 18px 0 4px;\n  box-sizing: border-box;\n}\n#files_directDownload .file .progress-bar {\n  position:absolute;\n  height: 2px;\n  bottom: 0;\n  left: -1px;\n  background: rgb(32,196,64);\n}\n#files_directDownload .file.failed .progress-bar {\n  background: rgb(196,64,32);\n  min-width: calc(100% + 2px);\n}\n#files_directDownload .file.done .progress-bar {\n  min-width: calc(100% + 2px);\n}\n#files_directDownload .file svg {\n  fill: rgba(0,0,0,0.5);\n  position: absolute;\n  top: -1px;\n  right: -1px;\n  height: 23px;\n  width: 23px;\n}\n\n#friends {\n  position: relative;\n}\n\n.attachment, .callout-backdrop + div .modal-image :-webkit-any(img,span) {\n  cursor: pointer;\n}";
+    Download.css = `#files_directDownload {\n  position: absolute;\n  bottom: 0;\n  width: 100%;\n  height: 25px;\n  overflow: hidden;\n  font-size: 0;\n}\n#files_directDownload.empty {\n  display: none;\n}\n#files_directDownload .file {\n  height: 100%;\n  width: 200px;\n  min-width: 50px;\n  max-width: calc((100% + 2px) / var(--numFiles) - 2px);\n  background: rgba(128,128,128,0.2);\n  display: inline-block;\n  margin-left: 2px;\n  box-shadow: inset 0 0 10px rgba(0,0,0,0.3);\n  border: 1px solid rgba(128,128,128,0.2);\n  border-bottom: none;\n  box-sizing: border-box;\n  position: relative;\n  cursor: pointer;\n}\n#files_directDownload .file:first-of-type {\n  border-top-left-radius: 4px;\n  margin: 0;\n}\n#files_directDownload .file:last-of-type {\n  border-top-right-radius: 4px;\n}\n#files_directDownload .file.will-open {\n  background: rgba(128,128,128,0.4);\n}\n#files_directDownload span {\n  width: calc(100% + 2px);\n  overflow: hidden;\n  text-overflow: ellipsis;\n  color: #87909C;\n  /*display: inline-block;*/\n  position: absolute;\n  left: -1px;\n  top: -1px;\n  font-size: 14px;\n  line-height: 23px;\n  padding: 0 18px 0 4px;\n  box-sizing: border-box;\n}\n#files_directDownload .file .progress-bar {\n  position:absolute;\n  height: 2px;\n  bottom: 0;\n  left: -1px;\n  background: rgb(32,196,64);\n}\n#files_directDownload .file.failed .progress-bar {\n  background: rgb(196,64,32);\n  min-width: calc(100% + 2px);\n}\n#files_directDownload .file.done .progress-bar {\n  min-width: calc(100% + 2px);\n}\n#files_directDownload .file svg {\n  fill: rgba(0,0,0,0.5);\n  position: absolute;\n  top: -1px;\n  right: -1px;\n  height: 23px;\n  width: 23px;\n}\n\n#friends {\n  position: relative;\n}\n\n.${classNames.attachment} {\n  cursor: pointer;\n}`;
 
     return Download;
   }();
