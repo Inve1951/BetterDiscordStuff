@@ -18,11 +18,12 @@ QuickDeleteMessages = function () {
     }
 
     getVersion() {
-      return "1.0.0";
+      return "1.0.1";
     }
 
     start() {
       var ref;
+      getInternalInstance = BDV2.reactDom.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED.ReactDOMComponentTree.getInstanceFromNode;
       settings.confirm = (ref = bdPluginStorage.get("QuickDeleteMessages", "confirm")) != null ? ref : false;
       document.addEventListener("click", onClick, true);
       document.addEventListener("keydown", onKeyDown);
@@ -52,7 +53,7 @@ QuickDeleteMessages = function () {
 
   settings = Object.create(null);
 
-  MessageActions = ConfirmActions = null;
+  MessageActions = ConfirmActions = getInternalInstance = null;
 
   deletePressed = false;
 
@@ -97,8 +98,6 @@ QuickDeleteMessages = function () {
     event.preventDefault();
     event.stopImmediatePropagation();
   };
-
-  getInternalInstance = BDV2.reactDom.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED.ReactDOMComponentTree.getInstanceFromNode;
 
   getOwnerInstance = function (node) {
     var internalInstance, ref;

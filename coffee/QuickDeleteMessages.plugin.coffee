@@ -4,12 +4,14 @@ class QuickDeleteMessages
   getName: -> "Quick Delete Messages"
   getDescription: -> "Hold Delete and click a Message to delete it."
   getAuthor: -> "square"
-  getVersion: -> "1.0.0"
+  getVersion: -> "1.0.1"
 
   settings = Object.create null
-  MessageActions = ConfirmActions = null
+  MessageActions = ConfirmActions = getInternalInstance = null
 
   start: ->
+    getInternalInstance = BDV2.reactDom.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED.ReactDOMComponentTree.getInstanceFromNode
+
     settings.confirm = bdPluginStorage.get("QuickDeleteMessages", "confirm") ? false
 
     document.addEventListener "click", onClick, true
@@ -73,8 +75,6 @@ class QuickDeleteMessages
     event.stopImmediatePropagation()
     return
 
-
-  getInternalInstance = BDV2.reactDom.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED.ReactDOMComponentTree.getInstanceFromNode
 
   getOwnerInstance = (node) ->
     internalInstance = getInternalInstance(node) ? node
