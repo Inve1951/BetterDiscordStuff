@@ -16,5 +16,5 @@ var MultiInstance = function()  {
     listener = ({code, ctrlKey, metaKey}) => code === "F12" && (process.platform !== "darwin" ? ctrlKey : metaKey) && require("child_process").
       exec(`"${process.argv0}" --multi-instance`);
 
-  for(name in public) this[name] = public[name];
+  for(let name in public) this[name] = public[name];
 };
