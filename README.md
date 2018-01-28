@@ -91,6 +91,11 @@ available source files:
 
     Hold Delete and click a Message to delete it.
 
+
+  **[Multi Instance](plugins/MultiInstance.plugin.js)**
+
+    Have several discord windows open same time. Ctrl+F12. (Cmd+F12 on osx)
+
 ------------------------
 
 ## themes:
