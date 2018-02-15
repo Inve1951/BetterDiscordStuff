@@ -1,10 +1,10 @@
 //META{"name":"channelHistory"}*//
 
-var channelHistory = (function(listener, bw, wc, buttons, buttonsClone, buttonsForward, buttonsBackward, attach, attachClone, css){
+var channelHistory = (function(listener, bw, wc, backdrop, buttons, buttonsClone, buttonsForward, buttonsBackward, attach, attachClone, css){
   class channelHistory {
     getName(){ return "Channel History" }
     getDescription(){ return "Allows you to switch channels using mouse 4 & 5 or the added GUI buttons." }
-    getVersion(){ return "1.1.2" }
+    getVersion(){ return "1.2.0" }
     getAuthor(){ return "square" }
 
     start(){
@@ -35,10 +35,13 @@ var channelHistory = (function(listener, bw, wc, buttons, buttonsClone, buttonsF
   }
 
   listener = (ev, cmd) => {
-    if (cmd === 'browser-backward' && wc.canGoBack())
+    if (backdrop = document.querySelector(".backdrop-2ohBEd"))
+      backdrop.click();
+    else if (cmd === 'browser-backward' && wc.canGoBack())
       wc.goBack();
     else if (cmd === 'browser-forward' && wc.canGoForward())
       wc.goForward();
+    backdrop = void 0;
   };
 
   buttons = document.createElement("div");
@@ -82,7 +85,7 @@ var channelHistory = (function(listener, bw, wc, buttons, buttonsClone, buttonsF
       left: unset;
       order: 0;
     }
-    #app-mount > .hidden:first-child + * .channelHistoryButtons.clone {
+    .hidden-by-OTB + * .channelHistoryButtons.clone {
       display: inline-block;
     }
     .channelHistoryButtons .btn {
