@@ -4,7 +4,7 @@ var channelHistory = (function(listener, bw, wc, backdrop, buttons, buttonsClone
   class channelHistory {
     getName(){ return "Channel History" }
     getDescription(){ return "Allows you to switch channels using mouse 4 & 5 or the added GUI buttons." }
-    getVersion(){ return "1.2.0" }
+    getVersion(){ return "1.2.1" }
     getAuthor(){ return "square" }
 
     start(){
@@ -35,6 +35,8 @@ var channelHistory = (function(listener, bw, wc, backdrop, buttons, buttonsClone
   }
 
   listener = (ev, cmd) => {
+    if (cmd !== 'browser-backward' && cmd !== 'browser-forward')
+      return;
     if (backdrop = document.querySelector(".backdrop-2ohBEd"))
       backdrop.click();
     else if (cmd === 'browser-backward' && wc.canGoBack())
