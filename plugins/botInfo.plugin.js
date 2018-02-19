@@ -7,7 +7,7 @@ var botInfo,
 };
 
 botInfo = function () {
-  var BotInfoComponent, DMChannelHandler, Parser, React, UserPopoutComponent, UserStore, cancels, css, defineBotInfoComponent, infoCache, log, request;
+  var BotInfoComponent, DI, ExternalLinkComponent, PrivateChannelActions, React, UserPopoutComponent, UserStore, cancels, css, defineBotInfoComponent, getUserPopoutComponent, infoCache, log, request;
 
   class botInfo {
     getName() {
@@ -23,13 +23,13 @@ botInfo = function () {
     }
 
     getVersion() {
-      return "1.0.0";
+      return "1.0.1";
     }
 
     load() {}
 
     async start() {
-      var DI, Filters, ReactComponents, Renderer, WebpackModules, minDI;
+      var Filters, Renderer, WebpackModules, minDI;
       cancels = [];
       DI = window.DiscordInternals;
       minDI = "1.6";
@@ -42,29 +42,25 @@ botInfo = function () {
         log(`DiscordInternals ${minDI} or higher not found. Update recommended! (https://git.io/v7Sfp)`);
       }
       BdApi.injectCSS("bot-info", css);
-      ({ Filters, ReactComponents, Renderer, React, WebpackModules } = DI);
+      ({ Filters, Renderer, React, WebpackModules } = DI);
       if (BotInfoComponent == null) {
         defineBotInfoComponent();
       }
       if (UserPopoutComponent == null) {
-        UserPopoutComponent = await ReactComponents.setName("UserPopout", Filters.byCode(/\.default\.userPopout/, function (c) {
-          var ref;
-          return (ref = c.prototype) != null ? ref.render : void 0;
-        }));
-      }
-      //UserModalHandler = WebpackModules.findByUniqueProperties ["open", "close", "fetchMutualFriends"]
-      if (Parser == null) {
-        Parser = WebpackModules.findByUniqueProperties(["createRules", "parserFor"]);
+        UserPopoutComponent = await getUserPopoutComponent();
       }
       if (UserStore == null) {
         UserStore = WebpackModules.findByUniqueProperties(["getUser", "getCurrentUser"]);
       }
-      if (DMChannelHandler == null) {
-        DMChannelHandler = WebpackModules.findByUniqueProperties(["openPrivateChannel", "ensurePrivateChannel"]);
+      if (PrivateChannelActions == null) {
+        PrivateChannelActions = WebpackModules.findByUniqueProperties(["openPrivateChannel", "ensurePrivateChannel"]);
+      }
+      if (ExternalLinkComponent == null) {
+        ExternalLinkComponent = WebpackModules.find(Filters.byCode(/\.trusted\b/));
       }
       cancels.push(Renderer.patchRender(UserPopoutComponent, [{
         selector: {
-          className: "body-3rkFrF"
+          className: "body-3ljq11"
         },
         method: "prepend",
         content: function (_this) {
@@ -84,7 +80,7 @@ botInfo = function () {
 
   };
 
-  UserPopoutComponent = Parser = UserStore = DMChannelHandler = cancels = BotInfoComponent = React = null;
+  UserPopoutComponent = UserStore = PrivateChannelActions = cancels = BotInfoComponent = ExternalLinkComponent = React = DI = null;
 
   infoCache = {};
 
@@ -92,6 +88,34 @@ botInfo = function () {
 
   log = function (msg) {
     console.log(msg);
+  };
+
+  getUserPopoutComponent = function () {
+    return new Promise(function (resolve) {
+      var observer;
+      observer = new MutationObserver(function ([{ addedNodes }]) {
+        var component, firstChild, j, len, ref, userPopout;
+        for (j = 0, len = addedNodes.length; j < len; j++) {
+          ({ firstChild } = addedNodes[j]);
+          if (!(firstChild != null ? (ref = firstChild.classList) != null ? ref.contains("userPopout-11hFKo") : void 0 : void 0)) {
+            continue;
+          }
+          userPopout = firstChild;
+          break;
+        }
+        if (userPopout != null) {
+          observer.disconnect();
+          component = DI.getInternalInstance(userPopout).return.stateNode.constructor;
+          if (component.displayName == null) {
+            component.displayName = "UserPopout";
+          }
+          resolve(component);
+        }
+      });
+      observer.observe(document.querySelector("#app-mount > .popouts"), {
+        childList: true
+      });
+    });
   };
 
   defineBotInfoComponent = function () {
@@ -134,15 +158,14 @@ botInfo = function () {
           if (!bot || infoCache[id] != null) {
             return;
           }
-          // await get botinfo
-          info = await new Promise(function (c, r) {
+          info = await new Promise(function (resolve) {
             return request(`https://discordbots.org/api/bots/${id}`, function (e, { statusCode }, msg) {
               if (e) {
-                return c({
+                return resolve({
                   error: e
                 });
               }
-              return c(function () {
+              return resolve(function () {
                 try {
                   return JSON.parse(statusCode === 200 || statusCode === 404 ? msg : void 0);
                 } catch (error) {
@@ -173,7 +196,7 @@ botInfo = function () {
             { className: "botInfo" },
             React.createElement(
               "div",
-              { className: "botInfo-inner bodyTitle-yehI7c marginBottom8-1mABJ4 size12-1IGJl9 weightBold-2qbcng" },
+              { className: "botInfo-inner bodyTitle-18hsd9 marginBottom8-1mABJ4 size12-1IGJl9 weightBold-2qbcng" },
               "Bot Info"
             ),
             React.createElement(
@@ -196,19 +219,7 @@ botInfo = function () {
                 "div",
                 { className: "desc", onClick: this.handleOnClick },
                 info.longdesc
-              ), info.invite && React.createElement(
-                "a",
-                Object.assign({ className: "invite", key: "invite", href: info.invite }, defaultLinkProps),
-                "Invite"
-              ), info.github && React.createElement(
-                "a",
-                Object.assign({ className: "github", key: "github", href: info.gitub }, defaultLinkProps),
-                "Github"
-              ), info.website && React.createElement(
-                "a",
-                Object.assign({ className: "website", key: "website", href: info.website }, defaultLinkProps),
-                "Website"
-              ), ((ref = info.owners) != null ? ref.length : void 0) && React.createElement(
+              ), info.invite && React.createElement(ExternalLinkComponent, { className: "invite", key: "invite", href: info.invite, title: "Invite" }), info.github && React.createElement(ExternalLinkComponent, { className: "github", key: "github", href: info.github, title: "Github" }), info.website && React.createElement(ExternalLinkComponent, { className: "website", key: "website", href: info.website, title: "Website" }), ((ref = info.owners) != null ? ref.length : void 0) && React.createElement(
                 "div",
                 { className: "owners" },
                 `Owner${info.owners.length > 1 ? "s" : ""}: `,
@@ -221,7 +232,7 @@ botInfo = function () {
                 `Error: ${(ref1 = info != null ? info.error : void 0) != null ? ref1 : "unknown"} `,
                 React.createElement(
                   "button",
-                  { type: "button", className: "member-role member-role-add", onClick: this.retry },
+                  { type: "button", className: "addButton-3RuTE0 weightMedium-13x9Y8", onClick: this.retry },
                   "Retry"
                 )
               )
@@ -255,14 +266,14 @@ botInfo = function () {
           async componentWillMount() {
             var username;
             if (this.state.username == null) {
-              username = await new Promise((c, r) => {
+              username = await new Promise(resolve => {
                 return request(`https://discordbots.org/api/users/${this.props.userId}`, (e, { statusCode }, msg) => {
                   if (statusCode === 200) {
                     try {
-                      return c(JSON.parse(msg).username);
+                      return resolve(JSON.parse(msg).username);
                     } catch (error) {}
                   }
-                  return c(`<@!${this.props.userId}>`);
+                  return resolve(`<@!${this.props.userId}>`);
                 });
               });
               this.setState({ username });
@@ -286,22 +297,20 @@ botInfo = function () {
         handleOnClick = async function (id, e) {
           var ownId;
           e.stopPropagation();
-          //UserModalHandler.open id
           ownId = UserStore.getCurrentUser().id;
           try {
-            // await DMChannelHandler.ensurePrivateChannel ownId, id
-            await DMChannelHandler.openPrivateChannel(ownId, id);
+            await PrivateChannelActions.openPrivateChannel(ownId, id);
           } catch (error) {}
         };
 
         return FakeMentionComponent;
-      }();
+      }.call(this);
 
       return BotInfoComponent;
-    }();
+    }.call(this);
   };
 
-  css = ".botInfo {\n  color: #99aab5;\n  font-size: 13px;\n}\n.theme-dark .botInfo {\n  color: #b9bbbe;\n}\n.botInfo .desc {\n  cursor: pointer;\n}\n.botInfo .more {\n  margin-left: 4px;\n  opacity: 0.5;\n}\n.botInfo a {\n  color: #00b0f4;\n  margin-right: 4px;\n}\n.theme-dark .botInfo a {\n  color: #0096cf;\n}\n.botInfo button {\n  background-color: #f3f3f3;\n  border: 1px solid #dbdde1;\n  border-radius: 3px;\n  color: #737f8d;\n  font-size: 12px;\n}\n.theme-dark .botInfo button {\n  background-color: #2f3136;\n  border-color: #72767d;\n  color: #b9bbbe;\n}";
+  css = ".botInfo {\n  color: #99aab5;\n  font-size: 13px;\n}\n.theme-dark .botInfo {\n  color: #b9bbbe;\n}\n.botInfo .desc {\n  cursor: pointer;\n}\n.botInfo .more {\n  margin-left: 4px;\n  opacity: 0.5;\n}\n.botInfo a {\n  color: #00b0f4;\n  margin-right: 4px;\n}\n.theme-dark .botInfo a {\n  color: #0096cf;\n}\n.botInfo button {\n  background-color: transparent;\n  border: 1px solid #dbdde1;\n  border-radius: 3px;\n  color: #737f8d;\n  font-size: 12px;\n  line-height: 12px;\n}\n.theme-dark .botInfo button {\n  border-color: #72767d;\n  color: #b9bbbe;\n}";
 
   return botInfo;
-}();
+}.call(this);

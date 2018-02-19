@@ -4,11 +4,11 @@ class botInfo
   getName: -> "Bot Info"
   getDescription: -> "Shows bots' infos from `discordbots.org`. Depends on samogot's Discord Internals Library: https://git.io/v7Sfp"
   getAuthor: -> "square"
-  getVersion: -> "1.0.0"
+  getVersion: -> "1.0.1"
 
   load: ->
 
-  UserPopoutComponent = Parser = UserStore = DMChannelHandler = cancels = BotInfoComponent = React = null
+  UserPopoutComponent = UserStore = PrivateChannelActions = cancels = BotInfoComponent = ExternalLinkComponent = React = DI = null
 
   infoCache = {}
 
@@ -29,18 +29,17 @@ class botInfo
 
     BdApi.injectCSS "bot-info", css
 
-    {Filters, ReactComponents, Renderer, React, WebpackModules} = DI
+    {Filters, Renderer, React, WebpackModules} = DI
     defineBotInfoComponent() if not BotInfoComponent?
 
-    UserPopoutComponent ?= await ReactComponents.setName "UserPopout", Filters.byCode /\.default\.userPopout/, (c) -> c::?.render
+    UserPopoutComponent ?= await getUserPopoutComponent()
 
-    #UserModalHandler = WebpackModules.findByUniqueProperties ["open", "close", "fetchMutualFriends"]
-    Parser ?= WebpackModules.findByUniqueProperties ["createRules", "parserFor"]
     UserStore ?= WebpackModules.findByUniqueProperties ["getUser", "getCurrentUser"]
-    DMChannelHandler ?= WebpackModules.findByUniqueProperties ["openPrivateChannel", "ensurePrivateChannel"]
+    PrivateChannelActions ?= WebpackModules.findByUniqueProperties ["openPrivateChannel", "ensurePrivateChannel"]
+    ExternalLinkComponent ?= WebpackModules.find Filters.byCode /\.trusted\b/
 
     cancels.push Renderer.patchRender UserPopoutComponent, [
-      selector: className: "body-3rkFrF"
+      selector: className: "body-3ljq11"
       method: "prepend"
       content: (_this) -> <BotInfoComponent user={_this.props.user} />
     ]
@@ -49,11 +48,23 @@ class botInfo
 
   stop: ->
     BdApi.clearCSS "bot-info"
-    do c for c in cancels
+    c() for c in cancels
     return
 
   log = (msg) ->
     console.log msg
+    return
+
+  getUserPopoutComponent = -> new Promise (resolve) ->
+    observer = new MutationObserver ([{addedNodes}]) ->
+      (userPopout = firstChild; break) for {firstChild} in addedNodes when firstChild?.classList?.contains "userPopout-11hFKo"
+      if userPopout?
+        observer.disconnect()
+        component = DI.getInternalInstance(userPopout).return.stateNode.constructor
+        component.displayName ?= "UserPopout"
+        resolve component
+      return
+    observer.observe document.querySelector("#app-mount > .popouts"), childList: true
     return
 
   defineBotInfoComponent = ->
@@ -83,10 +94,9 @@ class botInfo
       componentWillMount: ->
         {bot, id} = @props.user
         return if not bot or infoCache[id]?
-        # await get botinfo
-        info = await new Promise (c, r) -> request "https://discordbots.org/api/bots/#{id}", (e, {statusCode}, msg) ->
-          return c error: e if e
-          return c try JSON.parse (msg if statusCode is 200 or statusCode is 404) \
+        info = await new Promise (resolve) -> request "https://discordbots.org/api/bots/#{id}", (e, {statusCode}, msg) ->
+          return resolve error: e if e
+          return resolve try JSON.parse (msg if statusCode is 200 or statusCode is 404) \
             catch e then error: e
         infoCache[id] = info
         @setState loading: false
@@ -100,7 +110,7 @@ class botInfo
         {loading, collapsed} = @state
 
         (<div className="botInfo">
-          <div className="botInfo-inner bodyTitle-yehI7c marginBottom8-1mABJ4 size12-1IGJl9 weightBold-2qbcng">Bot Info</div>
+          <div className="botInfo-inner bodyTitle-18hsd9 marginBottom8-1mABJ4 size12-1IGJl9 weightBold-2qbcng">Bot Info</div>
           <div className="botInfo-inner endBodySection-1WYzxu marginBottom20-2Ifj-2">
             {if loading
               <span className="loading">loading...</span>
@@ -113,17 +123,11 @@ class botInfo
               else [
                 <div className="desc" onClick={@handleOnClick}>{info.longdesc}</div>
 
-                info.invite and <a className="invite" key="invite" href={info.invite} {defaultLinkProps...}>
-                  Invite
-                </a>
+                info.invite and <ExternalLinkComponent className="invite" key="invite" href={info.invite} title="Invite"/>
 
-                info.github and <a className="github" key="github" href={info.gitub} {defaultLinkProps...}>
-                  Github
-                </a>
+                info.github and <ExternalLinkComponent className="github" key="github" href={info.github} title="Github"/>
 
-                info.website and <a className="website" key="website" href={info.website} {defaultLinkProps...}>
-                  Website
-                </a>
+                info.website and <ExternalLinkComponent className="website" key="website" href={info.website} title="Website"/>
 
                 info.owners?.length and <div className="owners">
                   {"Owner#{if info.owners.length > 1 then "s" else ""}: "}
@@ -136,7 +140,7 @@ class botInfo
             else
               <div className="error">
                 {"Error: #{info?.error ? "unknown"} "}
-                <button type="button" className="member-role member-role-add" onClick={@retry}>Retry</button>
+                <button type="button" className="addButton-3RuTE0 weightMedium-13x9Y8" onClick={@retry}>Retry</button>
               </div>
             }
           </div>
@@ -153,19 +157,16 @@ class botInfo
 
         handleOnClick = (id, e) ->
           e.stopPropagation()
-          #UserModalHandler.open id
           ownId = UserStore.getCurrentUser().id
-          try
-            # await DMChannelHandler.ensurePrivateChannel ownId, id
-            await DMChannelHandler.openPrivateChannel ownId, id
+          try await PrivateChannelActions.openPrivateChannel ownId, id
           return
 
         componentWillMount: ->
           if !@state.username?
-            username = await new Promise (c, r) => request "https://discordbots.org/api/users/#{@props.userId}", (e, {statusCode}, msg) =>
+            username = await new Promise (resolve) => request "https://discordbots.org/api/users/#{@props.userId}", (e, {statusCode}, msg) =>
               if statusCode is 200
-                try return c JSON.parse(msg).username
-              return c "<@!#{@props.userId}>"
+                try return resolve JSON.parse(msg).username
+              return resolve "<@!#{@props.userId}>"
             @setState {username}
             usernames[@props.userId] = username
           return
@@ -201,14 +202,14 @@ class botInfo
       color: #0096cf;
     }
     .botInfo button {
-      background-color: #f3f3f3;
+      background-color: transparent;
       border: 1px solid #dbdde1;
       border-radius: 3px;
       color: #737f8d;
       font-size: 12px;
+      line-height: 12px;
     }
     .theme-dark .botInfo button {
-      background-color: #2f3136;
       border-color: #72767d;
       color: #b9bbbe;
     }
