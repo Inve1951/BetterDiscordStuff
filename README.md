@@ -20,10 +20,10 @@ available source files:
 
     Live-updates your themes and plugins. Especially useful during development.
 
-  **[Direct-Download](plugins/directDownload.plugin.js)** _alpha version_
+  **[Direct-Download](plugins/directDownload.plugin.js)**
 
     Download attached files directly within discord.
-    New: download and install themes and plugins from `betterdiscord.net` links.
+    Optionally installs themes and plugins from `betterdiscord.net` links.
 
   **[Force-Close](plugins/forceClose.plugin.js)**
 
@@ -76,7 +76,7 @@ available source files:
 
   **[Bot Info](plugins/botInfo.plugin.js)**
 
-    Shows bots' infos from `discordbots.org`.
+    Shows bots' infos from `discordbots.org` in user popouts.
     Depends on samogot's Discord Internals Library, so install that too. (https://github.com/samogot/betterdiscord-plugins/blob/master/v1/1lib_discord_internals.plugin.js)
 
   **[Local File Server](plugins/localFileServer.plugin.js)**
@@ -103,7 +103,7 @@ available source files:
   **[Drag-Fix](themes/dragfix.theme.css)** _mini-theme_
 
     Makes it way easier to move the window.
-    Obsolete since the titlebar update but still useful together with the old-titlebar plugin (https://github.com/mwittrien/BetterDiscordAddons/tree/master/Plugins/OldTitleBar)
+    Obsolete since discord's titlebar update.
 
   **[Show-URLs](/themes/showURLs.theme.css)** _mini-theme_
 

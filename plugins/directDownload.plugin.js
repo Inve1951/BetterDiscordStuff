@@ -18,7 +18,7 @@ directDownload = function () {
     }
 
     getVersion() {
-      return "0.3.5-alpha";
+      return "0.3.6";
     }
 
     start() {
@@ -159,7 +159,8 @@ directDownload = function () {
     attachment: "attachment-1Vom9D",
     iconFile: "icon-3cn2VC",
     imageWrapper: "imageWrapper-38T7d9",
-    lfg: "lfg-3xoFkI"
+    lfg: "lfg-3xoFkI",
+    metadataDownload: "metadataDownload-1eyTml"
   };
 
   installCss = function () {
@@ -257,13 +258,12 @@ directDownload = function () {
     if (ev.target.nodeName === "A" && ev.target.href.startsWith("https://betterdiscord.net/ghdl?")) {
       ok = true;
       elem = ev.target;
-    }
-    if (!ok) {
+    } else {
       ref = ev.path;
       for (i = 0, len = ref.length; i < len; i++) {
         elem = ref[i];
         if (elem.classList) {
-          if (settings.imagemodals && elem.classList.contains(classNames.imageWrapper) && !elem.parentNode.classList.contains("accessory") || elem.classList.contains(classNames.attachment) && elem.querySelector(`.${classNames.iconFile}`) != null) {
+          if (settings.imagemodals && elem.classList.contains(classNames.imageWrapper) && !elem.parentNode.matches(".accessory, .embed") || elem.classList.contains(classNames.attachment) && elem.querySelector(`.${classNames.iconFile}`) != null || elem.classList.contains(classNames.metadataDownload)) {
             ok = true;
             break;
           }
@@ -274,8 +274,8 @@ directDownload = function () {
       return;
     }
     new Download(elem);
-    event.preventDefault();
-    event.stopImmediatePropagation();
+    ev.preventDefault();
+    ev.stopImmediatePropagation();
     return false;
   };
 
@@ -307,7 +307,7 @@ directDownload = function () {
   Download = function () {
     class Download {
       constructor(...args) {
-        var a;
+        var a, att, ref;
         this.filename = this.filepath = this.url = "";
         this.filesize = this.bufpos = 0;
         this.buffer = this.elem = this.pb = this.att = this.buffers = null;
@@ -324,20 +324,7 @@ directDownload = function () {
           this.filepath = args[1].path;
           this.url = args[1].url;
           this.filename = path.basename(this.filepath);
-          this.isImage = function () {
-            switch (path.extname(this.filename)) {
-              case ".jpg":
-              case ".jpeg":
-              case ".png":
-              case ".webp":
-              case ".gif":
-              case ".bmp":
-              case ".ico":
-                return true; // copying to clipboard will silently fail for _unsupported_ formats
-              default:
-                return false;
-            }
-          }.call(this);
+          this.isImage = (ref = path.extname(this.filename)) === ".jpg" || ref === ".jpeg" || ref === ".png" || ref === ".webp" || ref === ".gif" || ref === ".bmp" || ref === ".ico"; // copying to clipboard will silently fail for _unsupported_ formats
           this.copyWhenFinished = this.isImage && settings.copyimages;
           return;
         }
@@ -345,11 +332,18 @@ directDownload = function () {
         if (settings.imagemodals && this.att.classList.contains(classNames.imageWrapper)) {
           this.copyWhenFinished = settings.copyimages;
           this.isImage = true;
-          this.att = this.att.parentNode.lastChild.querySelector("a");
-          this.url = this.att.href;
+          if (att = this.att.querySelector("video")) {
+            this.att = att;
+            this.url = this.att.src;
+          } else {
+            this.att = this.att.parentNode.lastChild.querySelector("a");
+            this.url = this.att.href;
+          }
           this.filename = path.basename(this.url.split("/").pop());
         } else {
-          a = this.att.nodeName === "A" ? this.att : this.att.querySelector("a");
+          if (!(a = this.att.nodeName === "A" ? this.att : this.att.querySelector("a"))) {
+            return;
+          }
           this.install = a === this.att && settings.itp;
           this.url = a.href;
           this.filename = path.basename(a.title || a.innerHTML);
@@ -357,13 +351,13 @@ directDownload = function () {
         cache.get(this.url, dl => {
           if (dl != null) {
             cache.verify(dl.url, valid => {
-              var ref;
+              var ref1;
               if (valid) {
                 // then restore tab
                 dl.openWhenFinished = settings.autoopen;
                 dl.showinstead = settings.showinstead;
                 dl.copyWhenFinished = dl.isImage && settings.copyimages;
-                if (!((ref = dl.elem) != null ? ref.inDOM : void 0)) {
+                if (!((ref1 = dl.elem) != null ? ref1.inDOM : void 0)) {
                   dl.start(false);
                 }
                 dl.finish(false);
@@ -394,7 +388,7 @@ directDownload = function () {
             return;
           }
           if (!path.extname(this.filename)) {
-            this.filename = path.basename(res.headers["content-disposition"].split("filename=")[1]);
+            this.filename = res.headers["content-disposition"] ? path.basename(res.headers["content-disposition"].split("filename=")[1]) : void 0;
             if (!this.prompt) {
               this.filepath = path.join(settings.dldir, this.filename);
             }
@@ -584,7 +578,7 @@ directDownload = function () {
     Download.css = `#files_directDownload {\n  position: absolute;\n  bottom: 0;\n  width: 100%;\n  height: 25px;\n  overflow: hidden;\n  font-size: 0;\n}\n#files_directDownload.empty {\n  display: none;\n}\n#files_directDownload .file {\n  height: 100%;\n  width: 200px;\n  min-width: 50px;\n  max-width: calc((100% + 2px) / var(--numFiles) - 2px);\n  background: rgba(128,128,128,0.2);\n  display: inline-block;\n  margin-left: 2px;\n  box-shadow: inset 0 0 10px rgba(0,0,0,0.3);\n  border: 1px solid rgba(128,128,128,0.2);\n  border-bottom: none;\n  box-sizing: border-box;\n  position: relative;\n  cursor: pointer;\n}\n#files_directDownload .file:first-of-type {\n  border-top-left-radius: 4px;\n  margin: 0;\n}\n#files_directDownload .file:last-of-type {\n  border-top-right-radius: 4px;\n}\n#files_directDownload .file.will-open {\n  background: rgba(128,128,128,0.4);\n}\n#files_directDownload span {\n  width: calc(100% + 2px);\n  overflow: hidden;\n  text-overflow: ellipsis;\n  color: #87909C;\n  /*display: inline-block;*/\n  position: absolute;\n  left: -1px;\n  top: -1px;\n  font-size: 14px;\n  line-height: 23px;\n  padding: 0 18px 0 4px;\n  box-sizing: border-box;\n}\n#files_directDownload .file .progress-bar {\n  position:absolute;\n  height: 2px;\n  bottom: 0;\n  left: -1px;\n  background: rgb(32,196,64);\n}\n#files_directDownload .file.failed .progress-bar {\n  background: rgb(196,64,32);\n  min-width: calc(100% + 2px);\n}\n#files_directDownload .file.done .progress-bar {\n  min-width: calc(100% + 2px);\n}\n#files_directDownload .file svg {\n  fill: rgba(0,0,0,0.5);\n  position: absolute;\n  top: -1px;\n  right: -1px;\n  height: 23px;\n  width: 23px;\n}\n\n#friends {\n  position: relative;\n}\n\n.${classNames.attachment} {\n  cursor: pointer;\n}`;
 
     return Download;
-  }();
+  }.call(this);
 
   // Download
   cache = new (function () {
@@ -726,7 +720,7 @@ directDownload = function () {
     };
 
     return _Class;
-  }())();
+  }.call(this))();
 
   // cache
   _fr = {
@@ -901,6 +895,6 @@ directDownload = function () {
   }(_fr.exports, _fr));
 
   return directDownload;
-}();
+}.call(this);
 
 window.directDownload = directDownload;
