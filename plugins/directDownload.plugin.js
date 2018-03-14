@@ -18,7 +18,7 @@ directDownload = function () {
     }
 
     getVersion() {
-      return "0.3.6";
+      return "0.3.7";
     }
 
     start() {
@@ -160,7 +160,9 @@ directDownload = function () {
     iconFile: "icon-3cn2VC",
     imageWrapper: "imageWrapper-38T7d9",
     lfg: "lfg-3xoFkI",
-    metadataDownload: "metadataDownload-1eyTml"
+    metadataDownload: "metadataDownload-1eyTml",
+    embedVideo: "embedVideo-3EiCm6",
+    videoControls: "controls-2g-WJ6"
   };
 
   installCss = function () {
@@ -262,17 +264,22 @@ directDownload = function () {
       ref = ev.path;
       for (i = 0, len = ref.length; i < len; i++) {
         elem = ref[i];
-        if (elem.classList) {
-          if (settings.imagemodals && elem.classList.contains(classNames.imageWrapper) && !elem.parentNode.matches(".accessory, .embed") || elem.classList.contains(classNames.attachment) && elem.querySelector(`.${classNames.iconFile}`) != null || elem.classList.contains(classNames.metadataDownload)) {
-            ok = true;
-            break;
-          }
+        if (!elem.classList) {
+          continue;
+        }
+        if (elem.nodeName === "svg" && "Play" === elem.getAttribute("name") || elem.classList.contains(classNames.videoControls)) {
+          break;
+        }
+        if (settings.imagemodals && elem.classList.contains(classNames.imageWrapper) && !elem.parentNode.matches(".accessory, .embed") || elem.classList.contains(classNames.attachment) && elem.querySelector(`.${classNames.iconFile}`) != null || elem.classList.contains(classNames.metadataDownload)) {
+          ok = true;
+          break;
         }
       }
     }
     if (!ok) {
       return;
     }
+    elem.parentNode.classList.contains(classNames.embedVideo) && (elem = elem.querySelector("video"));
     new Download(elem);
     ev.preventDefault();
     ev.stopImmediatePropagation();
@@ -328,7 +335,7 @@ directDownload = function () {
           this.copyWhenFinished = this.isImage && settings.copyimages;
           return;
         }
-        this.att = args[0];
+        [this.att] = args;
         if (settings.imagemodals && this.att.classList.contains(classNames.imageWrapper)) {
           this.copyWhenFinished = settings.copyimages;
           this.isImage = true;
@@ -340,6 +347,9 @@ directDownload = function () {
             this.url = this.att.href;
           }
           this.filename = path.basename(this.url.split("/").pop());
+        } else if ("VIDEO" === this.att.nodeName) {
+          this.url = this.att.querySelector("source").src;
+          this.filename = path.basename(this.url.split("/").pop());
         } else {
           if (!(a = this.att.nodeName === "A" ? this.att : this.att.querySelector("a"))) {
             return;
@@ -347,6 +357,9 @@ directDownload = function () {
           this.install = a === this.att && settings.itp;
           this.url = a.href;
           this.filename = path.basename(a.title || a.innerHTML);
+        }
+        if (!this.url) {
+          throw new Error("DirectDownload: couldn't get url.");
         }
         cache.get(this.url, dl => {
           if (dl != null) {
@@ -388,7 +401,7 @@ directDownload = function () {
             return;
           }
           if (!path.extname(this.filename)) {
-            this.filename = res.headers["content-disposition"] ? path.basename(res.headers["content-disposition"].split("filename=")[1]) : void 0;
+            this.filename = res.headers["content-disposition"] ? path.basename(res.headers["content-disposition"].split("filename=")[1]) : "to.do"; //TODO
             if (!this.prompt) {
               this.filepath = path.join(settings.dldir, this.filename);
             }
