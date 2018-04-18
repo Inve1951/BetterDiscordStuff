@@ -23,7 +23,7 @@ botInfo = function () {
     }
 
     getVersion() {
-      return "1.0.1";
+      return "1.0.2";
     }
 
     load() {}
@@ -112,7 +112,7 @@ botInfo = function () {
           resolve(component);
         }
       });
-      observer.observe(document.querySelector("#app-mount > .popouts"), {
+      observer.observe(document.querySelector("#app-mount > .popouts-1TN9u9"), {
         childList: true
       });
     });

@@ -4,7 +4,7 @@ class botInfo
   getName: -> "Bot Info"
   getDescription: -> "Shows bots' infos from `discordbots.org`. Depends on samogot's Discord Internals Library: https://git.io/v7Sfp"
   getAuthor: -> "square"
-  getVersion: -> "1.0.1"
+  getVersion: -> "1.0.2"
 
   load: ->
 
@@ -57,14 +57,16 @@ class botInfo
 
   getUserPopoutComponent = -> new Promise (resolve) ->
     observer = new MutationObserver ([{addedNodes}]) ->
-      (userPopout = firstChild; break) for {firstChild} in addedNodes when firstChild?.classList?.contains "userPopout-11hFKo"
+      for {firstChild} in addedNodes when firstChild?.classList?.contains "userPopout-11hFKo"
+        userPopout = firstChild
+        break
       if userPopout?
         observer.disconnect()
         component = DI.getInternalInstance(userPopout).return.stateNode.constructor
         component.displayName ?= "UserPopout"
         resolve component
       return
-    observer.observe document.querySelector("#app-mount > .popouts"), childList: true
+    observer.observe document.querySelector("#app-mount > .popouts-1TN9u9"), childList: true
     return
 
   defineBotInfoComponent = ->
