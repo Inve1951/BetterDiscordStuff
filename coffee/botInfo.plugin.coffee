@@ -4,7 +4,7 @@ class botInfo
   getName: -> "Bot Info"
   getDescription: -> "Shows bots' infos from `discordbots.org`. Depends on samogot's Discord Internals Library: https://git.io/v7Sfp"
   getAuthor: -> "square"
-  getVersion: -> "1.0.2"
+  getVersion: -> "1.0.3"
 
   load: ->
 
@@ -39,7 +39,7 @@ class botInfo
     ExternalLinkComponent ?= WebpackModules.find Filters.byCode /\.trusted\b/
 
     cancels.push Renderer.patchRender UserPopoutComponent, [
-      selector: className: "body-3ljq11"
+      selector: className: "body-3iLsc4"
       method: "prepend"
       content: (_this) -> <BotInfoComponent user={_this.props.user} />
     ]
@@ -57,7 +57,7 @@ class botInfo
 
   getUserPopoutComponent = -> new Promise (resolve) ->
     observer = new MutationObserver ([{addedNodes}]) ->
-      for {firstChild} in addedNodes when firstChild?.classList?.contains "userPopout-11hFKo"
+      for {firstChild} in addedNodes when firstChild?.classList?.contains "userPopout-3XzG_A"
         userPopout = firstChild
         break
       if userPopout?
@@ -66,7 +66,7 @@ class botInfo
         component.displayName ?= "UserPopout"
         resolve component
       return
-    observer.observe document.querySelector("#app-mount > .popouts-1TN9u9"), childList: true
+    observer.observe document.querySelector("#app-mount > .popouts-3dRSmE"), childList: true
     return
 
   defineBotInfoComponent = ->
@@ -112,8 +112,8 @@ class botInfo
         {loading, collapsed} = @state
 
         (<div className="botInfo">
-          <div className="botInfo-inner bodyTitle-18hsd9 marginBottom8-1mABJ4 size12-1IGJl9 weightBold-2qbcng">Bot Info</div>
-          <div className="botInfo-inner endBodySection-1WYzxu marginBottom20-2Ifj-2">
+          <div className="botInfo-inner bodyTitle-Y0qMQz marginBottom8-AtZOdT size12-3R0845 weightBold-2yjlgw">Bot Info</div>
+          <div className="botInfo-inner endBodySection-Rf4s-7 marginBottom20-32qID7">
             {if loading
               <span className="loading">loading...</span>
             else if info? and not info.error?
@@ -142,7 +142,7 @@ class botInfo
             else
               <div className="error">
                 {"Error: #{info?.error ? "unknown"} "}
-                <button type="button" className="addButton-3RuTE0 weightMedium-13x9Y8" onClick={@retry}>Retry</button>
+                <button type="button" className="addButton-pcyyf6 weightMedium-2iZe9B" onClick={@retry}>Retry</button>
               </div>
             }
           </div>

@@ -23,7 +23,7 @@ botInfo = function () {
     }
 
     getVersion() {
-      return "1.0.2";
+      return "1.0.3";
     }
 
     load() {}
@@ -60,7 +60,7 @@ botInfo = function () {
       }
       cancels.push(Renderer.patchRender(UserPopoutComponent, [{
         selector: {
-          className: "body-3ljq11"
+          className: "body-3iLsc4"
         },
         method: "prepend",
         content: function (_this) {
@@ -97,7 +97,7 @@ botInfo = function () {
         var component, firstChild, j, len, ref, userPopout;
         for (j = 0, len = addedNodes.length; j < len; j++) {
           ({ firstChild } = addedNodes[j]);
-          if (!(firstChild != null ? (ref = firstChild.classList) != null ? ref.contains("userPopout-11hFKo") : void 0 : void 0)) {
+          if (!(firstChild != null ? (ref = firstChild.classList) != null ? ref.contains("userPopout-3XzG_A") : void 0 : void 0)) {
             continue;
           }
           userPopout = firstChild;
@@ -112,7 +112,7 @@ botInfo = function () {
           resolve(component);
         }
       });
-      observer.observe(document.querySelector("#app-mount > .popouts-1TN9u9"), {
+      observer.observe(document.querySelector("#app-mount > .popouts-3dRSmE"), {
         childList: true
       });
     });
@@ -196,12 +196,12 @@ botInfo = function () {
             { className: "botInfo" },
             React.createElement(
               "div",
-              { className: "botInfo-inner bodyTitle-18hsd9 marginBottom8-1mABJ4 size12-1IGJl9 weightBold-2qbcng" },
+              { className: "botInfo-inner bodyTitle-Y0qMQz marginBottom8-AtZOdT size12-3R0845 weightBold-2yjlgw" },
               "Bot Info"
             ),
             React.createElement(
               "div",
-              { className: "botInfo-inner endBodySection-1WYzxu marginBottom20-2Ifj-2" },
+              { className: "botInfo-inner endBodySection-Rf4s-7 marginBottom20-32qID7" },
               loading ? React.createElement(
                 "span",
                 { className: "loading" },
@@ -232,7 +232,7 @@ botInfo = function () {
                 `Error: ${(ref1 = info != null ? info.error : void 0) != null ? ref1 : "unknown"} `,
                 React.createElement(
                   "button",
-                  { type: "button", className: "addButton-3RuTE0 weightMedium-13x9Y8", onClick: this.retry },
+                  { type: "button", className: "addButton-pcyyf6 weightMedium-2iZe9B", onClick: this.retry },
                   "Retry"
                 )
               )
