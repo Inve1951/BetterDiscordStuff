@@ -18,7 +18,7 @@ directDownload = function () {
     }
 
     getVersion() {
-      return "0.3.7";
+      return "0.3.8";
     }
 
     start() {
@@ -155,14 +155,14 @@ directDownload = function () {
   downloadbar = null;
 
   classNames = {
-    activity: "activityFeed-HeiGwL",
-    attachment: "attachment-1Vom9D",
-    iconFile: "icon-3cn2VC",
-    imageWrapper: "imageWrapper-38T7d9",
+    activity: "activityFeed-28jde9",
+    attachment: "attachment-33OFj0",
+    iconFile: "icon-1kp3fr",
+    imageWrapper: "imageWrapper-2p5ogY",
     lfg: "lfg-3xoFkI",
-    metadataDownload: "metadataDownload-1eyTml",
-    embedVideo: "embedVideo-3EiCm6",
-    videoControls: "controls-2g-WJ6"
+    metadataDownload: "metadataDownload-1fk90V",
+    embedVideo: "embedVideo-3nf0O9",
+    videoControls: "controls-N9e_UM"
   };
 
   installCss = function () {
@@ -179,10 +179,8 @@ directDownload = function () {
       downloadbar = document.createElement("div");
       downloadbar.id = "files_directDownload";
       downloadbar.style = "--numFiles:0;";
-      downloadbar.classList.add("empty");
-      downloadbar.setAttribute("deprecation-warning", ".empty will be removed in next version update, use :empty pseudo class instead");
     }
-    if (document.getElementById("files_directDownload") == null) {
+    if (!document.getElementById("files_directDownload")) {
       container = document.querySelector(`.chat .content > :first-child, #friends, .${classNames.activity}, .${classNames.lfg}`);
       try {
         container.appendChild(downloadbar);
@@ -583,12 +581,11 @@ directDownload = function () {
         var numFiles;
         numFiles = downloadbar.querySelectorAll(".file").length;
         downloadbar.style.setProperty("--numFiles", numFiles);
-        downloadbar.classList.toggle("empty", !numFiles);
       }
 
     };
 
-    Download.css = `#files_directDownload {\n  position: absolute;\n  bottom: 0;\n  width: 100%;\n  height: 25px;\n  overflow: hidden;\n  font-size: 0;\n}\n#files_directDownload.empty {\n  display: none;\n}\n#files_directDownload .file {\n  height: 100%;\n  width: 200px;\n  min-width: 50px;\n  max-width: calc((100% + 2px) / var(--numFiles) - 2px);\n  background: rgba(128,128,128,0.2);\n  display: inline-block;\n  margin-left: 2px;\n  box-shadow: inset 0 0 10px rgba(0,0,0,0.3);\n  border: 1px solid rgba(128,128,128,0.2);\n  border-bottom: none;\n  box-sizing: border-box;\n  position: relative;\n  cursor: pointer;\n}\n#files_directDownload .file:first-of-type {\n  border-top-left-radius: 4px;\n  margin: 0;\n}\n#files_directDownload .file:last-of-type {\n  border-top-right-radius: 4px;\n}\n#files_directDownload .file.will-open {\n  background: rgba(128,128,128,0.4);\n}\n#files_directDownload span {\n  width: calc(100% + 2px);\n  overflow: hidden;\n  text-overflow: ellipsis;\n  color: #87909C;\n  /*display: inline-block;*/\n  position: absolute;\n  left: -1px;\n  top: -1px;\n  font-size: 14px;\n  line-height: 23px;\n  padding: 0 18px 0 4px;\n  box-sizing: border-box;\n}\n#files_directDownload .file .progress-bar {\n  position:absolute;\n  height: 2px;\n  bottom: 0;\n  left: -1px;\n  background: rgb(32,196,64);\n}\n#files_directDownload .file.failed .progress-bar {\n  background: rgb(196,64,32);\n  min-width: calc(100% + 2px);\n}\n#files_directDownload .file.done .progress-bar {\n  min-width: calc(100% + 2px);\n}\n#files_directDownload .file svg {\n  fill: rgba(0,0,0,0.5);\n  position: absolute;\n  top: -1px;\n  right: -1px;\n  height: 23px;\n  width: 23px;\n}\n\n#friends {\n  position: relative;\n}\n\n.${classNames.attachment} {\n  cursor: pointer;\n}`;
+    Download.css = `#files_directDownload {\n  position: absolute;\n  bottom: 0;\n  width: 100%;\n  height: 25px;\n  overflow: hidden;\n  font-size: 0;\n}\n#files_directDownload:empty {\n  display: none;\n}\n#files_directDownload .file {\n  height: 100%;\n  width: 200px;\n  min-width: 50px;\n  max-width: calc((100% + 2px) / var(--numFiles) - 2px);\n  background: rgba(128,128,128,0.2);\n  display: inline-block;\n  margin-left: 2px;\n  box-shadow: inset 0 0 10px rgba(0,0,0,0.3);\n  border: 1px solid rgba(128,128,128,0.2);\n  border-bottom: none;\n  box-sizing: border-box;\n  position: relative;\n  cursor: pointer;\n}\n#files_directDownload .file:first-of-type {\n  border-top-left-radius: 4px;\n  margin: 0;\n}\n#files_directDownload .file:last-of-type {\n  border-top-right-radius: 4px;\n}\n#files_directDownload .file.will-open {\n  background: rgba(128,128,128,0.4);\n}\n#files_directDownload span {\n  width: calc(100% + 2px);\n  overflow: hidden;\n  text-overflow: ellipsis;\n  color: #87909C;\n  /*display: inline-block;*/\n  position: absolute;\n  left: -1px;\n  top: -1px;\n  font-size: 14px;\n  line-height: 23px;\n  padding: 0 18px 0 4px;\n  box-sizing: border-box;\n}\n#files_directDownload .file .progress-bar {\n  position:absolute;\n  height: 2px;\n  bottom: 0;\n  left: -1px;\n  background: rgb(32,196,64);\n}\n#files_directDownload .file.failed .progress-bar {\n  background: rgb(196,64,32);\n  min-width: calc(100% + 2px);\n}\n#files_directDownload .file.done .progress-bar {\n  min-width: calc(100% + 2px);\n}\n#files_directDownload .file svg {\n  fill: rgba(0,0,0,0.5);\n  position: absolute;\n  top: -1px;\n  right: -1px;\n  height: 23px;\n  width: 23px;\n}\n\n#friends {\n  position: relative;\n}\n\n.${classNames.attachment} {\n  cursor: pointer;\n}`;
 
     return Download;
   }.call(this);
