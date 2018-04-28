@@ -4,7 +4,7 @@ var channelHistory = (function(listener, bw, wc, backdrop, buttons, buttonsClone
   class channelHistory {
     getName(){ return "Channel History" }
     getDescription(){ return "Allows you to switch channels using mouse 4 & 5 or the added GUI buttons." }
-    getVersion(){ return "1.2.2" }
+    getVersion(){ return "1.2.3" }
     getAuthor(){ return "square" }
 
     start(){
@@ -37,7 +37,7 @@ var channelHistory = (function(listener, bw, wc, backdrop, buttons, buttonsClone
   listener = (ev, cmd) => {
     if (cmd !== 'browser-backward' && cmd !== 'browser-forward')
       return;
-    if (backdrop = document.querySelector(".backdrop-2ohBEd"))
+    if (backdrop = document.querySelector(".backdrop-1ocfXc"))
       backdrop.click();
     else if (cmd === 'browser-backward' && wc.canGoBack())
       wc.goBack();
@@ -61,11 +61,11 @@ var channelHistory = (function(listener, bw, wc, backdrop, buttons, buttonsClone
 
   attach = (branding, titlebar) => {
     try {
-      if (branding = document.querySelector(".wordmark-2L03Wr")) {
+      if (branding = document.querySelector(".wordmark-2iDDfm")) {
         branding.parentElement.insertBefore(buttons, branding.nextElementSibling);
       } else {
         // osx is *special*
-        titlebar = document.querySelector(".titleBar-3_fDwJ");
+        titlebar = document.querySelector(".titleBar-AC4pGV");
         titlebar.insertBefore(buttons, titlebar.firstChild);
       }
     } catch (err) { console.warn(err); }
@@ -73,7 +73,7 @@ var channelHistory = (function(listener, bw, wc, backdrop, buttons, buttonsClone
 
   attachClone = (channelName, after) => {
     try {
-      channelName = document.querySelector(".channelName-1G03vu") || (after = document.querySelector(".search-bar .search-bar-inner"));
+      channelName = document.querySelector(".channelName-3stJzi:not(.private-26pLvW)") || (after = document.querySelector(".search-bar .search-bar-inner"));
       channelName.parentElement.insertBefore(buttonsClone, after ? null : channelName);
     } catch (err) { console.warn(err); }
   }
