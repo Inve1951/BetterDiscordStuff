@@ -1,4 +1,4 @@
-/* //META { "name": "Horizontal_Serverlist", "description": "I've always wanted this :3", "author": "square", "version": "2.0.1-pre"} *//**/
+/* //META { "name": "Horizontal_Serverlist", "description": "I've always wanted this :3", "author": "square", "version": "2.0.2-pre"} *//**/
 
 :root {
   --height-titlebar: 22px;
@@ -8,12 +8,12 @@
 }
 
 
-.layers-20RVFW > .layer-kosS71:first-child > :first-child {
+.layers-3iHuyZ > .layer-3QrUeG:first-child > :first-child {
   flex-flow: row wrap;
   --height-serverlist: calc(70px * var(--guild-row-count) - 10px * (var(--guild-row-count) - 1));
 }
 
-.layers-20RVFW > .layer-kosS71:first-child > :first-child > * {
+.layers-3iHuyZ > .layer-3QrUeG:first-child > :first-child > * {
   flex: 1 100%;
 }
 
