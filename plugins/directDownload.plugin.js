@@ -18,7 +18,7 @@ directDownload = function () {
     }
 
     getVersion() {
-      return "0.3.8";
+      return "0.3.9";
     }
 
     start() {
@@ -162,7 +162,8 @@ directDownload = function () {
     lfg: "lfg-3xoFkI",
     metadataDownload: "metadataDownload-1fk90V",
     embedVideo: "embedVideo-3nf0O9",
-    videoControls: "controls-N9e_UM"
+    videoControls: "controls-N9e_UM",
+    webmControls: "videoControls-2kcYic"
   };
 
   installCss = function () {
@@ -265,7 +266,7 @@ directDownload = function () {
         if (!elem.classList) {
           continue;
         }
-        if (elem.nodeName === "svg" && "Play" === elem.getAttribute("name") || elem.classList.contains(classNames.videoControls)) {
+        if (elem.nodeName === "svg" && "Play" === elem.getAttribute("name") || elem.classList.contains(classNames.videoControls) || elem.classList.contains(classNames.webmControls)) {
           break;
         }
         if (settings.imagemodals && elem.classList.contains(classNames.imageWrapper) && !elem.parentNode.matches(".accessory, .embed") || elem.classList.contains(classNames.attachment) && elem.querySelector(`.${classNames.iconFile}`) != null || elem.classList.contains(classNames.metadataDownload)) {
