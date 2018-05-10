@@ -2,7 +2,7 @@
 var localFileServer;
 
 localFileServer = function () {
-  var app, assertMainProcJsPatch, bw, dialog, favicon, findPatchRelaunch, fn, fs, fs2, func, getSettings, https, i, isImage, len, onRequest, path, pfx, ref, remote, server, settings, shell, startServer, stopServer, url;
+  var app, assertMainProcJsPatch, bw, dialog, favicon, findPatchRelaunch, fs, fs2, func, getSettings, https, i, isImage, len, onRequest, path, pfx, ref, remote, server, settings, shell, startServer, stopServer, url;
 
   class localFileServer {
     getName() {
@@ -18,7 +18,7 @@ localFileServer = function () {
     }
 
     getVersion() {
-      return "1.1.0";
+      return "1.1.1";
     }
 
     load() {}
@@ -255,27 +255,26 @@ localFileServer = function () {
   fs2 = {};
 
   ref = ["readFile", "writeFile"];
-  fn = function (func) {
-    return fs2[func] = function (...args) {
-      return new Promise(function (c, r) {
-        return fs[func](...args, function (e, res) {
-          if (e != null) {
-            return r(e);
-          } else {
-            return c(res);
-          }
-        });
-      });
-    };
-  };
   for (i = 0, len = ref.length; i < len; i++) {
     func = ref[i];
-    fn(func);
+    (function (func) {
+      return fs2[func] = function (...args) {
+        return new Promise(function (c, r) {
+          return fs[func](...args, function (e, res) {
+            if (e != null) {
+              return r(e);
+            } else {
+              return c(res);
+            }
+          });
+        });
+      };
+    })(func);
   }
 
   isImage = function (filename) {
     var ref1;
-    return (ref1 = filename.slice(filename.lastIndexOf("."))) === ".png" || ref1 === ".jpeg" || ref1 === ".jpg" || ref1 === ".bmp" || ref1 === ".gif" || ref1 === ".webp" || ref1 === ".svg" || ref1 === ".tiff" || ref1 === ".apng";
+    return (ref1 = filename.slice(filename.lastIndexOf(".")).toLowerCase()) === ".png" || ref1 === ".jpeg" || ref1 === ".jpg" || ref1 === ".bmp" || ref1 === ".gif" || ref1 === ".webp" || ref1 === ".svg" || ref1 === ".tiff" || ref1 === ".apng";
   };
 
   favicon = Buffer.from("AAABAAEAEBAQAAEABAAoAQAAFgAAACgAAAAQAAAAIAAAAAEABAAAAAAAgAAAAMMOAADDDgAAEAAAABAAAAAAAAAAL2sUAEyxIgAXNgoA////AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAASIiIiIiEAACEDIAIwEgAAIDIxEyMCAAAjIAAAAjIAACIQEREBIgAAIDAQAQMCAAAgMBABAwIAACIQEREBIgAAIyAAAAIyAAAgMjETIwIAACEDIAIwEgAAEiIiIiIhAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "base64");
@@ -283,6 +282,6 @@ localFileServer = function () {
   pfx = Buffer.from("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", "base64");
 
   return localFileServer;
-}();
+}.call(this);
 
 global.localFileServer = localFileServer;

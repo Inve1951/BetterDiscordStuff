@@ -4,7 +4,7 @@ class localFileServer
   getName: -> "Local File Server"
   getDescription: -> "Hosts a selected folder so you can use local files in your theme. Has to restart discord first time enabling."
   getAuthor: -> "square"
-  getVersion: -> "1.1.0"
+  getVersion: -> "1.1.1"
 
   load: ->
 
@@ -212,7 +212,7 @@ class localFileServer
   for func in ["readFile", "writeFile"] then do (func) ->
     fs2[func] = (args...) -> new Promise (c, r) -> fs[func] args..., (e, res) -> if e? then r e else c res
 
-  isImage = (filename) -> filename[filename.lastIndexOf(".")...] in [".png",".jpeg", ".jpg", ".bmp", ".gif", ".webp", ".svg", ".tiff", ".apng"]
+  isImage = (filename) -> filename[filename.lastIndexOf(".")...].toLowerCase() in [".png",".jpeg", ".jpg", ".bmp", ".gif", ".webp", ".svg", ".tiff", ".apng"]
 
   favicon = Buffer.from(
     """AAABAAEAEBAQAAEABAAoAQAAFgAAACgAAAAQAAAAIAAAAAEABAAAAAAAgAAAAMMOAADDDgAAEAAAABAAAAAAAAAAL2sUAEyxIgAXNgoA////AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAASIiIiIiEAACEDIAIwEgAAIDIxEyMCAAAjIAAAAjIAACIQEREBIgAAIDAQAQMCAAAgMBABAwIAACIQEREBIgAAIyAAAAIyAAAgMjETIwIAACEDIAIwEgAAEiIiIiIhAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"""
