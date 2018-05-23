@@ -1,5 +1,9 @@
-# BetterDiscordStuff
-my BD plugins & themes, focused on enhancing user experience
+# [BetterDiscordStuff](https://Inve1951.github.io/BetterDiscordStuff)
+
+Made a simple site displaying my stuff in a better way than this readme ever could:<br/>
+[Inve1951.github.io/BetterDiscordStuff](https://Inve1951.github.io/BetterDiscordStuff)
+
+If you are someone who has considered donating before, then you can do that now. Find my PayPal link on above site.
 
 ------------------------
 
