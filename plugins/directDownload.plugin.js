@@ -342,7 +342,7 @@ directDownload = function () {
             this.att = att;
             this.url = this.att.src;
           } else {
-            this.att = this.att.parentNode.lastChild.querySelector("a");
+            this.att = this.att.parentNode.querySelector("a");
             this.url = this.att.href;
           }
           this.filename = path.basename(this.url.split("/").pop());
