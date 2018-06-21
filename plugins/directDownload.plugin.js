@@ -18,7 +18,7 @@ directDownload = function () {
     }
 
     getVersion() {
-      return "0.3.9";
+      return "0.3.11";
     }
 
     start() {
@@ -161,6 +161,7 @@ directDownload = function () {
     imageWrapper: "imageWrapper-2p5ogY",
     lfg: "lfg-3xoFkI",
     metadataDownload: "metadataDownload-1fk90V",
+    embed: "embed-IeVjo6",
     embedVideo: "embedVideo-3nf0O9",
     videoControls: "controls-N9e_UM",
     webmControls: "videoControls-2kcYic"
@@ -269,7 +270,7 @@ directDownload = function () {
         if (elem.nodeName === "svg" && "Play" === elem.getAttribute("name") || elem.classList.contains(classNames.videoControls) || elem.classList.contains(classNames.webmControls)) {
           break;
         }
-        if (settings.imagemodals && elem.classList.contains(classNames.imageWrapper) && !elem.parentNode.matches(".accessory, .embed") || elem.classList.contains(classNames.attachment) && elem.querySelector(`.${classNames.iconFile}`) != null || elem.classList.contains(classNames.metadataDownload)) {
+        if (settings.imagemodals && elem.classList.contains(classNames.imageWrapper) && !elem.parentNode.matches(`.accessory, .${classNames.embed}`) || elem.classList.contains(classNames.attachment) && elem.querySelector(`.${classNames.iconFile}`) != null || elem.classList.contains(classNames.metadataDownload)) {
           ok = true;
           break;
         }
