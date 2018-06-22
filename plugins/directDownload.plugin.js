@@ -2,7 +2,7 @@
 var directDownload;
 
 directDownload = function () {
-  var Download, _fr, bw, cache, classNames, clipboard, dialog, downloadbar, fs, getSettings, http, https, initSwitchFix, installCss, installDownloadBar, lastButOneIndexOf, listener, nativeImage, pPlugins, pThemes, path, remote, settings, shell;
+  var Download, _fr, bw, cache, classNames, clipboard, dialog, downloadbar, fs, getSettings, http, https, initSwitchFix, installCss, installDownloadBar, lastButOneIndexOf, lastClicked, listener, nativeImage, pPlugins, pThemes, path, remote, settings, shell;
 
   class directDownload {
     getName() {
@@ -18,7 +18,7 @@ directDownload = function () {
     }
 
     getVersion() {
-      return "0.3.12";
+      return "0.4.0";
     }
 
     start() {
@@ -29,6 +29,9 @@ directDownload = function () {
         initSwitchFix.call(this);
       }
       document.addEventListener("click", listener, true);
+      if (settings.doubleClick) {
+        document.addEventListener("dblclick", listener, true);
+      }
     }
 
     stop() {
@@ -36,6 +39,7 @@ directDownload = function () {
       downloadbar.remove();
       document.getElementById("css_directDownload").remove();
       document.removeEventListener("click", listener, true);
+      document.removeEventListener("dblclick", listener, true);
       if ((ref = this.switchFix) != null) {
         ref.disconnect();
       }
@@ -45,7 +49,7 @@ directDownload = function () {
 
     getSettingsPanel() {
       getSettings();
-      return `<div id="settings_directDownload">\n  <style>\n    #settings_directDownload {\n      color: #87909C;\n    }\n    #settings_directDownload button {\n      background: rgba(128,128,128,0.4);\n      width: calc(100% - 20px);\n      padding: 5px 10px;\n      box-sizing: content-box;\n      height: 1em;\n      font-size: 1em;\n      line-height: 0.1em;\n    }\n    #settings_directDownload button.invalid {\n      background: rgba(200,0,0,.5);\n      font-weight: 500;\n    }\n    #settings_directDownload label {\n      display: inline-block;\n    }\n    #settings_directDownload :-webkit-any(label, input) {\n      cursor: pointer;\n    }\n    #settings_directDownload br + br {\n      content: "";\n      display: block;\n      margin-top: 5px;\n    }\n  </style>\n  <button name="dldir" type="button" onclick="directDownload.chooseDirectory()">${settings.dldir}</button>\n  <br><br>\n  <label><input name="autoopen" type="checkbox" ${settings.autoopen ? "checked" : ""} onchange="directDownload.updateSettings()"/>Open files after download.</label>\n  <label><input name="showinstead" type="checkbox" ${settings.showinstead ? "checked" : ""} ${settings.autoopen ? "" : "disabled"} onchange="directDownload.updateSettings()"/>Show in folder instead.</label>\n  <br><br>\n  <label><input name="overwrite" type="checkbox" ${!settings.overwrite ? "checked" : ""} onchange="directDownload.updateSettings()"/>Ask for path if file exists.</label>\n  <label><input name="prompt" type="checkbox" ${settings.prompt ? "checked" : ""} ${settings.overwrite ? "disabled" : ""} onchange="directDownload.updateSettings()"/>Always ask.</label>\n  <br><br>\n  <label><input name="imagemodals" type="checkbox" ${settings.imagemodals ? "checked" : ""} onchange="directDownload.updateSettings()"/>Allow direct download for image modals.</label>\n  <label><input name="copyimages" type="checkbox" ${settings.copyimages ? "checked" : ""} ${settings.imagemodals ? "" : "disabled"} onchange="directDownload.updateSettings()"/>Copy the image to clipboard when download is done.</label>\n  <br><br>\n  <label><input name="itp" type="checkbox" ${settings.itp ? "checked" : ""} onchange="directDownload.updateSettings()"/>Install themes and plugins downloaded from betterdiscord.net (will always overwrite).</label>\n</div>`;
+      return `<div id="settings_directDownload">\n  <style>\n    #settings_directDownload {\n      color: #87909C;\n    }\n    #settings_directDownload button {\n      background: rgba(128,128,128,0.4);\n      width: calc(100% - 20px);\n      padding: 5px 10px;\n      box-sizing: content-box;\n      height: 1em;\n      font-size: 1em;\n      line-height: 0.1em;\n    }\n    #settings_directDownload button.invalid {\n      background: rgba(200,0,0,.5);\n      font-weight: 500;\n    }\n    #settings_directDownload label {\n      display: inline-block;\n    }\n    #settings_directDownload :-webkit-any(label, input) {\n      cursor: pointer;\n    }\n    #settings_directDownload br + br {\n      content: "";\n      display: block;\n      margin-top: 5px;\n    }\n  </style>\n  <button name="dldir" type="button" onclick="directDownload.chooseDirectory()">${settings.dldir}</button>\n  <br><br>\n  <label><input name="autoopen" type="checkbox" ${settings.autoopen ? "checked" : ""} onchange="directDownload.updateSettings()"/>Open files after download.</label>\n  <label><input name="showinstead" type="checkbox" ${settings.showinstead ? "checked" : ""} ${settings.autoopen ? "" : "disabled"} onchange="directDownload.updateSettings()"/>Show in folder instead.</label>\n  <br><br>\n  <label><input name="overwrite" type="checkbox" ${!settings.overwrite ? "checked" : ""} onchange="directDownload.updateSettings()"/>Ask for path if file exists.</label>\n  <label><input name="prompt" type="checkbox" ${settings.prompt ? "checked" : ""} ${settings.overwrite ? "disabled" : ""} onchange="directDownload.updateSettings()"/>Always ask.</label>\n  <br><br>\n  <label><input name="imagemodals" type="checkbox" ${settings.imagemodals ? "checked" : ""} onchange="directDownload.updateSettings()"/>Allow direct download for image modals.</label>\n  <label><input name="copyimages" type="checkbox" ${settings.copyimages ? "checked" : ""} ${settings.imagemodals ? "" : "disabled"} onchange="directDownload.updateSettings()"/>Copy the image to clipboard when download is done.</label>\n  <label><input name="doubleClick" type="checkbox" ${settings.doubleClick ? "checked" : ""} ${settings.imagemodals ? "" : "disabled"} onchange="directDownload.updateSettings()"/>Require a double click as opposed to a single one.</label>\n  <br><br>\n  <label><input name="itp" type="checkbox" ${settings.itp ? "checked" : ""} onchange="directDownload.updateSettings()"/>Install themes and plugins downloaded from betterdiscord.net (will always overwrite).</label>\n</div>`;
     }
 
     static chooseDirectory(cb) {
@@ -104,6 +108,7 @@ directDownload = function () {
               input.disabled = !settings.autoopen;
               return true;
             case "copyimages":
+            case "doubleClick":
               input.disabled = !settings.imagemodals;
               return true;
             case "overwrite":
@@ -124,6 +129,10 @@ directDownload = function () {
             input.innerHTML = "invalid path";
           }
         }
+      }
+      document.removeEventListener("dblclick", listener, true);
+      if (settings.doubleClick) {
+        document.addEventListener("dblclick", listener, true);
       }
       bdPluginStorage.set("directDownload", "settings", settings);
     }
@@ -254,6 +263,8 @@ directDownload = function () {
     }
   }();
 
+  lastClicked = [null, null];
+
   listener = function (ev) {
     var elem, i, len, ok, ref;
     ok = false;
@@ -270,7 +281,21 @@ directDownload = function () {
         if (elem.nodeName === "svg" && "Play" === elem.getAttribute("name") || elem.classList.contains(classNames.videoControls) || elem.classList.contains(classNames.webmControls)) {
           break;
         }
-        if (settings.imagemodals && elem.classList.contains(classNames.imageWrapper) && !elem.parentNode.matches(`.accessory, .${classNames.embed}, .image-details-wrapper`) || elem.classList.contains(classNames.attachment) && elem.querySelector(`.${classNames.iconFile}`) != null || elem.classList.contains(classNames.metadataDownload)) {
+        if (settings.imagemodals && elem.classList.contains(classNames.imageWrapper) && !elem.parentNode.matches(`.accessory, .${classNames.embed}, .image-details-wrapper`)) {
+          if (settings.doubleClick) {
+            if ("click" === ev.type) {
+              lastClicked.shift();
+              lastClicked.push(elem);
+            } else {
+              [elem] = lastClicked;
+              ok = true;
+            }
+          } else {
+            ok = true;
+          }
+          break;
+        }
+        if (elem.classList.contains(classNames.attachment) && elem.querySelector(`.${classNames.iconFile}`) != null || elem.classList.contains(classNames.metadataDownload)) {
           ok = true;
           break;
         }
@@ -292,7 +317,9 @@ directDownload = function () {
 
   getSettings = function () {
     var k, ref, ref1, v;
-    settings = (ref = bdPluginStorage.get("directDownload", "settings")) != null ? ref : {};
+    settings = (ref = bdPluginStorage.get("directDownload", "settings")) != null ? ref : {
+      doubleClick: true
+    };
     ref1 = {
       dldir: path.join(process.env[process.platform === "win32" ? "USERPROFILE" : "HOME"], "downloads"),
       autoopen: false,
@@ -301,7 +328,8 @@ directDownload = function () {
       prompt: false,
       imagemodals: true,
       copyimages: false,
-      itp: true
+      itp: true,
+      doubleClick: false
     };
     for (k in ref1) {
       v = ref1[k];
