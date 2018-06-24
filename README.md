@@ -11,6 +11,7 @@ I mostly write my plugins in [coffeescript](http://coffeescript.org/).<br/>
 I will release the source of fully featured (finished) code in [coffee/](coffee/).
 
 available source files:
+* [Avatar Hover](coffee/AvatarHover.plugin.coffee)
 * [Bot Info](coffee/botInfo.plugin.coffee)
 * [Local File Server](coffee/localFileServer.plugin.coffee)
 * [Toggle-Your-Stuff](coffee/toggleYourStuff.plugin.coffee)
@@ -99,6 +100,10 @@ available source files:
   **[Multi Instance](plugins/MultiInstance.plugin.js)**
 
     Have several discord windows open same time. Ctrl+F12. (Cmd+F12 on osx)
+
+  **[Avatar Hover](plugins/AvatarHover.plugin.js)**
+
+    When hovering, resize the avatar. Use Ctrl / Ctrl+Shift.
 
 ------------------------
 
