@@ -1,4 +1,4 @@
-/* //META{ "name": "Show-URLs", "description": "Shows a link's URL in bottom left corner much like a browser does.", "author": "square", "version": "1.0.1"} *//**/
+/* //META{ "name": "Show-URLs", "description": "Shows a link's URL in bottom left corner much like a browser does.", "author": "square", "version": "1.0.2"} *//**/
 
 .chat .messages-wrapper {
   z-index: unset;
@@ -29,6 +29,7 @@
 {
     opacity: 1;
     animation: fade .44s 10s forwards;
+    z-index: 42;
 }
 
 @keyframes fade{
