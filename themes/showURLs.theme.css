@@ -21,7 +21,7 @@
     transition: opacity .44s linear;
     pointer-events: none;
     opacity: 0;
-    z-index: 1;
+    z-index: 42;
 }
 
 .messages a:hover:after,
@@ -29,7 +29,6 @@
 {
     opacity: 1;
     animation: fade .44s 10s forwards;
-    z-index: 42;
 }
 
 @keyframes fade{
