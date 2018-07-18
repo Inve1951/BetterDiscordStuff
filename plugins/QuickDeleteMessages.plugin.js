@@ -18,7 +18,7 @@ QuickDeleteMessages = function () {
     }
 
     getVersion() {
-      return "1.0.1";
+      return "1.0.2";
     }
 
     start() {
@@ -41,7 +41,7 @@ QuickDeleteMessages = function () {
     load() {}
 
     getSettingsPanel() {
-      return `<label><input type="checkbox" name="confirm" onChange="QuickDeleteMessages.updateSettings(this)"\n${settings.confirm && "checked" || ""} />confirm delete?</label>`;
+      return `<label style="color: #87909C"><input type="checkbox" name="confirm" onChange="QuickDeleteMessages.updateSettings(this)"\n${settings.confirm && "checked" || ""} />confirm delete?</label>`;
     }
 
     static updateSettings({ name, checked }) {
@@ -86,7 +86,7 @@ QuickDeleteMessages = function () {
     }
     ({
       props: { canDelete, channel, message }
-    } = getOwnerInstance(element));
+    } = getOwnerInstance(getOwnerInstance(element)));
     if (!canDelete) {
       return;
     }
@@ -101,9 +101,9 @@ QuickDeleteMessages = function () {
 
   getOwnerInstance = function (node) {
     var internalInstance, ref;
-    internalInstance = (ref = getInternalInstance(node)) != null ? ref : node;
+    internalInstance = (ref = getInternalInstance(node)) != null ? ref : node._reactInternalFiber;
     return internalInstance.return.stateNode;
   };
 
   return QuickDeleteMessages;
-}();
+}.call(this);

@@ -4,7 +4,7 @@ class QuickDeleteMessages
   getName: -> "Quick Delete Messages"
   getDescription: -> "Hold Delete and click a Message to delete it."
   getAuthor: -> "square"
-  getVersion: -> "1.0.1"
+  getVersion: -> "1.0.2"
 
   settings = Object.create null
   MessageActions = ConfirmActions = getInternalInstance = null
@@ -29,7 +29,7 @@ class QuickDeleteMessages
   load: ->
 
   getSettingsPanel: ->
-    """<label><input type="checkbox" name="confirm" onChange="QuickDeleteMessages.updateSettings(this)"
+    """<label style="color: #87909C"><input type="checkbox" name="confirm" onChange="QuickDeleteMessages.updateSettings(this)"
     #{settings.confirm and "checked" or ""} />confirm delete?</label>"""
 
   @updateSettings: ({name, checked}) ->
@@ -62,7 +62,7 @@ class QuickDeleteMessages
 
     {
       props: {canDelete, channel, message}
-    } = getOwnerInstance element
+    } = getOwnerInstance getOwnerInstance element
 
     return unless canDelete
 
@@ -77,5 +77,5 @@ class QuickDeleteMessages
 
 
   getOwnerInstance = (node) ->
-    internalInstance = getInternalInstance(node) ? node
+    internalInstance = getInternalInstance(node) ? node._reactInternalFiber
     internalInstance.return.stateNode
