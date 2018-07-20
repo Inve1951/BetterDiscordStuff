@@ -11,7 +11,7 @@ var discordExperiments = function(t){
 
 		start(){
 			t = BDV2.WebpackModules.findByUniqueProperties(["isDeveloper"]);
-			Object.defineProperty(t,k,{get:_=>1,set:_=>_,configurable:true});
+			Object.defineProperty(t,"isDeveloper",{get:_=>1,set:_=>_,configurable:true});
 		}
 
 		stop(){
