@@ -127,3 +127,7 @@ available source files:
 
     I've always wanted this :3
     Server Grid support can be enabled in the file.
+
+  **[Ez Light](/themes/EzLight.theme.css)**
+
+    Easy light theme. Should also work in combination with most dark themes. Relies on discord's dark mode.
