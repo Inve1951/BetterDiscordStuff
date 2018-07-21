@@ -1,0 +1,3 @@
+/*//META{"name":"EzLight","description":"Easy light theme. Should also work in combination with most dark themes. Relies on discord's dark mode.","author":"square","version":"1.0.0"}*//**/
+html,[style*=background-image],img,video,canvas,.status-oxiHuE{filter:invert(1)}
+body{--EzLightEnabled:1}
