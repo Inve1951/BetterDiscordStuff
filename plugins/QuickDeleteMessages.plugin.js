@@ -2,7 +2,7 @@
 var QuickDeleteMessages;
 
 QuickDeleteMessages = function () {
-  var ConfirmActions, MessageActions, deletePressed, getInternalInstance, getOwnerInstance, onClick, onKeyDown, onKeyUp, qualifies, settings;
+  var MessageDeleteItem, deletePressed, getInternalInstance, getOwnerInstance, onClick, onKeyDown, onKeyUp, qualifies, settings;
 
   class QuickDeleteMessages {
     getName() {
@@ -18,7 +18,7 @@ QuickDeleteMessages = function () {
     }
 
     getVersion() {
-      return "1.0.2";
+      return "1.1.0";
     }
 
     start() {
@@ -28,8 +28,10 @@ QuickDeleteMessages = function () {
       document.addEventListener("click", onClick, true);
       document.addEventListener("keydown", onKeyDown);
       document.addEventListener("keyup", onKeyUp);
-      MessageActions = BDV2.WebpackModules.findByUniqueProperties(["deleteMessage"]);
-      return ConfirmActions = BDV2.WebpackModules.findByUniqueProperties(["confirmDelete"]);
+      return MessageDeleteItem = BDV2.WebpackModules.find(function (m) {
+        var ref1;
+        return (ref1 = m.prototype) != null ? ref1.handleDeleteMessage : void 0;
+      });
     }
 
     stop() {
@@ -53,7 +55,7 @@ QuickDeleteMessages = function () {
 
   settings = Object.create(null);
 
-  MessageActions = ConfirmActions = getInternalInstance = null;
+  MessageDeleteItem = getInternalInstance = null;
 
   deletePressed = false;
 
@@ -69,10 +71,10 @@ QuickDeleteMessages = function () {
     }
   };
 
-  qualifies = ".markup, .accessory";
+  qualifies = ".content-3dzVd8";
 
   onClick = function (event) {
-    var canDelete, channel, element, message;
+    var element, handler;
     if (!deletePressed) {
       return;
     }
@@ -80,21 +82,21 @@ QuickDeleteMessages = function () {
       path: [element]
     } = event);
     if (element.matches(qualifies) || (element = element.closest(qualifies))) {
-      element = element.closest(".message");
+      element = element.closest(".message-1PNnaP");
     } else {
       return;
     }
-    ({
-      props: { canDelete, channel, message }
-    } = getOwnerInstance(getOwnerInstance(element)));
-    if (!canDelete) {
+    try {
+      handler = new MessageDeleteItem(getOwnerInstance(element).props);
+      if (!handler.render()) {
+        return;
+      }
+    } catch (error) {
       return;
     }
-    if (settings.confirm) {
-      ConfirmActions.confirmDelete(channel, message);
-    } else {
-      MessageActions.deleteMessage(channel.id, message.id);
-    }
+    handler.handleDeleteMessage({
+      shiftKey: !settings.confirm || event.shiftKey
+    });
     event.preventDefault();
     event.stopImmediatePropagation();
   };

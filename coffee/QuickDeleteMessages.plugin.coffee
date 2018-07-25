@@ -4,10 +4,10 @@ class QuickDeleteMessages
   getName: -> "Quick Delete Messages"
   getDescription: -> "Hold Delete and click a Message to delete it."
   getAuthor: -> "square"
-  getVersion: -> "1.0.2"
+  getVersion: -> "1.1.0"
 
   settings = Object.create null
-  MessageActions = ConfirmActions = getInternalInstance = null
+  MessageDeleteItem = getInternalInstance = null
 
   start: ->
     getInternalInstance = BDV2.reactDom.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED.ReactDOMComponentTree.getInstanceFromNode
@@ -18,8 +18,7 @@ class QuickDeleteMessages
     document.addEventListener "keydown", onKeyDown
     document.addEventListener "keyup", onKeyUp
 
-    MessageActions = BDV2.WebpackModules.findByUniqueProperties ["deleteMessage"]
-    ConfirmActions = BDV2.WebpackModules.findByUniqueProperties ["confirmDelete"]
+    MessageDeleteItem = BDV2.WebpackModules.find (m) -> m::?.handleDeleteMessage
 
   stop: ->
     document.removeEventListener "click", onClick, true
@@ -49,7 +48,7 @@ class QuickDeleteMessages
     return
 
 
-  qualifies = ".markup, .accessory"
+  qualifies = ".content-3dzVd8"
 
   onClick = (event) ->
     return unless deletePressed
@@ -57,19 +56,15 @@ class QuickDeleteMessages
     {path: [element]} = event
 
     if element.matches(qualifies) or element = element.closest qualifies
-      element = element.closest ".message"
+      element = element.closest ".message-1PNnaP"
     else return
 
-    {
-      props: {canDelete, channel, message}
-    } = getOwnerInstance getOwnerInstance element
+    try
+      handler = new MessageDeleteItem getOwnerInstance(element).props
+      return unless handler.render()
+    catch then return
 
-    return unless canDelete
-
-    if settings.confirm
-      ConfirmActions.confirmDelete channel, message
-    else
-      MessageActions.deleteMessage channel.id, message.id
+    handler.handleDeleteMessage shiftKey: not settings.confirm or event.shiftKey
 
     event.preventDefault()
     event.stopImmediatePropagation()
