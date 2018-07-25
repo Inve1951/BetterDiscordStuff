@@ -4,7 +4,7 @@ class global.AvatarHover
   getName: -> "Avatar Hover"
   getDescription: -> "When hovering, resize the avatar. Use Ctrl / Ctrl+Shift."
   getAuthor: -> "noVaLue, square"
-  getVersion: -> "0.4.0"
+  getVersion: -> "0.4.1"
 
   load: ->
 
@@ -41,7 +41,7 @@ class global.AvatarHover
         .channel .avatar-small" if settings.isHoverChannels
       "#friends .avatar-small,
         .activityFeed-28jde9 .image-33JSyf" if settings.isHoverFriends
-      ".message-group .avatar-large, .embedAuthorIcon--1zR3L" if settings.isHoverChatMessages
+      ".message-1PNnaP .image-33JSyf, .embedAuthorIcon--1zR3L" if settings.isHoverChatMessages
       ".membersWrap-2h-GB4 .image-33JSyf" if settings.isHoverChatUsers
     ].filter((s) -> s?).join ", "
 
@@ -81,7 +81,7 @@ class global.AvatarHover
 
     hoverCard.style[k] = v for k, v of {
       backgroundColor: settings.avatarBackgroundColor
-      backgroundImage: getComputedStyle(target).backgroundImage.replace /\?size=\d{3,4}/, "?size=#{size}"
+      backgroundImage: ("IMG" is target.tagName and target.src or getComputedStyle(target).backgroundImage).replace /\?size=\d{3,4}/, "?size=#{size}"
       borderColor: settings.avatarBorderColor
       borderRadius: settings.avatarBorderRadius
       borderWidth: settings.avatarBorderSize

@@ -16,7 +16,7 @@ global.AvatarHover = function () {
     }
 
     getVersion() {
-      return "0.4.0";
+      return "0.4.1";
     }
 
     load() {}
@@ -94,7 +94,7 @@ global.AvatarHover = function () {
   qualifier = null;
 
   updateQualifier = function () {
-    return qualifier = [settings.isHoverGuilds ? ".icon-3o6xvg" : void 0, settings.isHoverChannels ? ".avatarDefault-35WC3R, .avatarSpeaking-1wJCNq, .channel .avatar-small" : void 0, settings.isHoverFriends ? "#friends .avatar-small, .activityFeed-28jde9 .image-33JSyf" : void 0, settings.isHoverChatMessages ? ".message-group .avatar-large, .embedAuthorIcon--1zR3L" : void 0, settings.isHoverChatUsers ? ".membersWrap-2h-GB4 .image-33JSyf" : void 0].filter(function (s) {
+    return qualifier = [settings.isHoverGuilds ? ".icon-3o6xvg" : void 0, settings.isHoverChannels ? ".avatarDefault-35WC3R, .avatarSpeaking-1wJCNq, .channel .avatar-small" : void 0, settings.isHoverFriends ? "#friends .avatar-small, .activityFeed-28jde9 .image-33JSyf" : void 0, settings.isHoverChatMessages ? ".message-1PNnaP .image-33JSyf, .embedAuthorIcon--1zR3L" : void 0, settings.isHoverChatUsers ? ".membersWrap-2h-GB4 .image-33JSyf" : void 0].filter(function (s) {
       return s != null;
     }).join(", ");
   };
@@ -148,7 +148,7 @@ global.AvatarHover = function () {
     top = boundsWindow.height - boundsTarget.height < boundsTarget.top ? boundsTarget.top - size : boundsTarget.bottom;
     ref = {
       backgroundColor: settings.avatarBackgroundColor,
-      backgroundImage: getComputedStyle(target).backgroundImage.replace(/\?size=\d{3,4}/, `?size=${size}`),
+      backgroundImage: ("IMG" === target.tagName && target.src || getComputedStyle(target).backgroundImage).replace(/\?size=\d{3,4}/, `?size=${size}`),
       borderColor: settings.avatarBorderColor,
       borderRadius: settings.avatarBorderRadius,
       borderWidth: settings.avatarBorderSize,
