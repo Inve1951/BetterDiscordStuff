@@ -1,4 +1,4 @@
-/* //META { "name": "Horizontal_Serverlist", "description": "I've always wanted this :3", "author": "square", "version": "2.0.2-pre"} *//**/
+/* //META { "name": "Horizontal_Serverlist", "description": "I've always wanted this :3", "author": "square", "version": "2.0.3-pre"} *//**/
 
 :root {
   --height-titlebar: 22px;
@@ -17,15 +17,15 @@
   flex: 1 100%;
 }
 
-.guilds-wrapper {
+.guildsWrapper-5TJh6A {
   order: 42;
 }
 
-.guilds-wrapper ~ * {
+.guildsWrapper-5TJh6A ~ * {
   height: calc(100vh - var(--height-titlebar) - var(--height-serverlist));
 }
 
-.guilds-wrapper .scroller-wrap {
+.guildsWrapper-5TJh6A .scroller-wrap {
   display: flex;
   width: 100vw;
   height: var(--height-serverlist);
@@ -33,7 +33,7 @@
   overflow-y: hidden;
 }
 
-.guilds-wrapper .guilds {
+.guildsWrapper-5TJh6A .guilds-1q_RqH {
   width: 100%;
   height: var(--height-serverlist);
   padding: 10px 0 0 0;
@@ -46,7 +46,7 @@
   overflow-y: auto;
 }
 
-.guilds-wrapper .guilds .guild, .guilds-wrapper .guilds .guild + .guild {
+.guildsWrapper-5TJh6A .guilds-1q_RqH .guild-1EfMGQ, .guildsWrapper-5TJh6A .guilds-1q_RqH .guild-1EfMGQ + .guild-1EfMGQ {
   display: inline-flex;
   margin: 0 0 10px 8px;
   padding: 0;
@@ -55,44 +55,44 @@
   max-height: 50px;*/
 }
 
-.guilds-wrapper .guilds > * > * {
+.guildsWrapper-5TJh6A .guilds-1q_RqH > * > * {
   flex: 1 0 auto;
 }
 
-.guilds-wrapper .guilds > .guild:first-child,
-.guilds-wrapper .guilds .friends-online,
-.guilds-wrapper .guilds .guild-separator {
+.guildsWrapper-5TJh6A .guilds-1q_RqH > .guild-1EfMGQ:first-child,
+.guildsWrapper-5TJh6A .guilds-1q_RqH .friendsOnline-_wi_fM,
+.guildsWrapper-5TJh6A .guilds-1q_RqH .guildSeparator-1X4GQ1 {
   position: absolute;
 }
 
-.guilds-wrapper .guilds > .guild:first-child {
+.guildsWrapper-5TJh6A .guilds-1q_RqH > .guild-1EfMGQ:first-child {
   left: 8px; top: calc(50% - 25px);
   margin: 0;
 }
 
-.guilds-wrapper .guilds .friends-online {
+.guildsWrapper-5TJh6A .guilds-1q_RqH .friendsOnline-_wi_fM {
   left: 8px; top: calc(50% + 23px);
   margin: 0;
   display: block;
 }
 
-.guilds-wrapper .guilds .guild-separator {
+.guildsWrapper-5TJh6A .guilds-1q_RqH .guildSeparator-1X4GQ1 {
   left: 66px;
   top: 10px;
   width: 2px;
   height: calc(100% - 20px);
   margin: 0;
 }
-.guilds-wrapper .guilds .guild-separator:after {
+.guildsWrapper-5TJh6A .guilds-1q_RqH .guildSeparator-1X4GQ1:after {
   left: unset; right: unset;
   top: 0; bottom: 0;
   width: 100%; height: 100%;
 }
 
-.dms:empty { display: none; }
+.dms-rcsEnV:empty { display: none; }
 
-.guilds-wrapper .guilds .guild.selected:before,
-.guilds-wrapper .guilds .guild.unread:before {
+.guildsWrapper-5TJh6A .guilds-1q_RqH .guild-1EfMGQ.selected-ML3OIq:before,
+.guildsWrapper-5TJh6A .guilds-1q_RqH .guild-1EfMGQ.unread-qLkInr:before {
   top: unset;
   left: 50%;
   bottom: -10px;
@@ -102,12 +102,12 @@
   clip-path: polygon(50% 0, 100% 100%, 0 100%);
 }
 
-.guilds-wrapper .guilds .guild.unread:before {
+.guildsWrapper-5TJh6A .guilds-1q_RqH .guild-1EfMGQ.unread-qLkInr:before {
   width: 10px;
   margin-left: -5px;
 }
 
-.guilds-wrapper .guilds .guild.selected:before {
+.guildsWrapper-5TJh6A .guilds-1q_RqH .guild-1EfMGQ.selected-ML3OIq:before {
   width: 40px;
   margin-left: -20px;
   transition: all .25s;
@@ -117,7 +117,7 @@
   order: 2;
 }
 
-.guilds-wrapper .guilds .dms {
+.guildsWrapper-5TJh6A .guilds-1q_RqH .dms-rcsEnV {
   display: block;
   order: 1;
   flex: unset;
@@ -130,30 +130,30 @@
   justify-content: center;
   max-width: calc(58px * var(--DM-column-count));
   padding-right: 10px;
-  counter-reset: guilds-dms;
+  counter-reset: dms;
 }
 
-.guilds-wrapper .guilds .dms .guild {
-  counter-increment: guilds-dms;
+.guildsWrapper-5TJh6A .guilds-1q_RqH .dms-rcsEnV .guild-1EfMGQ {
+  counter-increment: dms;
 }
 
-.guilds-wrapper .guilds .dms:after {/*
-  content: counter(guilds-dms);
-  width: calc(counter(guilds-dms) * 158px);*/
+.guildsWrapper-5TJh6A .guilds-1q_RqH .dms-rcsEnV:after {/*
+  content: counter(dms);
+  width: calc(counter(dms) * 158px);*/
 }
 
-.guilds-wrapper .guilds .dms::-webkit-scrollbar,
-.guilds-wrapper .guilds.scroller::-webkit-scrollbar {
+.guildsWrapper-5TJh6A .guilds-1q_RqH .dms-rcsEnV::-webkit-scrollbar,
+.guildsWrapper-5TJh6A .guilds-1q_RqH.scroller::-webkit-scrollbar {
   max-width: 0;
 }
 
-.unread-mentions-indicator-bottom .unread-mentions-bar:before,
-.unread-mentions-indicator-top .unread-mentions-bar:before {
+.unreadMentionsIndicatorBottom-BXS58x .unreadMentionsBar-1VrBNe:before,
+.unreadMentionsIndicatorTop-gA6RCh .unreadMentionsBar-1VrBNe:before {
   content: unset;
 }
 
-.unread-mentions-indicator-bottom,
-.unread-mentions-indicator-top {
+.unreadMentionsIndicatorBottom-BXS58x,
+.unreadMentionsIndicatorTop-gA6RCh {
   padding: 0;
   top: 0;
   bottom: unset;
@@ -162,19 +162,19 @@
   -webkit-mask-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, rgba(1,1,1,var(--show-unread-indicator))), color-stop(1, transparent));
 }
 
-.unread-mentions-indicator-bottom *,
-.unread-mentions-indicator-top * {
+.unreadMentionsIndicatorBottom-BXS58x *,
+.unreadMentionsIndicatorTop-gA6RCh * {
   pointer-events: none;
 }
 
-.unread-mentions-indicator-bottom .unread-mentions-bar,
-.unread-mentions-indicator-top .unread-mentions-bar {
+.unreadMentionsIndicatorBottom-BXS58x .unreadMentionsBar-1VrBNe,
+.unreadMentionsIndicatorTop-gA6RCh .unreadMentionsBar-1VrBNe {
   height: 10px;
   border-radius: 0;
 }
 
-.unread-mentions-indicator-bottom .unread-mentions-bar svg,
-.unread-mentions-indicator-top .unread-mentions-bar svg{
+.unreadMentionsIndicatorBottom-BXS58x .unreadMentionsBar-1VrBNe svg,
+.unreadMentionsIndicatorTop-gA6RCh .unreadMentionsBar-1VrBNe svg{
   display: none;
 }
 

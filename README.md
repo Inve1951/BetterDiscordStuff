@@ -3,7 +3,7 @@
 Made a simple site displaying my stuff in a better way than this readme ever could:<br/>
 [Inve1951.github.io/BetterDiscordStuff](https://Inve1951.github.io/BetterDiscordStuff)
 
-If you are someone who has considered donating before, then you can do that now. Find my PayPal link on above site.
+Wonna buy me a coffee? Find my PayPal link on above site.
 
 ------------------------
 
@@ -14,8 +14,9 @@ available source files:
 * [Avatar Hover](coffee/AvatarHover.plugin.coffee)
 * [Bot Info](coffee/botInfo.plugin.coffee)
 * [Local File Server](coffee/localFileServer.plugin.coffee)
-* [Toggle-Your-Stuff](coffee/toggleYourStuff.plugin.coffee)
+* [Toggle Your Stuff](coffee/toggleYourStuff.plugin.coffee)
 * [Quick Delete Messages](coffee/QuickDeleteMessages.plugin.coffee)
+* [More Obvious DMs](coffee/moreObviousDMs.plugin.coffee)
 
 ------------------------
 
