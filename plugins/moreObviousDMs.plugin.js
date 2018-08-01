@@ -1,7 +1,7 @@
 //META{"name":"moreObviousDMs"}*//;
 var moreObviousDMs;
 
-moreObviousDMs = (function() {
+moreObviousDMs = function () {
   var _flash, bw, flash, flashing, insertOverlay, insertStyle, observer;
 
   class moreObviousDMs {
@@ -18,13 +18,13 @@ moreObviousDMs = (function() {
     }
 
     getVersion() {
-      return "1.0.0";
+      return "1.0.1";
     }
 
     load() {}
 
     start() {
-      observer.observe(document.querySelector("span.dms"), {
+      observer.observe(document.querySelector(".dms-rcsEnV"), {
         childList: true,
         subtree: false
       });
@@ -42,7 +42,7 @@ moreObviousDMs = (function() {
 
   flashing = false;
 
-  observer = new MutationObserver(function([{addedNodes}]) {
+  observer = new MutationObserver(function ([{ addedNodes }]) {
     if (addedNodes.length) {
       flash(true);
     }
@@ -50,28 +50,28 @@ moreObviousDMs = (function() {
 
   _flash = 0;
 
-  flash = function(b) {
+  flash = function (b) {
     if (b && flashing) {
       return;
     }
     if (b) {
       flashing = true;
-      _flash = setInterval((function() {
+      _flash = setInterval(function () {
         bw.flashFrame(true);
-      }), 5000);
+      }, 5000);
       insertOverlay();
     } else {
       flashing = false;
       clearInterval(_flash);
-      setTimeout((function() {
+      setTimeout(function () {
         if (!flashing) {
           bw.flashFrame(false);
         }
-      }), 3000);
+      }, 3000);
     }
   };
 
-  insertStyle = function() {
+  insertStyle = function () {
     var style;
     style = document.createElement("style");
     style.id = "moreObviousDMs-style";
@@ -79,11 +79,11 @@ moreObviousDMs = (function() {
     document.head.appendChild(style);
   };
 
-  insertOverlay = function() {
+  insertOverlay = function () {
     var l, overlay;
     overlay = document.createElement("div");
     overlay.id = "moreObviousDMs-overlay";
-    l = function() {
+    l = function () {
       overlay.remove();
       window.removeEventListener("mousemove", l, true);
       flash(false);
@@ -97,5 +97,4 @@ moreObviousDMs = (function() {
   };
 
   return moreObviousDMs;
-
-})();
+}.call(this);
