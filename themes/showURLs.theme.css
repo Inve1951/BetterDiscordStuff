@@ -1,38 +1,38 @@
-/* //META{ "name": "Show-URLs", "description": "Shows a link's URL in bottom left corner much like a browser does.", "author": "square", "version": "1.0.2"} *//**/
+/* //META{ "name": "Show-URLs", "description": "Shows a link's URL in bottom left corner much like a browser does.", "author": "square", "version": "1.0.3"} *//**/
 
-.chat .messages-wrapper {
+.chat-3bRxxu .messagesWrapper-3lZDfY {
   z-index: unset;
 }
 
-.messages a:after,
-.topic a:after
+.messages-3amgkR a:after,
+.topic-2QX7LI a:after
 {
-    content: attr(href);
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    background: white;
-    color: black;
-    font-size: 13.5px;
-    line-height: 16.5px;
-    font-weight: 500;
-    padding: 1px 3px 2px 3px;
-    max-width: calc(100% - 240px);
-    transition: opacity .44s linear;
-    pointer-events: none;
-    opacity: 0;
-    z-index: 42;
+  content: attr(href);
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  background: white;
+  color: black;
+  font-size: 13.5px;
+  line-height: 16.5px;
+  font-weight: 500;
+  padding: 1px 3px 2px 3px;
+  max-width: calc(100% - 240px);
+  transition: opacity .44s linear;
+  pointer-events: none;
+  opacity: 0;
+  z-index: 42;
 }
 
-.messages a:hover:after,
-.topic a:hover:after
+.messages-3amgkR a:hover:after,
+.topic-2QX7LI a:hover:after
 {
-    opacity: 1;
-    animation: fade .44s 10s forwards;
+  opacity: 1;
+  animation: fade .44s 10s forwards;
 }
 
-@keyframes fade{
-    to{ opacity: 0; }
+@keyframes fade {
+  to{ opacity: 0; }
 }
 
-/* not being restrictive on which 'a:whatever' are to be handled breaks scrollbars */
+/* not being restrictive on which <a/> tags are to be handled breaks scrollbars */
