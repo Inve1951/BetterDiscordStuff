@@ -6,25 +6,33 @@ var clearInputOnEsc = (function(){
   class clearInputOnEsc {
     getName(){return "Clear-Input-on-Escape"}
     getDescription(){return "Clears the chat input when you hit escape inside it."}
-    getVersion(){return "1.1.1"}
+    getVersion(){return "1.2.0"}
     getAuthor(){return "square"}
 
     load(){}
 
     start(){
-      document.addEventListener("keydown", listener)
+      document.addEventListener("keydown", listener, true)
     }
 
     stop(){
-      document.removeEventListener("keydown", listener);
+      document.removeEventListener("keydown", listener, true);
+    }
+
+    onSwitch() {
+      document.activeElement.blur();
     }
   }
 
-  listener = function(e){
-    if("Escape" !== e.key || document.activeElement !== document.querySelector(".content textarea")) return;
+  listener = function(ev){
+    if("Escape" !== ev.key || document.activeElement !== document.querySelector(".content-yTz4x3 textarea")) return;
+    if(document.activeElement.value){
+      ev.stopImmediatePropagation();
+      ev.preventDefault();
+    }
     try {
       getOwnerInstance(document.activeElement, {include: "ChannelTextAreaForm"}).setState({textValue:""});
-    } catch(e){console.error(e)}
+    } catch(err){console.error(err)}
   };
 
   ({getInternalInstance, getOwnerInstance} = (function(){
