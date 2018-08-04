@@ -2,7 +2,7 @@
 var directDownload;
 
 directDownload = function () {
-  var Download, _fr, bw, cache, classNames, clipboard, dialog, downloadbar, fs, getSettings, http, https, initSwitchFix, installCss, installDownloadBar, lastButOneIndexOf, lastClicked, listener, nativeImage, pPlugins, pThemes, path, remote, settings, shell;
+  var Download, _fr, bw, cache, classNames, clipboard, dialog, downloadbar, fs, getSettings, http, https, installCss, installDownloadBar, lastButOneIndexOf, lastClicked, listener, nativeImage, pPlugins, pThemes, path, remote, settings, shell;
 
   class directDownload {
     getName() {
@@ -18,16 +18,13 @@ directDownload = function () {
     }
 
     getVersion() {
-      return "0.4.0";
+      return "0.4.1";
     }
 
     start() {
       getSettings();
       installCss();
       installDownloadBar();
-      if ("string" !== typeof global.bbdVersion) {
-        initSwitchFix.call(this);
-      }
       document.addEventListener("click", listener, true);
       if (settings.doubleClick) {
         document.addEventListener("dblclick", listener, true);
@@ -35,14 +32,10 @@ directDownload = function () {
     }
 
     stop() {
-      var ref;
       downloadbar.remove();
       document.getElementById("css_directDownload").remove();
       document.removeEventListener("click", listener, true);
       document.removeEventListener("dblclick", listener, true);
-      if ((ref = this.switchFix) != null) {
-        ref.disconnect();
-      }
     }
 
     load() {}
@@ -61,18 +54,18 @@ directDownload = function () {
       }, selection => {
         var dir;
         dir = selection != null ? selection[0] : void 0;
-        if (cb == null) {
-          document.querySelector("#settings_directDownload button").innerHTML = dir != null ? dir : "";
-          this.updateSettings();
-        } else {
+        if (cb) {
           cb(dir);
+        } else {
+          document.querySelector("#settings_directDownload button").textContent = dir != null ? dir : "";
+          this.updateSettings();
         }
       });
     }
 
     static chooseFile(defaultPath, cb) {
       var ext, filters;
-      if (cb == null) {
+      if (!cb) {
         cb = defaultPath;
         defaultPath = "";
       }
@@ -166,6 +159,7 @@ directDownload = function () {
   classNames = {
     activity: "activityFeed-28jde9",
     attachment: "attachment-33OFj0",
+    accessory: "containerCozy-B4noqO",
     iconFile: "icon-1kp3fr",
     imageWrapper: "imageWrapper-2p5ogY",
     lfg: "lfg-3xoFkI",
@@ -173,7 +167,9 @@ directDownload = function () {
     embed: "embed-IeVjo6",
     embedVideo: "embedVideo-3nf0O9",
     videoControls: "controls-N9e_UM",
-    webmControls: "videoControls-2kcYic"
+    webmControls: "videoControls-2kcYic",
+    chat: "chat-3bRxxu",
+    content: "content-yTz4x3"
   };
 
   installCss = function () {
@@ -186,13 +182,13 @@ directDownload = function () {
 
   installDownloadBar = function () {
     var container, e;
-    if (downloadbar == null) {
+    if (!downloadbar) {
       downloadbar = document.createElement("div");
       downloadbar.id = "files_directDownload";
       downloadbar.style = "--numFiles:0;";
     }
     if (!document.getElementById("files_directDownload")) {
-      container = document.querySelector(`.chat .content > :first-child, #friends, .${classNames.activity}, .${classNames.lfg}`);
+      container = document.querySelector(`.${classNames.chat} .${classNames.content} > :first-child, #friends, .${classNames.activity}, .${classNames.lfg}`);
       try {
         container.appendChild(downloadbar);
       } catch (error1) {
@@ -203,31 +199,6 @@ directDownload = function () {
   };
 
   directDownload.prototype.onSwitch = installDownloadBar;
-
-  initSwitchFix = function () {
-    var e;
-    this.switchFix = new MutationObserver(mutations => {
-      var addedNodes, classList, i, id, j, len, len1, ref, removedNodes;
-      for (i = 0, len = mutations.length; i < len; i++) {
-        ({ addedNodes, removedNodes } = mutations[i]);
-        ref = [...addedNodes, ...removedNodes];
-        for (j = 0, len1 = ref.length; j < len1; j++) {
-          ({ id, classList } = ref[j]);
-          if (classList && (id === "friends" || classList.contains(classNames.activity) || classList.contains(classNames.lfg))) {
-            return this.onSwitch();
-          }
-        }
-      }
-    });
-    try {
-      this.switchFix.observe(document.querySelector(`.guilds-wrapper + div :-webkit-any(.chat, #friends, .${classNames.activity}, .${classNames.lfg})`).parentNode, {
-        childList: true
-      });
-    } catch (error1) {
-      e = error1;
-      console.error(e);
-    }
-  };
 
   fs = require("fs");
 
@@ -281,7 +252,7 @@ directDownload = function () {
         if (elem.nodeName === "svg" && "Play" === elem.getAttribute("name") || elem.classList.contains(classNames.videoControls) || elem.classList.contains(classNames.webmControls)) {
           break;
         }
-        if (settings.imagemodals && elem.classList.contains(classNames.imageWrapper) && !elem.parentNode.matches(`.accessory, .${classNames.embed}, .image-details-wrapper`)) {
+        if (settings.imagemodals && elem.classList.contains(classNames.imageWrapper) && !elem.parentNode.matches(`.${classNames.accessory}, .${classNames.embed}, .image-details-wrapper`)) {
           if (settings.doubleClick) {
             if ("click" === ev.type) {
               lastClicked.shift();
@@ -327,9 +298,9 @@ directDownload = function () {
       overwrite: true,
       prompt: false,
       imagemodals: true,
+      doubleClick: false,
       copyimages: false,
-      itp: true,
-      doubleClick: false
+      itp: true
     };
     for (k in ref1) {
       v = ref1[k];
@@ -570,10 +541,10 @@ directDownload = function () {
               cache.set(this.url, this);
             }
             if (this.openWhenFinished) {
-              if (!this.showinstead) {
-                this.open();
-              } else {
+              if (this.showinstead) {
                 this.show();
+              } else {
+                this.open();
               }
             }
           });
@@ -585,10 +556,10 @@ directDownload = function () {
           delete this.buffer;
         }
         if (this.openWhenFinished) {
-          if (!this.showinstead) {
-            this.open();
-          } else {
+          if (this.showinstead) {
             this.show();
+          } else {
+            this.open();
           }
         }
       }
