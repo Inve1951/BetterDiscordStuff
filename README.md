@@ -106,6 +106,10 @@ available source files:
 
     When hovering, resize the avatar. Use Ctrl / Ctrl+Shift.
 
+  **[Character Counter](plugins/CharacterCounter.plugin.js)**
+
+    Adds a character counter to chat inputs.
+
 ------------------------
 
 ## themes:
