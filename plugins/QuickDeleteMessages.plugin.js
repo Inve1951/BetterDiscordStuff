@@ -2,7 +2,7 @@
 var QuickDeleteMessages;
 
 QuickDeleteMessages = function () {
-  var MessageDeleteItem, deletePressed, getInternalInstance, getOwnerInstance, onClick, onKeyDown, onKeyUp, qualifies, settings;
+  var MessageDeleteItem, deletePressed, getInternalInstance, getOwnerInstance, handleKeyUpDown, onClick, qualifies, settings;
 
   class QuickDeleteMessages {
     getName() {
@@ -18,7 +18,7 @@ QuickDeleteMessages = function () {
     }
 
     getVersion() {
-      return "1.1.0";
+      return "1.2.0";
     }
 
     start() {
@@ -26,8 +26,8 @@ QuickDeleteMessages = function () {
       getInternalInstance = BDV2.reactDom.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED.ReactDOMComponentTree.getInstanceFromNode;
       settings.confirm = (ref = bdPluginStorage.get("QuickDeleteMessages", "confirm")) != null ? ref : false;
       document.addEventListener("click", onClick, true);
-      document.addEventListener("keydown", onKeyDown);
-      document.addEventListener("keyup", onKeyUp);
+      document.addEventListener("keydown", handleKeyUpDown);
+      document.addEventListener("keyup", handleKeyUpDown);
       return MessageDeleteItem = BDV2.WebpackModules.find(function (m) {
         var ref1;
         return (ref1 = m.prototype) != null ? ref1.handleDeleteMessage : void 0;
@@ -36,8 +36,8 @@ QuickDeleteMessages = function () {
 
     stop() {
       document.removeEventListener("click", onClick, true);
-      document.removeEventListener("keydown", onKeyDown);
-      return document.removeEventListener("keyup", onKeyUp);
+      document.removeEventListener("keydown", handleKeyUpDown);
+      return document.removeEventListener("keyup", handleKeyUpDown);
     }
 
     load() {}
@@ -59,15 +59,9 @@ QuickDeleteMessages = function () {
 
   deletePressed = false;
 
-  onKeyDown = function ({ code }) {
-    if (code === "Delete") {
-      deletePressed = true;
-    }
-  };
-
-  onKeyUp = function ({ code }) {
-    if (code === "Delete") {
-      deletePressed = false;
+  handleKeyUpDown = function ({ code, type }) {
+    if (code === "Delete" || "darwin" === process.platform && "Backspace" === code) {
+      deletePressed = "keydown" === type;
     }
   };
 

@@ -4,7 +4,7 @@ class QuickDeleteMessages
   getName: -> "Quick Delete Messages"
   getDescription: -> "Hold Delete and click a Message to delete it."
   getAuthor: -> "square"
-  getVersion: -> "1.1.0"
+  getVersion: -> "1.2.0"
 
   settings = Object.create null
   MessageDeleteItem = getInternalInstance = null
@@ -15,15 +15,15 @@ class QuickDeleteMessages
     settings.confirm = bdPluginStorage.get("QuickDeleteMessages", "confirm") ? false
 
     document.addEventListener "click", onClick, true
-    document.addEventListener "keydown", onKeyDown
-    document.addEventListener "keyup", onKeyUp
+    document.addEventListener "keydown", handleKeyUpDown
+    document.addEventListener "keyup", handleKeyUpDown
 
     MessageDeleteItem = BDV2.WebpackModules.find (m) -> m::?.handleDeleteMessage
 
   stop: ->
     document.removeEventListener "click", onClick, true
-    document.removeEventListener "keydown", onKeyDown
-    document.removeEventListener "keyup", onKeyUp
+    document.removeEventListener "keydown", handleKeyUpDown
+    document.removeEventListener "keyup", handleKeyUpDown
 
   load: ->
 
@@ -39,12 +39,8 @@ class QuickDeleteMessages
 
   deletePressed = false
 
-  onKeyDown = ({code}) ->
-    deletePressed = true if code is "Delete"
-    return
-
-  onKeyUp = ({code}) ->
-    deletePressed = false if code is "Delete"
+  handleKeyUpDown = ({code, type}) ->
+    deletePressed = "keydown" is type if code is "Delete" or "darwin" is process.platform and "Backspace" is code
     return
 
 
