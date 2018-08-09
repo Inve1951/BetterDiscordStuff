@@ -1,62 +1,54 @@
 //META{"name":"clearInputOnEsc"}*//
 
 var clearInputOnEsc = (function(){
-  var getInternalInstance, getOwnerInstance, listener;
+  var TextArea, cancel, install;
 
   class clearInputOnEsc {
-    getName(){return "Clear-Input-on-Escape"}
-    getDescription(){return "Clears the chat input when you hit escape inside it."}
-    getVersion(){return "1.2.0"}
-    getAuthor(){return "square"}
+    getName(){ return "Clear-Input-on-Escape" }
+    getDescription(){ return "Clears chat inputs when hitting escape inside it." }
+    getVersion(){ return "1.3.0" }
+    getAuthor(){ return "square" }
 
     load(){}
 
     start(){
-      document.addEventListener("keydown", listener, true)
+      if(!install()) this.onSwitch = install;
     }
 
     stop(){
-      document.removeEventListener("keydown", listener, true);
-    }
-
-    onSwitch() {
-      document.activeElement.blur();
+      cancel && cancel();
+      cancel = this.onSwitch = void 0;
     }
   }
 
-  listener = function(ev){
-    if("Escape" !== ev.key || document.activeElement !== document.querySelector(".content-yTz4x3 textarea")) return;
-    if(document.activeElement.value){
-      ev.stopImmediatePropagation();
-      ev.preventDefault();
-    }
-    try {
-      getOwnerInstance(document.activeElement, {include: "ChannelTextAreaForm"}).setState({textValue:""});
-    } catch(err){console.error(err)}
-  };
+  install = function() {
+    var ta;
 
-  ({getInternalInstance, getOwnerInstance} = (function(){
-    // code in this closure by noodlebox & samogot
-    // https://github.com/samogot/betterdiscord-plugins/blob/master/v1/1lib_discord_internals.plugin.js
-    const getInternalInstance = e => e[Object.keys(e).find(k => k.startsWith("__reactInternalInstance"))];
-    function getOwnerInstance(e, {include, exclude = ["Popout", "Tooltip", "Scroller", "BackgroundFlash"]} = {}) {
-      if (e === undefined) {return undefined;}
-      const excluding = include === undefined;
-      const filter = excluding ? exclude : include;
-      function getDisplayName(owner) {
-        const type = owner.type;
-        const constructor = owner.stateNode && owner.stateNode.constructor;
-        return type && type.displayName || constructor && constructor.displayName || null;}
-      function classFilter(owner) {
-        const name = getDisplayName(owner);
-        return (name !== null && !!(filter.includes(name) ^ excluding));}
-      let curr = getInternalInstance(e);
-      while (curr) {
-        if (classFilter(curr)) {return curr.stateNode;}
-        curr = curr.return;}
-      return null;}
-    getOwnerInstance.displayName = "getOwnerInstance";
-    return {getInternalInstance, getOwnerInstance};})());
+    if(!TextArea) TextArea = BDV2.WebpackModules.find(m=>m.prototype&&["calculateNodeStyling"].every(p=>null!=m.prototype[p]));
+    if(!TextArea) return false;
+
+    delete this.onSwitch;
+
+    cancel = Utils.monkeyPatch(TextArea.prototype, "render", {after: function({thisObject, returnValue: ta}) {
+      if("textarea" !== ta.type) ({props: {children: [ta]}} = ta);  // CharacterCounter support
+      if(!ta || "textarea" !== ta.type || null == ta.props.value) return;
+
+      Utils.monkeyPatch(ta.props, "onKeyDown", {silent: true, instead: function({methodArguments: [ev], callOriginalMethod}) {
+        if("Escape" !== ev.key || !thisObject.props.value) return callOriginalMethod();
+        ev.type = "change";
+        ev.value = thisObject._textArea.value = "";
+        ev.preventDefault();
+        ev.stopPropagation();
+        thisObject.handleChange(ev);
+      }});
+    }});
+
+    if(ta = document.querySelector("form textarea")) try {
+      getInternalInstance(ta).forceUpdate();
+    } catch (e) {}
+
+    return true;
+  };
 
   return clearInputOnEsc;
 })();
