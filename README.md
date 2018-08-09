@@ -3,7 +3,7 @@
 Made a simple site displaying my stuff in a better way than this readme ever could:<br/>
 [Inve1951.github.io/BetterDiscordStuff](https://Inve1951.github.io/BetterDiscordStuff)
 
-Wonna buy me a coffee? Find my PayPal link on above site.
+Want to buy me a coffee? Find my PayPal link on above site.
 
 ------------------------
 
@@ -17,6 +17,7 @@ available source files:
 * [Toggle Your Stuff](coffee/toggleYourStuff.plugin.coffee)
 * [Quick Delete Messages](coffee/QuickDeleteMessages.plugin.coffee)
 * [More Obvious DMs](coffee/moreObviousDMs.plugin.coffee)
+* [Highlight Self](coffee/HighlightSelf.plugin.coffee)
 
 ------------------------
 
@@ -97,7 +98,6 @@ available source files:
 
     Hold Delete and click a Message to delete it.
 
-
   **[Multi Instance](plugins/MultiInstance.plugin.js)**
 
     Have several discord windows open same time. Ctrl+F12. (Cmd+F12 on osx)
@@ -109,6 +109,10 @@ available source files:
   **[Character Counter](plugins/CharacterCounter.plugin.js)**
 
     Adds a character counter to chat inputs.
+
+  **[Highlight Self](plugins/HighlightSelf.plugin.js)**
+
+    Highlights your own username in message headers.
 
 ------------------------
 
