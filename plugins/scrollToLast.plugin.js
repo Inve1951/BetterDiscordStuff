@@ -1,21 +1,34 @@
 //META { "name": "scrollToLast" } *//
 
 var scrollToLast = function() {
+
+  var Keybinds, Handlers, onSwitch;
+
+  onSwitch = ev => {
+    if(("CHANNEL_SELECT" === ev.type || "GUILD_SELECT" === ev.type) && /^\/channels\/(?:@me|\d+)\/\d+$/.test(window.location.pathname))
+      process.nextTick(Keybinds.MARK_CHANNEL_READ.action);
+  }
+
   return {
     getName: () => "Scroll-To-Last",
-    getDescription: () => "Always scroll to last message when entering a channel.",
+    getDescription: () => "When entering any text channel, scrolls to the bottom and marks it as read.",
     getAuthor: () => "square",
-    getVersion: () => "0.0.4",
+    getVersion: () => "1.0.0",
 
-    start: ()=>{},
-    stop: ()=>{},
-    load: ()=>{},
+    load: () => {
+      Keybinds = BDV2.WebpackModules.findByUniqueProperties(["MARK_CHANNEL_READ", "CALL_START"]);
+      Handlers = [
+        BDV2.WebpackModules.find(m => m._actionHandlers && m._actionHandlers.CHANNEL_SELECT),
+        BDV2.WebpackModules.find(m => m._actionHandlers && m._actionHandlers.GUILD_SELECT)
+      ];
+    },
 
-    onSwitch: ev=> {
-      console.log("switch")
-      ev = new KeyboardEvent("keydown", {bubbles:true});
-      Object.defineProperty(ev, "which", {get:_=>27});
-      document.dispatchEvent(ev);
+    start: () => {
+      Handlers.forEach(h=>h.subscribeToDispatch(onSwitch));
+    },
+
+    stop: () => {
+      Handlers.forEach(h=>h.unsubscribeToDispatch(onSwitch));
     }
   }
 }
