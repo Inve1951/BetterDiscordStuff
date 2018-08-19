@@ -4,7 +4,7 @@ class HighlightSelf
   getName: -> "Highlight Self"
   getDescription: -> "Highlights your own username in message headers."
   getAuthor: -> "square"
-  getVersion: -> "1.0.0"
+  getVersion: -> "1.0.1"
 
   MessageComponents = UserStore = cancel = null
 
@@ -15,8 +15,9 @@ class HighlightSelf
     BdApi.injectCSS "css_highlightSelf", css
 
   stop: ->
-    cancel() if cancel()
-    cancel = null
+    if cancel
+      cancel()
+      cancel = null
     BdApi.clearCSS "css_highlightSelf"
 
   install = ->

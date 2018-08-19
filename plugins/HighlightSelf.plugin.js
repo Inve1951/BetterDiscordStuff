@@ -18,7 +18,7 @@ HighlightSelf = function () {
     }
 
     getVersion() {
-      return "1.0.0";
+      return "1.0.1";
     }
 
     load() {}
@@ -31,10 +31,10 @@ HighlightSelf = function () {
     }
 
     stop() {
-      if (cancel()) {
+      if (cancel) {
         cancel();
+        cancel = null;
       }
-      cancel = null;
       return BdApi.clearCSS("css_highlightSelf");
     }
 
