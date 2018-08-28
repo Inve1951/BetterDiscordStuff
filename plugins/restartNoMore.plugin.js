@@ -1,8 +1,19 @@
-  //META { "name": "restartNoMore" } *//
-var restartNoMore,
-  _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+//META { "name": "restartNoMore" } *//
+var restartNoMore;
 
-restartNoMore = (function() {
+restartNoMore = function () {
+  /*
+  cb = (e) ->
+    window.removeEventListener "error", cb
+    if e not instanceof ErrorEvent
+      c arguments...
+    else
+      r message: e.error.message, stack: e.error.stack
+    return
+  window.addEventListener "error", cb
+  bw.webContents.executeJavaScript js, false, cb
+  return
+  */
   var _crypto, _electron, _path, _util, _vm, ap, bw, cbFunc2PromiseFunc, createWebview, error, execJs, execJsW, fs, getDisplayName, getMd5, getSettings, init, loadFile, log, np, onFileChanged, pPlugins, pThemes, parseHeader, replace, settings, si, state, ts, unloadFile, wPlugins, wThemes, warn, wrapJs;
 
   class restartNoMore {
@@ -15,7 +26,7 @@ restartNoMore = (function() {
     }
 
     getVersion() {
-      return "0.1.3-alpha";
+      return "0.1.4";
     }
 
     getAuthor() {
@@ -25,7 +36,7 @@ restartNoMore = (function() {
     constructor() {
       var base;
       bw = _electron.remote.getCurrentWindow();
-      base = (function() {
+      base = function () {
         switch (process.platform) {
           case "win32":
             return _path.resolve(process.env.appdata, "BetterDiscord");
@@ -34,7 +45,7 @@ restartNoMore = (function() {
           default:
             return _path.resolve(process.env.HOME, ".config/BetterDiscord");
         }
-      })();
+      }();
       pPlugins = _path.join(base, "plugins");
       pThemes = _path.join(base, "themes");
     }
@@ -50,25 +61,25 @@ restartNoMore = (function() {
       try {
         p = fs.readdir(pPlugins);
         t = fs.readdir(pThemes);
-        await ap((await ap((async function() {
+        await ap((await ap(async function () {
           var f, i, len, ref, results;
-          ref = (await p);
+          ref = await p;
           results = [];
           for (i = 0, len = ref.length; i < len; i++) {
             f = ref[i];
             results.push(init(f, true));
           }
           return results;
-        })(), (async function() {
+        }(), async function () {
           var f, i, len, ref, results;
-          ref = (await t);
+          ref = await t;
           results = [];
           for (i = 0, len = ref.length; i < len; i++) {
             f = ref[i];
             results.push(init(f, false));
           }
           return results;
-        })())));
+        }())));
       } catch (error1) {
         e = error1;
         error(e);
@@ -108,14 +119,14 @@ restartNoMore = (function() {
     }
 
     getSettingsPanel() {
-      return `<div id="settings_RNM">\n<label>\n<input name="devMode" type="checkbox" ${(settings.devMode ? "checked" : "")}\n  onchange="restartNoMore.updateSettings()"/>\nDeveloper Mode\n</label>\n</div>`;
+      return `<div id="settings_RNM">\n<label>\n<input name="devMode" type="checkbox" ${settings.devMode ? "checked" : ""}\n  onchange="restartNoMore.updateSettings()"/>\nDeveloper Mode\n</label>\n</div>`;
     }
 
     static updateSettings() {
       var checked, i, len, name, ref, type, value;
       ref = document.querySelectorAll("#settings_RNM input");
       for (i = 0, len = ref.length; i < len; i++) {
-        ({name, type, value, checked} = ref[i]);
+        ({ name, type, value, checked } = ref[i]);
         if (type === "checkbox") {
           settings[name] = checked;
         }
@@ -135,11 +146,11 @@ restartNoMore = (function() {
 
   _vm = require("vm");
 
-  np = function() {
+  np = function () {
     return new Promise(...arguments);
   };
 
-  ap = async function() {
+  ap = async function () {
     var i, len, p, results;
     results = [];
     for (i = 0, len = arguments.length; i < len; i++) {
@@ -149,15 +160,15 @@ restartNoMore = (function() {
     return results;
   };
 
-  ts = function(f) {
+  ts = function (f) {
     return f.toString();
   };
 
-  wrapJs = function(js) {
+  wrapJs = function (js) {
     return `(${js}\n)()`;
   };
 
-  replace = function(o, s) {
+  replace = function (o, s) {
     var k, v;
     for (k in o) {
       v = o[k];
@@ -167,18 +178,18 @@ restartNoMore = (function() {
     return s;
   };
 
-  si = function() {
-    return np(function(c) {
-      setImmediate(function() {
+  si = function () {
+    return np(function (c) {
+      setImmediate(function () {
         c();
       });
     });
   };
 
-  cbFunc2PromiseFunc = function(f) {
-    return function(...args) {
-      return np(function(c, r) {
-        f(...args, function(e, result) {
+  cbFunc2PromiseFunc = function (f) {
+    return function (...args) {
+      return np(function (c, r) {
+        f(...args, function (e, result) {
           if (e != null) {
             return r(e);
           }
@@ -190,7 +201,7 @@ restartNoMore = (function() {
 
   fs = {};
 
-  (function() {
+  (function () {
     var _fs, f, i, len, ref;
     _fs = require("fs");
     ref = ["readdir", "lstat", "readFile", "writeFile"];
@@ -211,7 +222,7 @@ restartNoMore = (function() {
 
   wPlugins = wThemes = null;
 
-  getSettings = function() {
+  getSettings = function () {
     var k, ref, ref1, v;
     settings = (ref = bdPluginStorage.get("restartNoMore", "settings")) != null ? ref : {};
     ref1 = {
@@ -225,19 +236,19 @@ restartNoMore = (function() {
     }
   };
 
-  init = async function(filename, isPlugin) {
+  init = async function (filename, isPlugin) {
     var e, fileContent, header, shortname, stats;
-    filename = _path.resolve((isPlugin ? pPlugins : pThemes), filename);
+    filename = _path.resolve(isPlugin ? pPlugins : pThemes, filename);
     shortname = _path.basename(filename);
     if (!(isPlugin && filename.endsWith(".plugin.js") || !isPlugin && filename.endsWith(".theme.css"))) {
-      if (isPlugin && filename.endsWith("config.json") || "desktop.ini" === shortname) {
+      if (isPlugin && filename.endsWith(".config.json") || "desktop.ini" === shortname) {
         return;
       }
       return warn(`WTF is that doing in there?\n${filename}`);
     }
     state.inProcess[filename] = true;
     try {
-      stats = (await fs.lstat(filename));
+      stats = await fs.lstat(filename);
     } catch (error1) {
       e = error1;
       state.inProcess[filename] = false;
@@ -248,7 +259,7 @@ restartNoMore = (function() {
       return;
     }
     try {
-      fileContent = (await fs.readFile(filename, "utf8"));
+      fileContent = await fs.readFile(filename, "utf8");
     } catch (error1) {
       e = error1;
       state.inProcess[filename] = false;
@@ -269,23 +280,23 @@ restartNoMore = (function() {
     state.inProcess[filename] = false;
   };
 
-  onFileChanged = function(isPlugin) {
-    return async function(type, filename) {
+  onFileChanged = function (isPlugin) {
+    return async function (type, filename) {
       var e, fileContent, header, headerOld, k, md5, ref, ref1, shortname, stats, v;
-      filename = _path.resolve((isPlugin ? pPlugins : pThemes), filename);
+      filename = _path.resolve(isPlugin ? pPlugins : pThemes, filename);
       if (state.inProcess[filename] || isPlugin && filename.endsWith(".config.json")) {
         return;
       }
       shortname = _path.basename(filename);
       if (!(isPlugin && filename.endsWith(".plugin.js") || !isPlugin && filename.endsWith(".theme.css"))) {
-        if (isPlugin && filename.endsWith("config.json") || "desktop.ini" === shortname || settings.devMode && (isPlugin && filename.endsWith(").js" || !isPlugin && filename.endsWith(").css")))) {
+        if (isPlugin && filename.endsWith("config.json") || "desktop.ini" === shortname || settings.devMode && isPlugin && filename.endsWith(").js" || !isPlugin && filename.endsWith(").css"))) {
           return;
         }
         return warn(`WTF is that doing in there?\n${filename}`);
       }
       state.inProcess[filename] = true;
       try {
-        stats = (await fs.lstat(filename));
+        stats = await fs.lstat(filename);
       } catch (error1) {
         e = error1;
         if ("ENOENT" === e.code) {
@@ -308,7 +319,7 @@ restartNoMore = (function() {
       }
       await si();
       try {
-        fileContent = (await fs.readFile(filename, "utf8"));
+        fileContent = await fs.readFile(filename, "utf8");
       } catch (error1) {
         e = error1;
         state.inProcess[filename] = false;
@@ -323,7 +334,7 @@ restartNoMore = (function() {
       }
       if (isPlugin) {
         if (header.displayName == null) {
-          header.displayName = (ref = header.pname) != null ? ref : (await getDisplayName(header.name, fileContent, false));
+          header.displayName = (ref = header.pname) != null ? ref : await getDisplayName(header.name, fileContent, false);
         }
         if (header.displayName instanceof Array) {
           state.inProcess[filename] = false;
@@ -332,7 +343,7 @@ restartNoMore = (function() {
       }
       md5 = getMd5(fileContent);
       headerOld = state.headerCache[filename];
-      if ((headerOld == null) && (state.md5Cache[header.name] != null)) {
+      if (headerOld == null && state.md5Cache[header.name] != null) {
         ref1 = state.headerCache;
         for (k in ref1) {
           v = ref1[k];
@@ -346,7 +357,7 @@ restartNoMore = (function() {
         return error(new Error("Unhandled code path!"), shortname);
       }
       if (headerOld != null) {
-        if ((headerOld.name != null) && state.md5Cache[headerOld.name] === md5) {
+        if (headerOld.name != null && state.md5Cache[headerOld.name] === md5) {
           state.inProcess[filename] = false;
           return log(`Skipped unchanged file ${shortname}!`);
         }
@@ -375,7 +386,7 @@ restartNoMore = (function() {
     };
   };
 
-  loadFile = async function(filename, header, fileContent, isPlugin) {
+  loadFile = async function (filename, header, fileContent, isPlugin) {
     var displayName, e, n, plugin;
     // throws
     if (isPlugin) {
@@ -386,16 +397,16 @@ restartNoMore = (function() {
       await execJs(wrapJs(replace({
         name: header.name,
         fileContent
-      }, ts(function() {
+      }, ts(function () {
         fileContent;
         global.name = name;
       }))));
       try {
-        displayName = (await execJs(wrapJs(replace({
+        displayName = await execJs(wrapJs(replace({
           name: header.name
-        }, ts(function() {
+        }, ts(function () {
           var plugin, result;
-          plugin = new global.name;
+          plugin = new global.name();
           result = plugin.getName();
           if (result in bdplugins) {
             throw new Error(`\`displayName\` mismatch! Actual: \`${result}\``);
@@ -405,7 +416,7 @@ restartNoMore = (function() {
             enabled: false
           };
           return result;
-        })))));
+        }))));
       } catch (error1) {
         e = error1;
         if (e.message.startsWith("`displayName`")) {
@@ -420,8 +431,10 @@ restartNoMore = (function() {
         }
         header.displayName = displayName;
       }
-      ({plugin} = bdplugins[displayName]);
-      plugin.load();
+      ({ plugin } = bdplugins[displayName]);
+      if (plugin != null) {
+        plugin.load();
+      }
       if (displayName in pluginCookie) {
         if (pluginCookie[displayName]) {
           plugin.start();
@@ -434,7 +447,7 @@ restartNoMore = (function() {
     }
     // is theme
     fileContent = fileContent.slice(1 + fileContent.indexOf("\n"));
-    bdthemes[header.name] = _extends({}, header, {
+    bdthemes[header.name] = Object.assign({}, header, {
       enabled: false,
       css: escape(fileContent)
     });
@@ -454,13 +467,13 @@ restartNoMore = (function() {
     themeModule.saveThemeData();
   };
 
-  unloadFile = async function(filename, shortname, isPlugin) {
+  unloadFile = async function (filename, shortname, isPlugin) {
     var e, header, plugin, ref, theme;
     // throws # dev mode
     header = state.headerCache[filename];
     if (isPlugin) {
       if (header.displayName == null) {
-        header.displayName = (await getDisplayName(header.name, state.fileCache[filename], true));
+        header.displayName = await getDisplayName(header.name, state.fileCache[filename], true);
       }
       if (header.displayName instanceof Array) {
         throw header.displayName;
@@ -517,14 +530,14 @@ restartNoMore = (function() {
     delete state.md5Cache[header.name];
   };
 
-  parseHeader = function(fileContent, isPlugin) {
+  parseHeader = function (fileContent, isPlugin) {
     var header, i, len, missing, ref, x;
     // throws # sync
     header = fileContent.slice(0, fileContent.indexOf("\n"));
     header = header.slice(6 + header.lastIndexOf("/\/ME" + "TA"), header.lastIndexOf("*/\/"));
     header = JSON.parse(header);
     missing = [];
-    ref = (isPlugin ? ["name"] : ["name", "author", "description", "version"]);
+    ref = isPlugin ? ["name"] : ["name", "author", "description", "version"];
     for (i = 0, len = ref.length; i < len; i++) {
       x = ref[i];
       if (!(x in header)) {
@@ -537,7 +550,7 @@ restartNoMore = (function() {
     return header;
   };
 
-  getDisplayName = async function(name, fileContent, mustMatchLoadedPlugin) {
+  getDisplayName = async function (name, fileContent, mustMatchLoadedPlugin) {
     var displayName, dontDoThisForPluginsLoadedByRNM, e, errors, fallback, fromInstance, fromPrototype, m, plugin, ref, sandbox, unsafeButFastest, webview;
     if (fileContent == null) {
       // returns string or array of errors
@@ -546,19 +559,26 @@ restartNoMore = (function() {
     errors = [];
     if (mustMatchLoadedPlugin) {
       try {
-        dontDoThisForPluginsLoadedByRNM = (await execJs(wrapJs(replace({name}, ts(function() {
+        dontDoThisForPluginsLoadedByRNM = await execJs(wrapJs(replace({ name }, ts(function () {
           return name.prototype.getName();
-        })))));
+        }))));
       } catch (error1) {
         e = error1;
         errors.push(e);
       }
-      if ((dontDoThisForPluginsLoadedByRNM != null) && dontDoThisForPluginsLoadedByRNM in bdplugins) {
+      if (dontDoThisForPluginsLoadedByRNM != null && dontDoThisForPluginsLoadedByRNM in bdplugins) {
         return dontDoThisForPluginsLoadedByRNM;
       }
     }
-    unsafeButFastest = (ref = (m = fileContent.match(RegExp(`^[\\s\\S]*?\\n[\\s\\S]*?${name}[\\s\\S]*?getName[\\s\\S]+?('|")((?:\\\\\\1|[^\\1])*?)\\1`)))) != null ? ref[2].replace("\\" + m[1], m[1]) : void 0;
-    if ((unsafeButFastest != null) && unsafeButFastest in bdplugins || !mustMatchLoadedPlugin && (unsafeButFastest != null)) {
+    unsafeButFastest = (ref = m = fileContent.match(RegExp(`^[\\s\\S]*?\\n[\\s\\S]*?${name}[\\s\\S]*?getName[\\s\\S]+?('|")((?:\\\\\\1|[^\\1])*?)\\1`))) != null ? ref[2].replace("\\" + m[1], m[1]) : void 0; // skip first line
+    // class deklaration
+    // find getName function
+    // + in case of name["getName"] = ...
+    // find and store opening quotation marker in \1
+    // store display name in \2
+    // which can hold anything besides unescaped \1
+    // and is closed with \1
+    if (unsafeButFastest != null && unsafeButFastest in bdplugins || !mustMatchLoadedPlugin && unsafeButFastest != null) {
       return unsafeButFastest;
     }
     warn("Couldn't get plugin name from regex, booting up virtual machine!");
@@ -579,7 +599,7 @@ restartNoMore = (function() {
       errors.push(e);
     }
     try {
-      fromPrototype = new _vm.Script(wrapJs(replace({name}, ts(function() {
+      fromPrototype = new _vm.Script(wrapJs(replace({ name }, ts(function () {
         return name.prototype.getName();
       })))).runInContext(sandbox, {
         displayErrors: true
@@ -588,13 +608,13 @@ restartNoMore = (function() {
       e = error1;
       errors.push(e);
     }
-    if ((fromPrototype != null) && fromPrototype in bdplugins) {
+    if (fromPrototype != null && fromPrototype in bdplugins) {
       return fromPrototype;
     }
     try {
-      fromInstance = new _vm.Script(wrapJs(replace({name}, ts(function() {
+      fromInstance = new _vm.Script(wrapJs(replace({ name }, ts(function () {
         var p;
-        p = new name;
+        p = new name();
         try {
           p.load();
         } catch (error1) {}
@@ -606,11 +626,11 @@ restartNoMore = (function() {
       e = error1;
       errors.push(e);
     }
-    if ((fromInstance != null) && fromInstance in bdplugins || !mustMatchLoadedPlugin && (fromInstance != null)) {
+    if (fromInstance != null && fromInstance in bdplugins || !mustMatchLoadedPlugin && fromInstance != null) {
       return fromInstance;
     }
     warn("Couldn't get plugin name from VM, creating webview!!!!!");
-    webview = (await createWebview());
+    webview = await createWebview();
     try {
       await execJsW(webview, fileContent);
     } catch (error1) {
@@ -618,31 +638,31 @@ restartNoMore = (function() {
       errors.push(e);
     }
     try {
-      fallback = (await execJsW(webview, wrapJs(replace({name}, ts(function() {
+      fallback = await execJsW(webview, wrapJs(replace({ name }, ts(function () {
         return name.prototype.getName();
-      })))));
+      }))));
     } catch (error1) {
       e = error1;
       errors.push(e);
     }
-    if ((fallback != null) && fallback in bdplugins) {
+    if (fallback != null && fallback in bdplugins) {
       webview.remove();
       return fallback;
     }
     try {
-      displayName = (await execJsW(webview, wrapJs(replace({name}, ts(function() {
+      displayName = await execJsW(webview, wrapJs(replace({ name }, ts(function () {
         var p;
-        p = new name;
+        p = new name();
         try {
           p.load();
         } catch (error1) {}
         return p.getName();
-      })))));
+      }))));
     } catch (error1) {
       e = error1;
       errors.push(e);
     }
-    if ((displayName != null) && displayName in bdplugins || !mustMatchLoadedPlugin && (displayName != null)) {
+    if (displayName != null && displayName in bdplugins || !mustMatchLoadedPlugin && displayName != null) {
       webview.remove();
       return displayName;
     }
@@ -650,8 +670,8 @@ restartNoMore = (function() {
     return [...errors, new Error("Unable to determine plugin name!")];
   };
 
-  execJs = function(js) {
-    return np(function(c, r) {
+  execJs = function (js) {
+    return np(function (c, r) {
       var e, script;
       try {
         //return try c _vm.runInThisContext js, displayErrors: true
@@ -667,40 +687,28 @@ restartNoMore = (function() {
     });
   };
 
-  /*
-  cb = (e) ->
-    window.removeEventListener "error", cb
-    if e not instanceof ErrorEvent
-      c arguments...
-    else
-      r message: e.error.message, stack: e.error.stack
-    return
-  window.addEventListener "error", cb
-  bw.webContents.executeJavaScript js, false, cb
-  return
-  */
-  createWebview = function() {
-    return np(function(c) {
+  createWebview = function () {
+    return np(function (c) {
       var webview;
       webview = document.createElement("webview");
       webview.src = "non-existent.dummy";
       webview.setAttribute("from-restart-no-more", null);
-      webview.addEventListener("dom-ready", function() {
+      webview.addEventListener("dom-ready", function () {
         c(webview);
       });
       document.body.appendChild(webview);
     });
   };
 
-  execJsW = function(webview, js) {
-    return np(function(c, r) {
+  execJsW = function (webview, js) {
+    return np(function (c, r) {
       var clearErrorP, errorP;
-      clearErrorP = wrapJs(ts(function() {
+      clearErrorP = wrapJs(ts(function () {
         window.onerror = void 0;
       }));
-      errorP = wrapJs(ts(function() {
-        return new Promise(function(c) {
-          window.onerror = function(e) {
+      errorP = wrapJs(ts(function () {
+        return new Promise(function (c) {
+          window.onerror = function (e) {
             window.onerror = void 0;
             c({
               message: e.message,
@@ -709,30 +717,30 @@ restartNoMore = (function() {
           };
         });
       }));
-      webview.executeJavaScript(errorP, false, function(e) {
+      webview.executeJavaScript(errorP, false, function (e) {
         r(e);
       });
-      webview.executeJavaScript(js, false, function(result) {
-        webview.executeJavaScript(clearErrorP, false, function() {
+      webview.executeJavaScript(js, false, function (result) {
+        webview.executeJavaScript(clearErrorP, false, function () {
           c(result);
         });
       });
     });
   };
 
-  getMd5 = function(fileContent) {
+  getMd5 = function (fileContent) {
     return _crypto.createHash("md5").update(fileContent).digest("hex");
   };
 
-  log = function(text) {
+  log = function (text) {
     console.log(`%cRNM: %c${text}`, "color:#7e0e46;font-size:1.3em;font-weight:bold", "color:#005900;font-size:1.3em");
   };
 
-  warn = function(text) {
+  warn = function (text) {
     console.log(`%cRNM: %c${text}`, "color:#7e0e46;font-size:1.3em;font-weight:bold", "color:#c6a924;font-size:1.3em");
   };
 
-  error = function(e, filename) {
+  error = function (e, filename) {
     var _e, i, len;
     if (!(e instanceof Array)) {
       _e = [e];
@@ -750,7 +758,6 @@ restartNoMore = (function() {
   };
 
   return restartNoMore;
-
-})();
+}.call(this);
 
 global.restartNoMore = restartNoMore;
