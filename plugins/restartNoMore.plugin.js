@@ -432,7 +432,7 @@ restartNoMore = function () {
         header.displayName = displayName;
       }
       ({ plugin } = bdplugins[displayName]);
-      if (plugin != null) {
+      if (typeof plugin.load === "function") {
         plugin.load();
       }
       if (displayName in pluginCookie) {
