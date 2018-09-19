@@ -37,12 +37,19 @@ restartNoMore = function () {
       var base;
       bw = _electron.remote.getCurrentWindow();
       base = function () {
+        let flatpak_path;
+
         switch (process.platform) {
           case "win32":
             return _path.resolve(process.env.appdata, "BetterDiscord");
           case "darwin":
             return _path.resolve(process.env.HOME, "Library/Preferences/BetterDiscord");
           default:
+            flatpak_path = _path.resolve(process.env.HOME, ".var/app/com.discordapp.Discord/config", "BetterDiscord/plugins/");
+
+            if(require('fs').existsSync(flatpak_path))
+              return flatpak_path;
+
             return _path.resolve(process.env.HOME, ".config/BetterDiscord");
         }
       }();
