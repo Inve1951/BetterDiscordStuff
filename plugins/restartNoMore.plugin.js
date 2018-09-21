@@ -26,7 +26,7 @@ restartNoMore = function () {
     }
 
     getVersion() {
-      return "0.1.4";
+      return "0.1.5";
     }
 
     getAuthor() {
@@ -43,7 +43,11 @@ restartNoMore = function () {
           case "darwin":
             return _path.resolve(process.env.HOME, "Library/Preferences/BetterDiscord");
           default:
-            return _path.resolve(process.env.HOME, ".config/BetterDiscord");
+            if (process.env.XDG_CONFIG_HOME) {
+              return _path.resolve(process.env.XDG_CONFIG_HOME, "BetterDiscord");
+            } else {
+              return _path.resolve(process.env.HOME, ".config/BetterDiscord");
+            }
         }
       }();
       pPlugins = _path.join(base, "plugins");
