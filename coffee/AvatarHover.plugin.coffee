@@ -1,37 +1,40 @@
-#META { "name": "AvatarHover" } *//
+#META { "name": "AvatarHover", "website": "https://inve1951.github.io/BetterDiscordStuff/" } *//
 
 class global.AvatarHover
   getName: -> "Avatar Hover"
   getDescription: -> "When hovering, resize the avatar. Use Ctrl / Ctrl+Shift."
   getAuthor: -> "noVaLue, square"
-  getVersion: -> "0.4.1"
+  getVersion: -> "0.5.0"
+
+  hoverCard = AsyncKeystate = null
 
   load: ->
+    window.SuperSecretSquareStuff ?= new Promise (c, r) ->
+      require("request").get "https://raw.githubusercontent.com/Inve1951/BetterDiscordStuff/master/plugins/0circle.plugin.js", (err, res, body) ->
+        return r err ? res if err or 200 isnt res?.statusCode
+        Object.defineProperties window.SuperSecretSquareStuff, {libLoaded: value: c; code: value: body}
+        `(0,eval)(body)`
 
   start: ->
+    {AsyncKeystate, createElement} = await SuperSecretSquareStuff
     getSettings()
     updateQualifier()
     BdApi.injectCSS "css-AvatarHover", css
-    initContainer()
-    document.addEventListener "keydown", handleKeyUpDown, true
-    document.addEventListener "keyup", handleKeyUpDown, true
-    document.addEventListener "mouseover", handleMouseOverOut, true
-    document.addEventListener "mouseout", handleMouseOverOut, true
-    document.addEventListener "blur", handleFocusLoss, true
+    hoverCard = createElement "div", id: "AvatarHover"
+    document.addEventListener "keydown", handleKeyUpDown, yes
+    document.addEventListener "keyup", handleKeyUpDown, yes
+    document.addEventListener "mouseover", handleMouseOverOut, yes
+    document.addEventListener "mouseout", handleMouseOverOut, yes
+    window.addEventListener "blur", handleFocusLoss, yes
 
   stop: ->
-    document.removeEventListener "keydown", handleKeyUpDown, true
-    document.removeEventListener "keyup", handleKeyUpDown, true
-    document.removeEventListener "mouseover", handleMouseOverOut, true
-    document.removeEventListener "mouseout", handleMouseOverOut, true
-    document.removeEventListener "blur", handleFocusLoss, true
+    document.removeEventListener "keydown", handleKeyUpDown, yes
+    document.removeEventListener "keyup", handleKeyUpDown, yes
+    document.removeEventListener "mouseover", handleMouseOverOut, yes
+    document.removeEventListener "mouseout", handleMouseOverOut, yes
+    window.removeEventListener "blur", handleFocusLoss, yes
     hoverCard.remove()
     BdApi.clearCSS "css-AvatarHover"
-
-  hoverCard = null
-  initContainer = ->
-    hoverCard = document.createElement "div"
-    hoverCard.id = "AvatarHover"
 
   qualifier = null
   updateQualifier = ->
@@ -45,14 +48,11 @@ class global.AvatarHover
       ".membersWrap-2h-GB4 .image-33JSyf" if settings.isHoverChatUsers
     ].filter((s) -> s?).join ", "
 
-  pressed = [false, false]
-  handleKeyUpDown = ({type, key}) ->
-    return unless -1 isnt ctrlShift = ["Control", "Shift"].indexOf key
-    return if pressed[ctrlShift] is pressed[ctrlShift] = "keydown" is type
+  handleKeyUpDown = ({key}) ->
+    return unless key in ["Control", "Shift"]
     updateHoverCard()
 
   handleFocusLoss = ->
-    pressed = [false, false]
     updateHoverCard()
 
   handleMouseOverOut = ({type, target}) ->
@@ -62,9 +62,8 @@ class global.AvatarHover
   lastTarget = null
   updateHoverCard = (target = lastTarget) ->
     lastTarget = target
-    [isShown, isLarge] = pressed
-    isShown or= settings.isShown
-    isLarge or= settings.isLarge
+    isShown = settings.isShown or AsyncKeystate.key "Control"
+    isLarge = settings.isLarge or AsyncKeystate.key "Shift"
     return hoverCard.remove() unless isShown and target
     size = isLarge and 256 or 128
     boundsTarget = target.getBoundingClientRect()

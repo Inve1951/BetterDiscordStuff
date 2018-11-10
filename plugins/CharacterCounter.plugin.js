@@ -1,7 +1,7 @@
-//META { "name": "CharCounter" } *//
+//META { "name": "CharCounter", "website": "https://inve1951.github.io/BetterDiscordStuff/" } *//
 
 var CharCounter = (function (){
-  var CharacterCounter, TextArea, cancel, install, css, React, getInternalInstance;
+  var CharacterCounter, TextArea, cancel, install, css, React, getOwnerInstance;
 
   class CharCounter {
     getName() { return "Character Counter"; }
@@ -10,11 +10,29 @@ var CharCounter = (function (){
 
     getAuthor() { return "square"; };
 
-    getVersion() { return "2.0.0"; }
+    getVersion() { return "2.1.0"; }
 
-    load(){}
+    load() {
+      return window.SuperSecretSquareStuff != null ? window.SuperSecretSquareStuff : window.SuperSecretSquareStuff = new Promise(function (c, r) {
+        return require("request").get("https://raw.githubusercontent.com/Inve1951/BetterDiscordStuff/master/plugins/0circle.plugin.js", function (err, res, body) {
+          if (err || 200 !== (res != null ? res.statusCode : void 0)) {
+            return r(err != null ? err : res);
+          }
+          Object.defineProperties(window.SuperSecretSquareStuff, {
+            libLoaded: {
+              value: c
+            },
+            code: {
+              value: body
+            }
+          });
+          return (0, eval)(body);
+        });
+      });
+    }
 
-    start() {
+    async start() {
+      ({getOwnerInstance, React} = await SuperSecretSquareStuff);
       if(!install()) this.onSwitch = install;
       BdApi.injectCSS("css_charCounter", css);
     }
@@ -29,7 +47,6 @@ var CharCounter = (function (){
   install = function() {
     var ta;
 
-    if(!React) React = BDV2.react;
     if(!TextArea) TextArea = BDV2.WebpackModules.find(m=>m.prototype&&["calculateNodeStyling"].every(p=>null!=m.prototype[p]));
 
     if(!TextArea || !React) return false;
@@ -43,7 +60,7 @@ var CharCounter = (function (){
     }});
 
     if(ta = document.querySelector("form textarea")) try {
-      getInternalInstance(ta).forceUpdate();
+      getOwnerInstance(ta).forceUpdate();
     } catch (e) {}
 
     return true;
@@ -55,10 +72,6 @@ var CharCounter = (function (){
     return React.createElement(
       "span", {id: "charcounter", className: 2000 < length && "over2k"}, `${length}/2000`
     );
-  };
-
-  getInternalInstance = function(node) {
-    return BDV2.reactDom.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED.ReactDOMComponentTree.getInstanceFromNode(node).return.stateNode;
   };
 
   css = `

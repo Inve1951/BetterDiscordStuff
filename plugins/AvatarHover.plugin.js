@@ -1,6 +1,6 @@
-//META { "name": "AvatarHover" } *//
+//META { "name": "AvatarHover", "website": "https://inve1951.github.io/BetterDiscordStuff/" } *//
 global.AvatarHover = function () {
-  var css, defaultSettings, getSettings, handleFocusLoss, handleKeyUpDown, handleMouseOverOut, hoverCard, initContainer, lastTarget, makeInput, pressed, qualifier, settings, updateHoverCard, updateQualifier;
+  var AsyncKeystate, css, defaultSettings, getSettings, handleFocusLoss, handleKeyUpDown, handleMouseOverOut, hoverCard, lastTarget, makeInput, qualifier, settings, updateHoverCard, updateQualifier;
 
   class AvatarHover {
     getName() {
@@ -16,21 +16,42 @@ global.AvatarHover = function () {
     }
 
     getVersion() {
-      return "0.4.1";
+      return "0.5.0";
     }
 
-    load() {}
+    load() {
+      return window.SuperSecretSquareStuff != null ? window.SuperSecretSquareStuff : window.SuperSecretSquareStuff = new Promise(function (c, r) {
+        return require("request").get("https://raw.githubusercontent.com/Inve1951/BetterDiscordStuff/master/plugins/0circle.plugin.js", function (err, res, body) {
+          if (err || 200 !== (res != null ? res.statusCode : void 0)) {
+            return r(err != null ? err : res);
+          }
+          Object.defineProperties(window.SuperSecretSquareStuff, {
+            libLoaded: {
+              value: c
+            },
+            code: {
+              value: body
+            }
+          });
+          return (0, eval)(body);
+        });
+      });
+    }
 
-    start() {
+    async start() {
+      var createElement;
+      ({ AsyncKeystate, createElement } = await SuperSecretSquareStuff);
       getSettings();
       updateQualifier();
       BdApi.injectCSS("css-AvatarHover", css);
-      initContainer();
+      hoverCard = createElement("div", {
+        id: "AvatarHover"
+      });
       document.addEventListener("keydown", handleKeyUpDown, true);
       document.addEventListener("keyup", handleKeyUpDown, true);
       document.addEventListener("mouseover", handleMouseOverOut, true);
       document.addEventListener("mouseout", handleMouseOverOut, true);
-      return document.addEventListener("blur", handleFocusLoss, true);
+      return window.addEventListener("blur", handleFocusLoss, true);
     }
 
     stop() {
@@ -38,7 +59,7 @@ global.AvatarHover = function () {
       document.removeEventListener("keyup", handleKeyUpDown, true);
       document.removeEventListener("mouseover", handleMouseOverOut, true);
       document.removeEventListener("mouseout", handleMouseOverOut, true);
-      document.removeEventListener("blur", handleFocusLoss, true);
+      window.removeEventListener("blur", handleFocusLoss, true);
       hoverCard.remove();
       return BdApi.clearCSS("css-AvatarHover");
     }
@@ -84,12 +105,7 @@ global.AvatarHover = function () {
 
   };
 
-  hoverCard = null;
-
-  initContainer = function () {
-    hoverCard = document.createElement("div");
-    return hoverCard.id = "AvatarHover";
-  };
+  hoverCard = AsyncKeystate = null;
 
   qualifier = null;
 
@@ -99,21 +115,14 @@ global.AvatarHover = function () {
     }).join(", ");
   };
 
-  pressed = [false, false];
-
-  handleKeyUpDown = function ({ type, key }) {
-    var ctrlShift;
-    if (-1 === (ctrlShift = ["Control", "Shift"].indexOf(key))) {
-      return;
-    }
-    if (pressed[ctrlShift] === (pressed[ctrlShift] = "keydown" === type)) {
+  handleKeyUpDown = function ({ key }) {
+    if (key !== "Control" && key !== "Shift") {
       return;
     }
     return updateHoverCard();
   };
 
   handleFocusLoss = function () {
-    pressed = [false, false];
     return updateHoverCard();
   };
 
@@ -129,9 +138,8 @@ global.AvatarHover = function () {
   updateHoverCard = function (target = lastTarget) {
     var boundsTarget, boundsWindow, isLarge, isShown, k, left, ref, size, top, v;
     lastTarget = target;
-    [isShown, isLarge] = pressed;
-    isShown || (isShown = settings.isShown);
-    isLarge || (isLarge = settings.isLarge);
+    isShown = settings.isShown || AsyncKeystate.key("Control");
+    isLarge = settings.isLarge || AsyncKeystate.key("Shift");
     if (!(isShown && target)) {
       return hoverCard.remove();
     }

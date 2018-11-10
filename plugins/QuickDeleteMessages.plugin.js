@@ -1,8 +1,6 @@
-//META{"name":"QuickDeleteMessages"}*//
-var QuickDeleteMessages;
-
-QuickDeleteMessages = function () {
-  var MessageDeleteItem, deletePressed, getInternalInstance, getOwnerInstance, handleKeyUpDown, onClick, qualifies, settings;
+//META { "name": "QuickDeleteMessages", "website": "https://inve1951.github.io/BetterDiscordStuff/" } *//
+global.QuickDeleteMessages = function () {
+  var AsyncKeystate, MessageDeleteItem, getOwnerInstance, onClick, qualifies, settings;
 
   class QuickDeleteMessages {
     getName() {
@@ -18,29 +16,42 @@ QuickDeleteMessages = function () {
     }
 
     getVersion() {
-      return "1.2.0";
+      return "1.3.0";
     }
 
-    start() {
-      var ref;
-      getInternalInstance = BDV2.reactDom.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED.ReactDOMComponentTree.getInstanceFromNode;
-      settings.confirm = (ref = bdPluginStorage.get("QuickDeleteMessages", "confirm")) != null ? ref : false;
-      document.addEventListener("click", onClick, true);
-      document.addEventListener("keydown", handleKeyUpDown);
-      document.addEventListener("keyup", handleKeyUpDown);
-      return MessageDeleteItem = BDV2.WebpackModules.find(function (m) {
-        var ref1;
-        return (ref1 = m.prototype) != null ? ref1.handleDeleteMessage : void 0;
+    load() {
+      return window.SuperSecretSquareStuff != null ? window.SuperSecretSquareStuff : window.SuperSecretSquareStuff = new Promise(function (c, r) {
+        return require("request").get("https://raw.githubusercontent.com/Inve1951/BetterDiscordStuff/master/plugins/0circle.plugin.js", function (err, res, body) {
+          if (err || 200 !== (res != null ? res.statusCode : void 0)) {
+            return r(err != null ? err : res);
+          }
+          Object.defineProperties(window.SuperSecretSquareStuff, {
+            libLoaded: {
+              value: c
+            },
+            code: {
+              value: body
+            }
+          });
+          return (0, eval)(body);
+        });
       });
     }
 
-    stop() {
-      document.removeEventListener("click", onClick, true);
-      document.removeEventListener("keydown", handleKeyUpDown);
-      return document.removeEventListener("keyup", handleKeyUpDown);
+    async start() {
+      var ref;
+      ({ AsyncKeystate, getOwnerInstance } = await SuperSecretSquareStuff);
+      settings.confirm = (ref = bdPluginStorage.get("QuickDeleteMessages", "confirm")) != null ? ref : false;
+      MessageDeleteItem = BDV2.WebpackModules.find(function (m) {
+        var ref1;
+        return (ref1 = m.prototype) != null ? ref1.handleDeleteMessage : void 0;
+      });
+      return document.addEventListener("click", onClick, true);
     }
 
-    load() {}
+    stop() {
+      return document.removeEventListener("click", onClick, true);
+    }
 
     getSettingsPanel() {
       return `<label style="color: #87909C"><input type="checkbox" name="confirm" onChange="QuickDeleteMessages.updateSettings(this)"\n${settings.confirm && "checked" || ""} />confirm delete?</label>`;
@@ -55,21 +66,15 @@ QuickDeleteMessages = function () {
 
   settings = Object.create(null);
 
-  MessageDeleteItem = getInternalInstance = null;
+  MessageDeleteItem = null;
 
-  deletePressed = false;
-
-  handleKeyUpDown = function ({ code, type }) {
-    if (code === "Delete" || "darwin" === process.platform && "Backspace" === code) {
-      deletePressed = "keydown" === type;
-    }
-  };
+  AsyncKeystate = getOwnerInstance = null;
 
   qualifies = ".content-3dzVd8";
 
   onClick = function (event) {
     var element, handler;
-    if (!deletePressed) {
+    if (!(AsyncKeystate.key("Delete") || "darwin" === process.platform && AsyncKeystate.key("Backspace"))) {
       return;
     }
     ({
@@ -93,12 +98,6 @@ QuickDeleteMessages = function () {
     });
     event.preventDefault();
     event.stopImmediatePropagation();
-  };
-
-  getOwnerInstance = function (node) {
-    var internalInstance, ref;
-    internalInstance = (ref = getInternalInstance(node)) != null ? ref : node._reactInternalFiber;
-    return internalInstance.return.stateNode;
   };
 
   return QuickDeleteMessages;

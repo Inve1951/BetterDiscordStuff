@@ -1,8 +1,8 @@
-//META { "name": "HighlightSelf" } *//
+//META { "name": "HighlightSelf", "website": "https://inve1951.github.io/BetterDiscordStuff/" } *//
 var HighlightSelf;
 
 HighlightSelf = function () {
-  var MessageComponents, UserStore, cancel, css, install;
+  var MessageComponents, UserStore, cancel, css, getOwnerInstance, install;
 
   class HighlightSelf {
     getName() {
@@ -18,12 +18,30 @@ HighlightSelf = function () {
     }
 
     getVersion() {
-      return "1.0.1";
+      return "1.1.0";
     }
 
-    load() {}
+    load() {
+      return window.SuperSecretSquareStuff != null ? window.SuperSecretSquareStuff : window.SuperSecretSquareStuff = new Promise(function (c, r) {
+        return require("request").get("https://raw.githubusercontent.com/Inve1951/BetterDiscordStuff/master/plugins/0circle.plugin.js", function (err, res, body) {
+          if (err || 200 !== (res != null ? res.statusCode : void 0)) {
+            return r(err != null ? err : res);
+          }
+          Object.defineProperties(window.SuperSecretSquareStuff, {
+            libLoaded: {
+              value: c
+            },
+            code: {
+              value: body
+            }
+          });
+          return (0, eval)(body);
+        });
+      });
+    }
 
-    start() {
+    async start() {
+      ({ getOwnerInstance } = await SuperSecretSquareStuff);
       if (!install()) {
         this.onSwitch = install;
       }
@@ -40,7 +58,7 @@ HighlightSelf = function () {
 
   };
 
-  MessageComponents = UserStore = cancel = null;
+  MessageComponents = UserStore = cancel = getOwnerInstance = null;
 
   install = function () {
     var i, len, n, ref;
@@ -54,18 +72,18 @@ HighlightSelf = function () {
     delete this.onSwitch;
     cancel = Utils.monkeyPatch(MessageComponents.MessageUsername.prototype, "render", {
       after: function ({ returnValue, thisObject }) {
-        var props;
+        var props, ref;
         ({ props } = returnValue.props.children);
-        if (UserStore.getCurrentUser() === thisObject.props.message.author && !props.className.endsWith(" highlight-self")) {
-          return props.className += " highlight-self";
+        if (UserStore.getCurrentUser() === thisObject.props.message.author && !((ref = props.className) != null ? ref.endsWith(" highlight-self") : void 0)) {
+          return props.className = props.className ? props.className + " highlight-self" : "highlight-self";
         }
       }
     });
     try {
-      ref = document.querySelectorAll("usernameWrapper-1S-G5O");
+      ref = document.querySelectorAll(".message-1PNnaP h2 > span");
       for (i = 0, len = ref.length; i < len; i++) {
         n = ref[i];
-        BDV2.reactDom.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED.ReactDOMComponentTree.getInstanceFromNode(n).return.stateNode.forceUpdate();
+        getOwnerInstance(n).forceUpdate();
       }
     } catch (error) {}
     return true;
