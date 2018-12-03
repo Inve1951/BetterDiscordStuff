@@ -4,7 +4,7 @@ class global.AvatarHover
   getName: -> "Avatar Hover"
   getDescription: -> "When hovering, resize the avatar. Use Ctrl / Ctrl+Shift."
   getAuthor: -> "noVaLue, square"
-  getVersion: -> "0.5.0"
+  getVersion: -> "0.6.0"
 
   hoverCard = AsyncKeystate = null
 
@@ -68,15 +68,19 @@ class global.AvatarHover
     size = isLarge and 256 or 128
     boundsTarget = target.getBoundingClientRect()
     boundsWindow =
-      width: innerWidth
-      height: innerHeight
+      width: window.innerWidth
+      height: window.innerHeight
 
     left = Math.max 0, boundsTarget.left + (boundsTarget.width - size) / 2
-    left = boundsWindow.width - boundsTarget.width if left + boundsTarget.width > boundsWindow.width
+    left = boundsWindow.width - size if left + size > boundsWindow.width
 
-    top = if boundsWindow.height - boundsTarget.height < boundsTarget.top
+    top =
+      if size > boundsWindow.height
+        (boundsWindow.height - size) / 2
+      else if boundsTarget.bottom + size > boundsWindow.height
         boundsTarget.top - size
       else boundsTarget.bottom
+
 
     hoverCard.style[k] = v for k, v of {
       backgroundColor: settings.avatarBackgroundColor
