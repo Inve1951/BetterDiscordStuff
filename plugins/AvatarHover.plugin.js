@@ -16,7 +16,7 @@ global.AvatarHover = function () {
     }
 
     getVersion() {
-      return "0.5.0";
+      return "0.6.0";
     }
 
     load() {
@@ -146,14 +146,14 @@ global.AvatarHover = function () {
     size = isLarge && 256 || 128;
     boundsTarget = target.getBoundingClientRect();
     boundsWindow = {
-      width: innerWidth,
-      height: innerHeight
+      width: window.innerWidth,
+      height: window.innerHeight
     };
     left = Math.max(0, boundsTarget.left + (boundsTarget.width - size) / 2);
-    if (left + boundsTarget.width > boundsWindow.width) {
-      left = boundsWindow.width - boundsTarget.width;
+    if (left + size > boundsWindow.width) {
+      left = boundsWindow.width - size;
     }
-    top = boundsWindow.height - boundsTarget.height < boundsTarget.top ? boundsTarget.top - size : boundsTarget.bottom;
+    top = size > boundsWindow.height ? (boundsWindow.height - size) / 2 : boundsTarget.bottom + size > boundsWindow.height ? boundsTarget.top - size : boundsTarget.bottom;
     ref = {
       backgroundColor: settings.avatarBackgroundColor,
       backgroundImage: ("IMG" === target.tagName && target.src || getComputedStyle(target).backgroundImage).replace(/\?size=\d{3,4}/, `?size=${size}`),
