@@ -115,20 +115,20 @@ SquareLib = function () {
   }, true);
   window.addEventListener("blur", function () {
     return _keystates = [];
-  }, true);
-  createElement = function (tag, props = {}, children) {
+  }, false);
+  createElement = function (tag, props = {}, ...children) {
     var c, elem, i, k, len, v;
     elem = document.createElement(tag);
-    for (k in props) {
-      if (!hasProp.call(props, k)) continue;
-      v = props[k];
-      elem[k] = v;
-    }
-    if (children) {
-      for (i = 0, len = children.length; i < len; i++) {
-        c = children[i];
-        elem.appendChild(c);
+    if (props) {
+      for (k in props) {
+        if (!hasProp.call(props, k)) continue;
+        v = props[k];
+        elem[k] = v;
       }
+    }
+    for (i = 0, len = children.length; i < len; i++) {
+      c = children[i];
+      elem.appendChild(c);
     }
     return elem;
   };
