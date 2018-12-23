@@ -1,7 +1,5 @@
 //META { "name": "localFileServer" } *//
-var localFileServer;
-
-localFileServer = function () {
+global.localFileServer = function () {
   var app, assertMainProcJsPatch, bw, dialog, favicon, findPatchRelaunch, fs, fs2, func, getSettings, https, i, isImage, len, onRequest, path, pfx, ref, remote, server, settings, shell, startServer, stopServer, url;
 
   class localFileServer {
@@ -18,7 +16,7 @@ localFileServer = function () {
     }
 
     getVersion() {
-      return "1.1.1";
+      return "1.1.2";
     }
 
     load() {}
@@ -35,7 +33,7 @@ localFileServer = function () {
 
     getSettingsPanel() {
       getSettings();
-      return `<div id="settings_localFileServer">\n  <style>\n  #settings_localFileServer {\n    color: #87909C;\n  }\n  #settings_localFileServer button {\n    background: rgba(128,128,128,0.4);\n    width: calc(100% - 20px);\n    padding: 5px 10px;\n    box-sizing: content-box;\n    height: 1em;\n    font-size: 1em;\n    line-height: 0.1em;\n  }\n  #settings_localFileServer input {\n    text-align: center;\n    width: 63px;\n    border-width: 0;\n    outline-width: 0;\n  }\n  #settings_localFileServer .invalid {\n    background: rgba(255,0,0,.5);\n    font-weight: 500;\n  }\n  #settings_localFileServer * {\n    margin-bottom: 2px;\n  }\n  </style>\n  <button name="folder" ${fs.existsSync(settings.folder) ? "" : "class=\"invalid\" "}type="button" onclick="localFileServer.chooseDirectory()">${settings.folder}</button>\n  <button type="button" onclick="localFileServer.openInBrowser()">Open in browser.</button>\n  Port: <input name="port" type="number" value="${settings.port}" placeholder="...port..." oninput="localFileServer.updateSettings()" autocomplete="off" />\n  only accepts 443 and [10001-65535]\n</div>`;
+      return `<div id="settings_localFileServer">\n  <style>\n  #settings_localFileServer {\n    color: #87909C;\n  }\n  #settings_localFileServer button {\n    background: rgba(128,128,128,0.4);\n    width: calc(100% - 20px);\n    padding: 5px 10px;\n    box-sizing: content-box;\n    height: 1em;\n    font-size: 1em;\n    line-height: 0.1em;\n  }\n  #settings_localFileServer input {\n    text-align: center;\n    color: black;\n    width: 63px;\n    border-width: 0;\n    outline-width: 0;\n  }\n  #settings_localFileServer .invalid {\n    background: rgba(255,0,0,.5);\n    font-weight: 500;\n  }\n  #settings_localFileServer * {\n    margin-bottom: 2px;\n  }\n  </style>\n  <button name="folder" ${fs.existsSync(settings.folder) ? "" : "class=\"invalid\" "}type="button" onclick="localFileServer.chooseDirectory()">${settings.folder}</button>\n  <button type="button" onclick="localFileServer.openInBrowser()">Open in browser.</button>\n  Port: <input name="port" type="number" value="${settings.port}" placeholder="...port..." oninput="localFileServer.updateSettings()" autocomplete="off" />\n  only accepts 443 and [10001-65535]\n</div>`;
     }
 
     static openInBrowser() {
@@ -215,22 +213,10 @@ localFileServer = function () {
   };
 
   assertMainProcJsPatch = async function () {
-    var _path, e, mainjs, split;
+    var _path, e;
     try {
-      split = "_electron = require('electron');";
-      mainjs = "\r\n\r\n// localFileServer plugin start     #ref1#\nglobal.localFileServerMainProcObj={port:null};\n_electron.app.commandLine.appendSwitch(\"allow-insecure-localhost\");\n_electron.app.on(\"certificate-error\",(ev,x,url,y,z,cb)=>(new RegExp(`https://(localhost|127\\\\.0\\\\.0\\\\.1)${localFileServerMainProcObj.port}/`)).test(url)?(ev.preventDefault(),cb(!0)):cb(!1));\n// localFileServer plugin end\r\n";
-      _path = path.join(remote.require(path.join(app.getAppPath(), "common/paths.js")).getUserDataVersioned(), "modules/discord_desktop_core/core/app/mainscreen.js");
-      return await findPatchRelaunch(_path, split, mainjs);
-    } catch (error) {
-      e = error;
-      console.error(e);
-    }
-    // 0.0.300 changes didn't make it to osx at time of writing
-    split = "app.setVersion(discordVersion);";
-    _path = path.join(app.getAppPath(), "index.js");
-    mainjs = mainjs.split("_electron.").join("");
-    try {
-      await findPatchRelaunch(_path, split, mainjs);
+      _path = remote.app.getAppPath().split(".asar")[0] + "/index.js";
+      return await findPatchRelaunch(_path, null, "\n\n// localFileServer plugin start     #ref1#\nglobal.localFileServerMainProcObj={port:null};\nelectron.app.commandLine.appendSwitch(\"allow-insecure-localhost\");\nelectron.app.on(\"certificate-error\",(ev,x,url,y,z,cb)=>(new RegExp(`https://(localhost|127\\.0\\.0\\.1)${localFileServerMainProcObj.port}/`)).test(url)?(ev.preventDefault(),cb(!0)):cb(!1));\n// localFileServer plugin end\n".replace(/\r?\n/g, require("os").EOL));
     } catch (error) {
       e = error;
       console.error(e);
@@ -243,9 +229,9 @@ localFileServer = function () {
     if (-1 !== data.indexOf(mainjs)) {
       return;
     }
-    newData = data.split(split).join(`${split}${mainjs}`);
+    newData = split ? data.split(split).join(`${split}${mainjs}`) : data + mainjs;
     if (data.length + mainjs.length !== newData.length) {
-      throw "localFileServer needs fixing!";
+      throw new Error("localFileServer needs fixing!");
     }
     await fs2.writeFile(_path, newData);
     app.relaunch();
@@ -283,5 +269,3 @@ localFileServer = function () {
 
   return localFileServer;
 }.call(this);
-
-global.localFileServer = localFileServer;
