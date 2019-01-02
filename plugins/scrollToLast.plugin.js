@@ -2,33 +2,35 @@
 
 var scrollToLast = function() {
 
-  var Keybinds, Handlers, onSwitch;
+  var Keybinds, onSwitch, cancels = [];
 
-  onSwitch = ev => {
+  Keybinds = BdApi.findModuleByProps("MARK_CHANNEL_READ");
+
+  onSwitch = ({methodArguments: [ev]}) => {
     if(("CHANNEL_SELECT" === ev.type || "GUILD_SELECT" === ev.type) && /^\/channels\/(?:@me|\d+)\/\d+$/.test(window.location.pathname))
       process.nextTick(Keybinds.MARK_CHANNEL_READ.action);
-  }
+  };
 
   return {
     getName: () => "Scroll-To-Last",
     getDescription: () => "When entering any text channel, scrolls to the bottom and marks it as read.",
     getAuthor: () => "square",
-    getVersion: () => "1.0.0",
-
-    load: () => {
-      Keybinds = BDV2.WebpackModules.findByUniqueProperties(["MARK_CHANNEL_READ", "CALL_START"]);
-      Handlers = [
-        BDV2.WebpackModules.find(m => m._actionHandlers && m._actionHandlers.CHANNEL_SELECT),
-        BDV2.WebpackModules.find(m => m._actionHandlers && m._actionHandlers.GUILD_SELECT)
-      ];
-    },
+    getVersion: () => "1.0.1",
 
     start: () => {
-      Handlers.forEach(h=>h.subscribeToDispatch(onSwitch));
+      cancels.push(BdApi.monkeyPatch(
+        BdApi.findModule(m => m._actionHandlers && m._actionHandlers.CHANNEL_SELECT)._actionHandlers,
+        "CHANNEL_SELECT", {before: onSwitch}
+      ));
+      cancels.push(BdApi.monkeyPatch(
+        BdApi.findModule(m => m._actionHandlers && m._actionHandlers.GUILD_SELECT)._actionHandlers,
+        "GUILD_SELECT", {before: onSwitch}
+      ));
     },
 
     stop: () => {
-      Handlers.forEach(h=>h.unsubscribeToDispatch(onSwitch));
+      cancels.forEach(c => c());
+      cancels = [];
     }
-  }
-}
+  };
+};

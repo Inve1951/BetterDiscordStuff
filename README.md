@@ -10,9 +10,9 @@ Want to buy me a coffee? Find my PayPal link on above site.
 I mostly write my plugins in [coffeescript](http://coffeescript.org/).<br/>
 I will release the source of fully featured (finished) code in [coffee/](coffee/).
 
-available source files:
+Available source files:
 * [Avatar Hover](coffee/AvatarHover.plugin.coffee)
-* [Bot Info](coffee/botInfo.plugin.coffee)
+* now dead: [Bot Info](coffee/botInfo.plugin.coffee)
 * [Local File Server](coffee/localFileServer.plugin.coffee)
 * [Toggle Your Stuff](coffee/toggleYourStuff.plugin.coffee)
 * [Quick Delete Messages](coffee/QuickDeleteMessages.plugin.coffee)
@@ -21,18 +21,19 @@ available source files:
 
 ------------------------
 
-## plugins:
+## Plugins:
 
-  **[Restart No More](plugins/restartNoMore.plugin.js)** _alpha version_
+  **[Restart No More](plugins/restartNoMore.plugin.js)** _alpha version, obsolete_
 
     Live-updates your themes and plugins. Especially useful during development.
+    This functionality is now included in BetterDiscord.
 
   **[Direct-Download](plugins/directDownload.plugin.js)**
 
     Download attached files directly within discord.
     Optionally installs themes and plugins from `betterdiscord.net` links.
 
-  **[Force-Close](plugins/forceClose.plugin.js)**
+  **[Force-Close](plugins/forceClose.plugin.js)** _obsolete_
 
     Actually closes discord when clicking the close button.
     Obsolete as of 12.12.17. Discord got this built-in now. See window settings in client.
@@ -81,10 +82,11 @@ available source files:
 
     Always scroll to last message when entering a channel.
 
-  **[Bot Info](plugins/botInfo.plugin.js)**
+  **[Bot Info](plugins/botInfo.plugin.js)** _dead_
 
     Shows bots' infos from `discordbots.org` in user popouts.
     Depends on samogot's Discord Internals Library, so install that too. (https://github.com/samogot/betterdiscord-plugins/blob/master/v1/1lib_discord_internals.plugin.js)
+    Dead as of december 2018. discordbots.org's API changes disallow for continuation.
 
   **[Local File Server](plugins/localFileServer.plugin.js)**
 
@@ -113,19 +115,20 @@ available source files:
   **[Highlight Self](plugins/HighlightSelf.plugin.js)**
 
     Highlights your own username in message headers.
+    Especially awesome when using compact chat UI.
 
 ------------------------
 
-## themes:
+## Themes:
 
-  **[Drag-Fix](themes/dragfix.theme.css)** _mini-theme_
+  **[Drag-Fix](themes/dragfix.theme.css)** _mini-theme, obsolete_
 
     Makes it way easier to move the window.
     Obsolete since discord's titlebar update.
 
   **[Show-URLs](/themes/showURLs.theme.css)** _mini-theme_
 
-    Shows a link's URL in bottom left corner much like a browser does.
+    Shows links' URLs in bottom left corner much like a browser does.
 
   **[Compact-User-List](/themes/compactUserList.theme.css)** _mini-theme_
 
