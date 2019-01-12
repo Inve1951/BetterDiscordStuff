@@ -1,4 +1,4 @@
-/* //META { "name": "Horizontal_Serverlist", "description": "I've always wanted this :3", "author": "square", "version": "2.0.3-pre"} *//**/
+/* //META { "name": "Horizontal_Serverlist", "description": "I've always wanted this :3", "author": "square", "version": "2.0.4-pre"} *//**/
 
 :root {
   --height-titlebar: 22px;
@@ -25,7 +25,7 @@
   height: calc(100vh - var(--height-titlebar) - var(--height-serverlist));
 }
 
-.guildsWrapper-5TJh6A .scroller-wrap {
+.guildsWrapper-5TJh6A .scrollerWrap-2lJEkd {
   display: flex;
   width: 100vw;
   height: var(--height-serverlist);
