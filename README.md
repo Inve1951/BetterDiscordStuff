@@ -18,6 +18,7 @@ Available source files:
 * [Quick Delete Messages](coffee/QuickDeleteMessages.plugin.coffee)
 * [More Obvious DMs](coffee/moreObviousDMs.plugin.coffee)
 * [Highlight Self](coffee/HighlightSelf.plugin.coffee)
+* [Direct-Download](coffee/directDownload.plugin.coffee)
 
 ------------------------
 

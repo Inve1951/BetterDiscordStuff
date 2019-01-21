@@ -1,8 +1,6 @@
-//META{"name":"directDownload"}*//
-var directDownload;
-
-directDownload = function () {
-  var Download, _fr, bw, cache, classNames, clipboard, dialog, downloadbar, fs, getSettings, http, https, installCss, installDownloadBar, lastButOneIndexOf, lastClicked, listener, nativeImage, pPlugins, pThemes, path, remote, settings, shell;
+//META{"name":"directDownload", "website": "https://inve1951.github.io/BetterDiscordStuff/"}*//
+global.directDownload = function () {
+  var Download, _dialogOpen, _fr, bw, cache, classNames, clipboard, dialog, downloadbar, fs, getSettings, http, https, installCss, installDownloadBar, lastButOneIndexOf, lastClicked, listener, nativeImage, pPlugins, pThemes, path, remote, settings, shell;
 
   class directDownload {
     getName() {
@@ -18,7 +16,7 @@ directDownload = function () {
     }
 
     getVersion() {
-      return "0.4.1";
+      return "0.4.2";
     }
 
     start() {
@@ -38,21 +36,22 @@ directDownload = function () {
       document.removeEventListener("dblclick", listener, true);
     }
 
-    load() {}
-
     getSettingsPanel() {
       getSettings();
       return `<div id="settings_directDownload">\n  <style>\n    #settings_directDownload {\n      color: #87909C;\n    }\n    #settings_directDownload button {\n      background: rgba(128,128,128,0.4);\n      width: calc(100% - 20px);\n      padding: 5px 10px;\n      box-sizing: content-box;\n      height: 1em;\n      font-size: 1em;\n      line-height: 0.1em;\n    }\n    #settings_directDownload button.invalid {\n      background: rgba(200,0,0,.5);\n      font-weight: 500;\n    }\n    #settings_directDownload label {\n      display: inline-block;\n    }\n    #settings_directDownload :-webkit-any(label, input) {\n      cursor: pointer;\n    }\n    #settings_directDownload br + br {\n      content: "";\n      display: block;\n      margin-top: 5px;\n    }\n  </style>\n  <button name="dldir" type="button" onclick="directDownload.chooseDirectory()">${settings.dldir}</button>\n  <br><br>\n  <label><input name="autoopen" type="checkbox" ${settings.autoopen ? "checked" : ""} onchange="directDownload.updateSettings()"/>Open files after download.</label>\n  <label><input name="showinstead" type="checkbox" ${settings.showinstead ? "checked" : ""} ${settings.autoopen ? "" : "disabled"} onchange="directDownload.updateSettings()"/>Show in folder instead.</label>\n  <br><br>\n  <label><input name="overwrite" type="checkbox" ${!settings.overwrite ? "checked" : ""} onchange="directDownload.updateSettings()"/>Ask for path if file exists.</label>\n  <label><input name="prompt" type="checkbox" ${settings.prompt ? "checked" : ""} ${settings.overwrite ? "disabled" : ""} onchange="directDownload.updateSettings()"/>Always ask.</label>\n  <br><br>\n  <label><input name="imagemodals" type="checkbox" ${settings.imagemodals ? "checked" : ""} onchange="directDownload.updateSettings()"/>Allow direct download for image modals.</label>\n  <label><input name="copyimages" type="checkbox" ${settings.copyimages ? "checked" : ""} ${settings.imagemodals ? "" : "disabled"} onchange="directDownload.updateSettings()"/>Copy the image to clipboard when download is done.</label>\n  <label><input name="doubleClick" type="checkbox" ${settings.doubleClick ? "checked" : ""} ${settings.imagemodals ? "" : "disabled"} onchange="directDownload.updateSettings()"/>Require a double click as opposed to a single one.</label>\n  <br><br>\n  <label><input name="itp" type="checkbox" ${settings.itp ? "checked" : ""} onchange="directDownload.updateSettings()"/>Install themes and plugins downloaded from betterdiscord.net (will always overwrite).</label>\n</div>`;
     }
 
     static chooseDirectory(cb) {
-      dialog.showOpenDialog(bw, {
+      if (_dialogOpen) {
+        throw new Error("Dialog already open");
+      }
+      _dialogOpen = true;
+      dialog.showOpenDialog({
         defaultPath: settings.dldir,
-        buttonLabel: "Choose",
-        properties: ["openDirectory", "showHiddenFiles", "createDirectory", "noResolveAliases", "treatPackageAsDirectory" // "promptToCreate",
-        ]
+        properties: ["openDirectory", "showHiddenFiles", "createDirectory", "noResolveAliases", "treatPackageAsDirectory"]
       }, selection => {
         var dir;
+        _dialogOpen = false;
         dir = selection != null ? selection[0] : void 0;
         if (cb) {
           cb(dir);
@@ -64,21 +63,28 @@ directDownload = function () {
     }
 
     static chooseFile(defaultPath, cb) {
-      var ext, filters;
+      var ext, extensions, filters;
+      if (_dialogOpen) {
+        throw new Error("Dialog already open");
+      }
+      _dialogOpen = true;
       if (!cb) {
         cb = defaultPath;
         defaultPath = "";
       }
-      ext = path.extname(defaultPath).slice(1);
-      filters = ext ? [{
+      ext = path.extname(defaultPath).slice(1).toLowerCase();
+      filters = ext ? (extensions = ext === "jpg" || ext === "jpeg" ? ["jpg", "jpeg"] : [ext], [{
         name: ext.toUpperCase(),
-        extensions: [ext]
+        extensions
       }, {
         name: "All Files",
         extensions: ["*"]
-      }] : [];
-      dialog.showSaveDialog(bw, { defaultPath, filters }, function (selection) {
-        cb(selection);
+      }]) : [];
+      dialog.showSaveDialog({ defaultPath, filters }, function (selection) {
+        _dialogOpen = false;
+        if (typeof cb === "function") {
+          cb(selection);
+        }
       });
     }
 
@@ -309,6 +315,8 @@ directDownload = function () {
       }
     }
   };
+
+  _dialogOpen = false;
 
   Download = function () {
     class Download {
@@ -907,5 +915,3 @@ directDownload = function () {
 
   return directDownload;
 }.call(this);
-
-window.directDownload = directDownload;
