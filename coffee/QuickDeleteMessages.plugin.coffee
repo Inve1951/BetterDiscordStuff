@@ -4,7 +4,7 @@ class global.QuickDeleteMessages
   getName: -> "Quick Delete Messages"
   getDescription: -> "Hold Delete and click a Message to delete it."
   getAuthor: -> "square"
-  getVersion: -> "1.3.0"
+  getVersion: -> "1.3.1"
 
   settings = Object.create null
   MessageDeleteItem = null
@@ -21,7 +21,19 @@ class global.QuickDeleteMessages
     {AsyncKeystate, getOwnerInstance} = await SuperSecretSquareStuff
 
     settings.confirm = bdPluginStorage.get("QuickDeleteMessages", "confirm") ? no
-    MessageDeleteItem = BDV2.WebpackModules.find (m) -> m::?.handleDeleteMessage
+
+    try MessageDeleteItem = do ->
+      C = BdApi.findModule (m) -> /MessageDeleteItem/.test m.displayName
+      if C.displayName.includes "(MessageDeleteItem)"
+        new C
+          channel: {}
+          message: {}
+        .render()
+        .type
+      else
+        C
+
+    return console.error "[QuickDeleteMessages]: fix me!" unless "function" is typeof MessageDeleteItem
 
     document.addEventListener "click", onClick, yes
 

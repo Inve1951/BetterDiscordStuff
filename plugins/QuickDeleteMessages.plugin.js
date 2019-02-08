@@ -16,7 +16,7 @@ global.QuickDeleteMessages = function () {
     }
 
     getVersion() {
-      return "1.3.0";
+      return "1.3.1";
     }
 
     load() {
@@ -42,10 +42,26 @@ global.QuickDeleteMessages = function () {
       var ref;
       ({ AsyncKeystate, getOwnerInstance } = await SuperSecretSquareStuff);
       settings.confirm = (ref = bdPluginStorage.get("QuickDeleteMessages", "confirm")) != null ? ref : false;
-      MessageDeleteItem = BDV2.WebpackModules.find(function (m) {
-        var ref1;
-        return (ref1 = m.prototype) != null ? ref1.handleDeleteMessage : void 0;
-      });
+      try {
+        MessageDeleteItem = function () {
+          var C;
+          C = BdApi.findModule(function (m) {
+            return (/MessageDeleteItem/.test(m.displayName)
+            );
+          });
+          if (C.displayName.includes("(MessageDeleteItem)")) {
+            return new C({
+              channel: {},
+              message: {}
+            }).render().type;
+          } else {
+            return C;
+          }
+        }();
+      } catch (error) {}
+      if ("function" !== typeof MessageDeleteItem) {
+        return console.error("[QuickDeleteMessages]: fix me!");
+      }
       return document.addEventListener("click", onClick, true);
     }
 
