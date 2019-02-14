@@ -4,10 +4,10 @@ class global.QuickDeleteMessages
   getName: -> "Quick Delete Messages"
   getDescription: -> "Hold Delete and click a Message to delete it."
   getAuthor: -> "square"
-  getVersion: -> "1.3.1"
+  getVersion: -> "1.4.0"
 
   settings = Object.create null
-  MessageDeleteItem = null
+  Permissions = UserStore = EndpointMessages = MessagePrompts = null
   AsyncKeystate = getOwnerInstance = null
 
   load: ->
@@ -22,18 +22,10 @@ class global.QuickDeleteMessages
 
     settings.confirm = bdPluginStorage.get("QuickDeleteMessages", "confirm") ? no
 
-    try MessageDeleteItem = do ->
-      C = BdApi.findModule (m) -> /MessageDeleteItem/.test m.displayName
-      if C.displayName.includes "(MessageDeleteItem)"
-        new C
-          channel: {}
-          message: {}
-        .render()
-        .type
-      else
-        C
-
-    return console.error "[QuickDeleteMessages]: fix me!" unless "function" is typeof MessageDeleteItem
+    UserStore ?= BdApi.findModuleByProps "getCurrentUser"
+    Permissions ?= BdApi.findModuleByProps "computePermissions"
+    EndpointMessages ?= BdApi.findModuleByProps "deleteMessage"
+    MessagePrompts ?= BdApi.findModuleByProps "confirmDelete"
 
     document.addEventListener "click", onClick, yes
 
@@ -46,7 +38,7 @@ class global.QuickDeleteMessages
 
   @updateSettings: ({name, checked}) ->
     settings[name] = checked
-    bdPluginStorage.set "QuickDeleteMessages", name, checked
+    BdApi.saveData "QuickDeleteMessages", name, checked
     return
 
   qualifies = ".content-3dzVd8"
@@ -55,19 +47,25 @@ class global.QuickDeleteMessages
     return unless AsyncKeystate.key("Delete") or
       "darwin" is process.platform and AsyncKeystate.key "Backspace"
 
-    {path: [element]} = event
+    {path: [element], shiftKey} = event
 
     if element.matches(qualifies) or element = element.closest qualifies
       element = element.closest ".message-1PNnaP"
     else return
 
-    try
-      handler = new MessageDeleteItem getOwnerInstance(element).props
-      return unless handler.render()
-    catch then return
+    {props: {channel, message}} = getOwnerInstance element
+    return unless gotDeletePermission channel, message
 
-    handler.handleDeleteMessage shiftKey: not settings.confirm or event.shiftKey
+    if settings.confirm and not shiftKey
+      MessagePrompts.confirmDelete channel, message, no
+    else
+      EndpointMessages.deleteMessage channel.id, message.id, no
 
     event.preventDefault()
     event.stopImmediatePropagation()
     return
+
+  gotDeletePermission = (channel, message) ->
+    self = UserStore.getCurrentUser()
+    self is message.author or
+    0x2000 & Permissions.computePermissions self, channel

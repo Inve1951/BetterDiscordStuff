@@ -1,6 +1,6 @@
 //META { "name": "QuickDeleteMessages", "website": "https://inve1951.github.io/BetterDiscordStuff/" } *//
 global.QuickDeleteMessages = function () {
-  var AsyncKeystate, MessageDeleteItem, getOwnerInstance, onClick, qualifies, settings;
+  var AsyncKeystate, EndpointMessages, MessagePrompts, Permissions, UserStore, getOwnerInstance, gotDeletePermission, onClick, qualifies, settings;
 
   class QuickDeleteMessages {
     getName() {
@@ -16,7 +16,7 @@ global.QuickDeleteMessages = function () {
     }
 
     getVersion() {
-      return "1.3.1";
+      return "1.4.0";
     }
 
     load() {
@@ -42,25 +42,17 @@ global.QuickDeleteMessages = function () {
       var ref;
       ({ AsyncKeystate, getOwnerInstance } = await SuperSecretSquareStuff);
       settings.confirm = (ref = bdPluginStorage.get("QuickDeleteMessages", "confirm")) != null ? ref : false;
-      try {
-        MessageDeleteItem = function () {
-          var C;
-          C = BdApi.findModule(function (m) {
-            return (/MessageDeleteItem/.test(m.displayName)
-            );
-          });
-          if (C.displayName.includes("(MessageDeleteItem)")) {
-            return new C({
-              channel: {},
-              message: {}
-            }).render().type;
-          } else {
-            return C;
-          }
-        }();
-      } catch (error) {}
-      if ("function" !== typeof MessageDeleteItem) {
-        return console.error("[QuickDeleteMessages]: fix me!");
+      if (UserStore == null) {
+        UserStore = BdApi.findModuleByProps("getCurrentUser");
+      }
+      if (Permissions == null) {
+        Permissions = BdApi.findModuleByProps("computePermissions");
+      }
+      if (EndpointMessages == null) {
+        EndpointMessages = BdApi.findModuleByProps("deleteMessage");
+      }
+      if (MessagePrompts == null) {
+        MessagePrompts = BdApi.findModuleByProps("confirmDelete");
       }
       return document.addEventListener("click", onClick, true);
     }
@@ -75,45 +67,52 @@ global.QuickDeleteMessages = function () {
 
     static updateSettings({ name, checked }) {
       settings[name] = checked;
-      bdPluginStorage.set("QuickDeleteMessages", name, checked);
+      BdApi.saveData("QuickDeleteMessages", name, checked);
     }
 
   };
 
   settings = Object.create(null);
 
-  MessageDeleteItem = null;
+  Permissions = UserStore = EndpointMessages = MessagePrompts = null;
 
   AsyncKeystate = getOwnerInstance = null;
 
   qualifies = ".content-3dzVd8";
 
   onClick = function (event) {
-    var element, handler;
+    var channel, element, message, shiftKey;
     if (!(AsyncKeystate.key("Delete") || "darwin" === process.platform && AsyncKeystate.key("Backspace"))) {
       return;
     }
     ({
-      path: [element]
+      path: [element],
+      shiftKey
     } = event);
     if (element.matches(qualifies) || (element = element.closest(qualifies))) {
       element = element.closest(".message-1PNnaP");
     } else {
       return;
     }
-    try {
-      handler = new MessageDeleteItem(getOwnerInstance(element).props);
-      if (!handler.render()) {
-        return;
-      }
-    } catch (error) {
+    ({
+      props: { channel, message }
+    } = getOwnerInstance(element));
+    if (!gotDeletePermission(channel, message)) {
       return;
     }
-    handler.handleDeleteMessage({
-      shiftKey: !settings.confirm || event.shiftKey
-    });
+    if (settings.confirm && !shiftKey) {
+      MessagePrompts.confirmDelete(channel, message, false);
+    } else {
+      EndpointMessages.deleteMessage(channel.id, message.id, false);
+    }
     event.preventDefault();
     event.stopImmediatePropagation();
+  };
+
+  gotDeletePermission = function (channel, message) {
+    var self;
+    self = UserStore.getCurrentUser();
+    return self === message.author || 0x2000 & Permissions.computePermissions(self, channel);
   };
 
   return QuickDeleteMessages;
