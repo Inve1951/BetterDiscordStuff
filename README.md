@@ -112,8 +112,7 @@ Available source files:
   Works great with [RadialStatus](https://github.com/rauenzi/BetterDiscordAddons/tree/master/Themes/RadialStatus).
 
 **[Horizontal Serverlist](/themes/horizontalServerlist.theme.css)** _mini-theme_, _obsolete_  
-  ~~I've always wanted this :3
-  Server Grid support can be enabled in the file.~~
+  ~~Server Grid support can be enabled in the file.~~  
   Discontinued in favor of [Gibbu's version](https://github.com/Gibbu/BetterDiscord-Themes/blob/master/HorizontalServerlist/zHorizontalServerlist.theme.css).
 
 **[Ez Light](/themes/EzLight.theme.css)**  
