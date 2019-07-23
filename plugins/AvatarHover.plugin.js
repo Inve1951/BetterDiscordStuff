@@ -127,7 +127,6 @@ global.AvatarHover = function () {
   };
 
   handleMouseOverOut = function ({ type, target }) {
-	console.log(["mouseover"===type,target.matches(qualifier),target]);
 	if (!target.matches(qualifier)) {
       return;
 	}
