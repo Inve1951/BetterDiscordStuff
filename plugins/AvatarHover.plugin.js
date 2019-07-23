@@ -16,7 +16,7 @@ global.AvatarHover = function () {
     }
 
     getVersion() {
-      return "0.6.0";
+      return "0.6.1";
     }
 
     load() {
@@ -42,7 +42,7 @@ global.AvatarHover = function () {
       var createElement;
       ({ AsyncKeystate, createElement } = await SuperSecretSquareStuff);
       getSettings();
-      updateQualifier();
+	  updateQualifier();
       BdApi.injectCSS("css-AvatarHover", css);
       hoverCard = createElement("div", {
         id: "AvatarHover"
@@ -71,7 +71,7 @@ global.AvatarHover = function () {
         ({ name, type, value, checked } = ref[i]);
         settings[name] = "checkbox" === type ? checked : value || defaultSettings[name];
       }
-      bdPluginStorage.set("AvatarHover", "settings", settings);
+      BdApi.saveData("AvatarHover", "settings", settings);
       return updateQualifier();
     }
 
@@ -110,7 +110,7 @@ global.AvatarHover = function () {
   qualifier = null;
 
   updateQualifier = function () {
-    return qualifier = [settings.isHoverGuilds ? ".icon-3o6xvg" : void 0, settings.isHoverChannels ? ".avatarDefault-35WC3R, .avatarSpeaking-1wJCNq, .channel .avatar-small" : void 0, settings.isHoverFriends ? "#friends .avatar-small, .activityFeed-28jde9 .image-33JSyf" : void 0, settings.isHoverChatMessages ? ".message-1PNnaP .image-33JSyf, .embedAuthorIcon--1zR3L" : void 0, settings.isHoverChatUsers ? ".membersWrap-2h-GB4 .image-33JSyf" : void 0].filter(function (s) {
+    return qualifier = [settings.isHoverGuilds ? ".wrapper-1BJsBx:not(.button-OhfaWu)" : void 0, settings.isHoverChannels ? ".avatarDefault-35WC3R, .avatarSpeaking-3MqCHL, .modeConnected-2IEL4z .avatarSmall-2CW6I1, .avatarContainer-2inGBK, .privateChannels-1nO12o .avatar-28BJzY" : void 0, settings.isHoverFriends ? ".friendsTable-133bsv .avatarSmall--gkJKA, .activityFeed-28jde9 .image-33JSyf, .friendsTable-133bsv .icon-3o6xvg" : void 0, settings.isHoverChatMessages ? ".message-1PNnaP .wrapper-3t9DeA, .message-1PNnaP .embedAuthorIcon--1zR3L" : void 0, settings.isHoverChatUsers ? ".membersWrap-2h-GB4 .avatarWrapper-3B0ndJ" : void 0].filter(function (s) {
       return s != null;
     }).join(", ");
   };
@@ -127,9 +127,10 @@ global.AvatarHover = function () {
   };
 
   handleMouseOverOut = function ({ type, target }) {
-    if (!target.matches(qualifier)) {
+	console.log(["mouseover"===type,target.matches(qualifier),target]);
+	if (!target.matches(qualifier)) {
       return;
-    }
+	}
     return updateHoverCard("mouseover" === type && target);
   };
 
@@ -143,7 +144,13 @@ global.AvatarHover = function () {
     if (!(isShown && target)) {
       return hoverCard.remove();
     }
-    size = isLarge && 256 || 128;
+	size = isLarge && 256 || 128;
+	
+	for(let selector of ["avatar-VxgULZ","icon-27yU2q","avatarDefault-35WC3R","avatarSpeaking-3MqCHL","avatarSmall-2CW6I1","image-33JSyf","embedAuthorIcon--1zR3L"]){
+		let child=target.getElementsByClassName(selector)[0];
+		if(child)target=child;
+	}
+
     boundsTarget = target.getBoundingClientRect();
     boundsWindow = {
       width: window.innerWidth,
@@ -156,7 +163,7 @@ global.AvatarHover = function () {
     top = size > boundsWindow.height ? (boundsWindow.height - size) / 2 : boundsTarget.bottom + size > boundsWindow.height ? boundsTarget.top - size : boundsTarget.bottom;
     ref = {
       backgroundColor: settings.avatarBackgroundColor,
-      backgroundImage: ("IMG" === target.tagName && target.src || getComputedStyle(target).backgroundImage).replace(/\?size=\d{3,4}/, `?size=${size}`),
+      backgroundImage: ("IMG"===target.tagName&&target.src?`url(${target.src.replace(/\?size=\d{3,4}/,`?size=${size}`)})`:(target.style.backgroundImage?target.style.backgroundImage.replace(/\?size=\d{3,4}/, `?size=${size}`):'')),
       borderColor: settings.avatarBorderColor,
       borderRadius: settings.avatarBorderRadius,
       borderWidth: settings.avatarBorderSize,
@@ -164,11 +171,10 @@ global.AvatarHover = function () {
       height: `${size}px`,
       top: `${top}px`,
       left: `${left}px`
-    };
+	};
     for (k in ref) {
-      v = ref[k];
-      hoverCard.style[k] = v;
-    }
+      hoverCard.style[k] = ref[k];
+	}
     if ("none" === hoverCard.style.backgroundImage) {
       return hoverCard.remove();
     }
@@ -196,7 +202,7 @@ global.AvatarHover = function () {
     if (settings != null) {
       return;
     }
-    settings = (ref = bdPluginStorage.get("AvatarHover", "settings")) != null ? ref : {};
+    settings = (ref = BdApi.loadData("AvatarHover", "settings")) != null ? ref : {};
     results = [];
     for (k in defaultSettings) {
       v = defaultSettings[k];
