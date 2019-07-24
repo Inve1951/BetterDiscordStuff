@@ -1,10 +1,10 @@
-#META { "name": "AvatarHover", "website": "https://inve1951.github.io/BetterDiscordStuff/" } *//
+#META { "name": "AvatarHover", "source":"https://github.com/Inve1951/BetterDiscordStuff/blob/master/plugins/AvatarHover.plugin.js","website":"https://github.com/Inve1951" } *//
 
 class global.AvatarHover
   getName: -> "Avatar Hover"
   getDescription: -> "When hovering, resize the avatar. Use Ctrl / Ctrl+Shift."
   getAuthor: -> "noVaLue, square"
-  getVersion: -> "0.6.0"
+  getVersion: -> "0.6.1"
 
   hoverCard = AsyncKeystate = null
 
@@ -39,13 +39,16 @@ class global.AvatarHover
   qualifier = null
   updateQualifier = ->
     qualifier = [
-      ".icon-3o6xvg" if settings.isHoverGuilds
-      ".avatarDefault-35WC3R, .avatarSpeaking-1wJCNq,
-        .channel .avatar-small" if settings.isHoverChannels
-      "#friends .avatar-small,
-        .activityFeed-28jde9 .image-33JSyf" if settings.isHoverFriends
-      ".message-1PNnaP .image-33JSyf, .embedAuthorIcon--1zR3L" if settings.isHoverChatMessages
-      ".membersWrap-2h-GB4 .image-33JSyf" if settings.isHoverChatUsers
+      ".wrapper-1BJsBx:not(.button-OhfaWu)" if settings.isHoverGuilds
+      ".avatarDefault-35WC3R, .avatarSpeaking-3MqCHL,
+       .modeConnected-2IEL4z .avatarSmall-2CW6I1, .avatarContainer-2inGBK,
+	   .privateChannels-1nO12o .avatar-28BJzY" if settings.isHoverChannels
+      ".friendsTable-133bsv .avatarSmall--gkJKA,
+        .activityFeed-28jde9 .image-33JSyf,
+		.friendsTable-133bsv .icon-3o6xvg" if settings.isHoverFriends
+      ".message-1PNnaP .wrapper-3t9DeA,
+	    .message-1PNnaP .embedAuthorIcon--1zR3L" if settings.isHoverChatMessages
+      ".membersWrap-2h-GB4 .avatarWrapper-3B0ndJ" if settings.isHoverChatUsers
     ].filter((s) -> s?).join ", "
 
   handleKeyUpDown = ({key}) ->
@@ -66,6 +69,12 @@ class global.AvatarHover
     isLarge = settings.isLarge or AsyncKeystate.key "Shift"
     return hoverCard.remove() unless isShown and target
     size = isLarge and 256 or 128
+
+    selectors = ["avatar-VxgULZ", "icon-27yU2q", "avatarDefault-35WC3R", "avatarSpeaking-3MqCHL", "avatarSmall-2CW6I1", "image-33JSyf", "embedAuthorIcon--1zR3L"]
+    for selector in selectors
+      child = target.getElementsByClassName selector
+      target = child[0] if child[0]
+    
     boundsTarget = target.getBoundingClientRect()
     boundsWindow =
       width: window.innerWidth
@@ -84,7 +93,7 @@ class global.AvatarHover
 
     hoverCard.style[k] = v for k, v of {
       backgroundColor: settings.avatarBackgroundColor
-      backgroundImage: ("IMG" is target.tagName and target.src or getComputedStyle(target).backgroundImage).replace /\?size=\d{3,4}/, "?size=#{size}"
+      backgroundImage: ("IMG" is target.tagName and "url(#{target.src.replace /\?size=\d{3,4}/, "?size=#{size}"})" or target.style.backgroundImage).replace /\?size=\d{3,4}/, "?size=#{size}"
       borderColor: settings.avatarBorderColor
       borderRadius: settings.avatarBorderRadius
       borderWidth: settings.avatarBorderSize
@@ -112,13 +121,13 @@ class global.AvatarHover
   settings = null
   getSettings = ->
     return if settings?
-    settings = bdPluginStorage.get("AvatarHover", "settings") ? {}
+    settings = BdApi.loadData("AvatarHover", "settings") ? {}
     settings[k] ?= v for k, v of defaultSettings
 
   @updateSettings: ->
     for {name, type, value, checked} in document.querySelectorAll "#settings_AvatarHover input"
       settings[name] = if "checkbox" is type then checked else value or defaultSettings[name]
-    bdPluginStorage.set "AvatarHover", "settings", settings
+    BdApi.saveData "AvatarHover", "settings", settings
     updateQualifier()
 
   getSettingsPanel: ->
