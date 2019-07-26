@@ -11,14 +11,13 @@ class linkProfilePicture {
 	stop(){}
 
 	observer({addedNodes}){
-		//AddedNodes only ever returns one node or nothing no need to iterate over it. Can return text nodes and the Notification settings panel shares the same class, so check for hasClass and a certain child element.
-		if(addedNodes[0]&&addedNodes[0].hasClass&&addedNodes[0].hasClass('modal-3c3bKg')&&addedNodes[0].getElementsByClassName('avatar-VxgULZ')[0]){
+		//AddedNodes only ever returns one node or nothing no need to iterate over it. Can return text nodes and the Notification settings panel shares the same class, so check that classList contains the correct class and a certain child element.
+		if(addedNodes[0]&&addedNodes[0] instanceof Element&&addedNodes[0].classList.contains('modal-3c3bKg')&&addedNodes[0].getElementsByClassName('avatar-VxgULZ')[0]){
 			var a,parent=addedNodes[0].getElementsByClassName('avatar-3EQepX')[0],child=parent.getElementsByTagName('svg')[0],img=child.getElementsByClassName('avatar-VxgULZ')[0];
-			if(parent&&child&&img){
-				a=this.parseHTML(`<a class="linkProfilePicture" target="_blank" rel="noreferrer" href="${img.src.match(/https.+(?:webp|png|gif)/)[0]}?size=2048"></a>`)[0];
-				a.appendChild(child);//Move the element named "child" to be a child of our "a" element.
-				parent.appendChild(a);//Append "a" to our parent.
-			}
+			if(!parent||!child||!img)return;//Check if something went wrong.
+			a=this.parseHTML(`<a class="linkProfilePicture" target="_blank" rel="noreferrer" href="${img.src.match(/https.+(?:webp|png|gif)/)[0]}?size=2048"></a>`)[0];
+			a.appendChild(child);//Move the element named "child" to be a child of our "a" element.
+			parent.appendChild(a);//Append "a" to our parent.
 		}
 	}
 
