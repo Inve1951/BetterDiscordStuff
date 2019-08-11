@@ -73,8 +73,8 @@ var channelHistory = (function(listener, bw, wc, backdrop, buttons, buttonsClone
 
   attachClone = (channelName, after) => {
     try {
-      channelNameIconWrapper = document.querySelector(".iconWrapper-2OrFZ1") || (after = document.querySelector(".search-36MZv-"));
-      channelNameIconWrapper.parentElement.insertBefore(buttonsClone, after ? null : channelNameIconWrapper);
+      channelNameWrapper = document.querySelector(".children-19S4PO") || (after = document.querySelector(".search-36MZv-"));
+      channelNameWrapper.parentElement.insertBefore(buttonsClone, after ? null : channelNameWrapper);
     } catch (err) { console.warn(err); }
   }
 
