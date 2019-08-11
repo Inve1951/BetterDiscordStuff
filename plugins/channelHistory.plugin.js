@@ -4,7 +4,7 @@ var channelHistory = (function(listener, bw, wc, backdrop, buttons, buttonsClone
   class channelHistory {
     getName(){ return "Channel History" }
     getDescription(){ return "Allows you to switch channels using mouse 4 & 5 or the added GUI buttons." }
-    getVersion(){ return "1.2.4" }
+    getVersion(){ return "1.2.5" }
     getAuthor(){ return "square" }
 
     start(){
@@ -73,8 +73,8 @@ var channelHistory = (function(listener, bw, wc, backdrop, buttons, buttonsClone
 
   attachClone = (channelName, after) => {
     try {
-      channelName = document.querySelector(".channelName-3stJzi:not(.private-26pLvW)") || (after = document.querySelector(".searchBar-2_Yu-C .searchBarInner-1_Tg2R"));
-      channelName.parentElement.insertBefore(buttonsClone, after ? null : channelName);
+      channelNameIconWrapper = document.querySelector(".iconWrapper-2OrFZ1") || (after = document.querySelector(".search-36MZv-"));
+      channelNameIconWrapper.parentElement.insertBefore(buttonsClone, after ? null : channelNameIconWrapper);
     } catch (err) { console.warn(err); }
   }
 
@@ -92,7 +92,8 @@ var channelHistory = (function(listener, bw, wc, backdrop, buttons, buttonsClone
       left: unset;
       order: 0;
     }
-    .hidden-by-OTB + * .channelHistoryButtons.clone {
+    .hidden-by-OTB + * .channelHistoryButtons.clone,
+    .platform-linux .channelHistoryButtons.clone {
       display: inline-block;
     }
     .channelHistoryButtons .btn {
