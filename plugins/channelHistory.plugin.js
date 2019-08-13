@@ -63,7 +63,7 @@ var channelHistory = (function(listener, bw, wc, backdrop, buttons, buttonsClone
     try {
       if (branding = document.querySelector(".wordmark-2iDDfm")) {
         branding.parentElement.insertBefore(buttons, branding.nextElementSibling);
-      } else {
+      } else if (document.querySelector(".titleBar-AC4pGV") != null) {
         // osx is *special*
         titlebar = document.querySelector(".titleBar-AC4pGV");
         titlebar.insertBefore(buttons, titlebar.firstChild);
