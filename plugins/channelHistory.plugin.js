@@ -4,7 +4,7 @@ var channelHistory = (function(listener, bw, wc, backdrop, buttons, buttonsClone
   class channelHistory {
     getName(){ return "Channel History" }
     getDescription(){ return "Allows you to switch channels using mouse 4 & 5 or the added GUI buttons." }
-    getVersion(){ return "1.2.4" }
+    getVersion(){ return "1.2.5" }
     getAuthor(){ return "square" }
 
     start(){
@@ -62,10 +62,10 @@ var channelHistory = (function(listener, bw, wc, backdrop, buttons, buttonsClone
   attach = (branding, titlebar) => {
     try {
       if (branding = document.querySelector(".wordmark-2iDDfm")) {
+        // windows
         branding.parentElement.insertBefore(buttons, branding.nextElementSibling);
-      } else {
-        // osx is *special*
-        titlebar = document.querySelector(".titleBar-AC4pGV");
+      } else if (titlebar = document.querySelector(".titleBar-AC4pGV")) {
+        // osx
         titlebar.insertBefore(buttons, titlebar.firstChild);
       }
     } catch (err) { console.warn(err); }
@@ -73,8 +73,8 @@ var channelHistory = (function(listener, bw, wc, backdrop, buttons, buttonsClone
 
   attachClone = (channelName, after) => {
     try {
-      channelName = document.querySelector(".channelName-3stJzi:not(.private-26pLvW)") || (after = document.querySelector(".searchBar-2_Yu-C .searchBarInner-1_Tg2R"));
-      channelName.parentElement.insertBefore(buttonsClone, after ? null : channelName);
+      channelNameWrapper = document.querySelector(".children-19S4PO") || (after = document.querySelector(".search-36MZv-"));
+      channelNameWrapper.parentElement.insertBefore(buttonsClone, after ? null : channelNameWrapper);
     } catch (err) { console.warn(err); }
   }
 
@@ -92,7 +92,8 @@ var channelHistory = (function(listener, bw, wc, backdrop, buttons, buttonsClone
       left: unset;
       order: 0;
     }
-    .hidden-by-OTB + * .channelHistoryButtons.clone {
+    .hidden-by-OTB + * .channelHistoryButtons.clone,
+    .platform-linux .channelHistoryButtons.clone {
       display: inline-block;
     }
     .channelHistoryButtons .btn {
