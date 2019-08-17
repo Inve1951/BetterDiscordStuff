@@ -62,10 +62,10 @@ var channelHistory = (function(listener, bw, wc, backdrop, buttons, buttonsClone
   attach = (branding, titlebar) => {
     try {
       if (branding = document.querySelector(".wordmark-2iDDfm")) {
+        // windows
         branding.parentElement.insertBefore(buttons, branding.nextElementSibling);
-      } else if (document.querySelector(".titleBar-AC4pGV") != null) {
-        // osx is *special*
-        titlebar = document.querySelector(".titleBar-AC4pGV");
+      } else if (titlebar = document.querySelector(".titleBar-AC4pGV")) {
+        // osx
         titlebar.insertBefore(buttons, titlebar.firstChild);
       }
     } catch (err) { console.warn(err); }
