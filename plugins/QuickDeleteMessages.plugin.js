@@ -90,7 +90,7 @@ global.QuickDeleteMessages = function () {
       shiftKey
     } = event);
     if (element.matches(qualifies) || (element = element.closest(qualifies))) {
-      element = element.closest(".message-1PNnaP");
+      element = element.closest(".da-content");
     } else {
       return;
     }
