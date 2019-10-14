@@ -4,7 +4,7 @@ class global.QuickDeleteMessages
   getName: -> "Quick Delete Messages"
   getDescription: -> "Hold Delete and click a Message to delete it."
   getAuthor: -> "square"
-  getVersion: -> "1.4.0"
+  getVersion: -> "1.4.1"
 
   settings = Object.create null
   Permissions = UserStore = EndpointMessages = MessagePrompts = null
@@ -41,7 +41,7 @@ class global.QuickDeleteMessages
     BdApi.saveData "QuickDeleteMessages", name, checked
     return
 
-  qualifies = ".content-3dzVd8"
+  _qualifies = ".contentCozy-3XX413, .messageCompact-kQa7ES"
 
   onClick = (event) ->
     return unless AsyncKeystate.key("Delete") or
@@ -49,9 +49,7 @@ class global.QuickDeleteMessages
 
     {path: [element], shiftKey} = event
 
-    if element.matches(qualifies) or element = element.closest qualifies
-      element = element.closest ".message-1PNnaP"
-    else return
+    return unless element.matches(_qualifies) or element = element.closest _qualifies
 
     {props: {channel, message}} = getOwnerInstance element
     return unless gotDeletePermission channel, message

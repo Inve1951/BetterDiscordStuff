@@ -1,6 +1,6 @@
 //META { "name": "QuickDeleteMessages", "website": "https://inve1951.github.io/BetterDiscordStuff/" } *//
 global.QuickDeleteMessages = function () {
-  var AsyncKeystate, EndpointMessages, MessagePrompts, Permissions, UserStore, getOwnerInstance, gotDeletePermission, onClick, qualifies, settings;
+  var AsyncKeystate, EndpointMessages, MessagePrompts, Permissions, UserStore, _qualifies, getOwnerInstance, gotDeletePermission, onClick, settings;
 
   class QuickDeleteMessages {
     getName() {
@@ -16,7 +16,7 @@ global.QuickDeleteMessages = function () {
     }
 
     getVersion() {
-      return "1.4.0";
+      return "1.4.1";
     }
 
     load() {
@@ -78,7 +78,7 @@ global.QuickDeleteMessages = function () {
 
   AsyncKeystate = getOwnerInstance = null;
 
-  qualifies = ".content-3dzVd8";
+  _qualifies = ".contentCozy-3XX413, .messageCompact-kQa7ES";
 
   onClick = function (event) {
     var channel, element, message, shiftKey;
@@ -89,9 +89,7 @@ global.QuickDeleteMessages = function () {
       path: [element],
       shiftKey
     } = event);
-    if (element.matches(qualifies) || (element = element.closest(qualifies))) {
-      element = element.closest(".message-1PNnaP");
-    } else {
+    if (!(element.matches(_qualifies) || (element = element.closest(_qualifies)))) {
       return;
     }
     ({
