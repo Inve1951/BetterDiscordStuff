@@ -4,7 +4,7 @@ class global.AvatarHover
   getName: -> "Avatar Hover"
   getDescription: -> "When hovering, resize the avatar. Use Ctrl / Ctrl+Shift."
   getAuthor: -> "noVaLue, square"
-  getVersion: -> "0.6.0"
+  getVersion: -> "0.6.1"
 
   hoverCard = AsyncKeystate = null
 
@@ -39,13 +39,17 @@ class global.AvatarHover
   qualifier = null
   updateQualifier = ->
     qualifier = [
-      ".icon-3o6xvg" if settings.isHoverGuilds
-      ".avatarDefault-35WC3R, .avatarSpeaking-1wJCNq,
-        .channel .avatar-small" if settings.isHoverChannels
-      "#friends .avatar-small,
-        .activityFeed-28jde9 .image-33JSyf" if settings.isHoverFriends
-      ".message-1PNnaP .image-33JSyf, .embedAuthorIcon--1zR3L" if settings.isHoverChatMessages
-      ".membersWrap-2h-GB4 .image-33JSyf" if settings.isHoverChatUsers
+      # guilds
+      ".wrapper-25eVIn" if settings.isHoverGuilds
+      # voip, DM channels
+      ".avatarContainer-2inGBK,
+        .channel-2QD9_O .avatar-3uk_u9" if settings.isHoverChannels
+      # friends list
+      ".friendsTable-133bsv .avatarSmall--gkJKA" if settings.isHoverFriends
+      # messages, embeds
+      ".headerCozy-2N9HOL .avatar-17mtNa, .embedAuthorIcon--1zR3L" if settings.isHoverChatMessages
+      # channel users
+      ".member-3-YXUe .avatar-3uk_u9" if settings.isHoverChatUsers
     ].filter((s) -> s?).join ", "
 
   handleKeyUpDown = ({key}) ->
@@ -56,7 +60,7 @@ class global.AvatarHover
     updateHoverCard()
 
   handleMouseOverOut = ({type, target}) ->
-    return unless target.matches qualifier
+    return unless target.matches(qualifier) or target = target.closest qualifier
     updateHoverCard "mouseover" is type and target
 
   lastTarget = null
@@ -81,10 +85,15 @@ class global.AvatarHover
         boundsTarget.top - size
       else boundsTarget.bottom
 
+    return hoverCard.remove() if "none" is imageUrl = (
+        target.querySelector("img")?.src or
+        target.src or
+        getComputedStyle(target).backgroundImage.match(/^url\((["']?)(.+)\1\)$/)[2]
+      ).replace /\?size=\d{3,4}\)?$/, "?size=#{size}"
 
     hoverCard.style[k] = v for k, v of {
       backgroundColor: settings.avatarBackgroundColor
-      backgroundImage: ("IMG" is target.tagName and target.src or getComputedStyle(target).backgroundImage).replace /\?size=\d{3,4}/, "?size=#{size}"
+      backgroundImage: "url(#{imageUrl})"
       borderColor: settings.avatarBorderColor
       borderRadius: settings.avatarBorderRadius
       borderWidth: settings.avatarBorderSize
@@ -93,7 +102,6 @@ class global.AvatarHover
       top: "#{top}px"
       left: "#{left}px"
     }
-    return hoverCard.remove() if "none" is hoverCard.style.backgroundImage
     document.body.appendChild hoverCard
 
   defaultSettings =

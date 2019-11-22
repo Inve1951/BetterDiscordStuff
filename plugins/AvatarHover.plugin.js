@@ -16,7 +16,7 @@ global.AvatarHover = function () {
     }
 
     getVersion() {
-      return "0.6.0";
+      return "0.6.1";
     }
 
     load() {
@@ -110,7 +110,17 @@ global.AvatarHover = function () {
   qualifier = null;
 
   updateQualifier = function () {
-    return qualifier = [settings.isHoverGuilds ? ".icon-3o6xvg" : void 0, settings.isHoverChannels ? ".avatarDefault-35WC3R, .avatarSpeaking-1wJCNq, .channel .avatar-small" : void 0, settings.isHoverFriends ? "#friends .avatar-small, .activityFeed-28jde9 .image-33JSyf" : void 0, settings.isHoverChatMessages ? ".message-1PNnaP .image-33JSyf, .embedAuthorIcon--1zR3L" : void 0, settings.isHoverChatUsers ? ".membersWrap-2h-GB4 .image-33JSyf" : void 0].filter(function (s) {
+    return qualifier = [
+    // guilds
+    settings.isHoverGuilds ? ".wrapper-25eVIn" : void 0,
+    // voip, DM channels
+    settings.isHoverChannels ? ".avatarContainer-2inGBK, .channel-2QD9_O .avatar-3uk_u9" : void 0,
+    // friends list
+    settings.isHoverFriends ? ".friendsTable-133bsv .avatarSmall--gkJKA" : void 0,
+    // messages, embeds
+    settings.isHoverChatMessages ? ".headerCozy-2N9HOL .avatar-17mtNa, .embedAuthorIcon--1zR3L" : void 0,
+    // channel users
+    settings.isHoverChatUsers ? ".member-3-YXUe .avatar-3uk_u9" : void 0].filter(function (s) {
       return s != null;
     }).join(", ");
   };
@@ -127,7 +137,7 @@ global.AvatarHover = function () {
   };
 
   handleMouseOverOut = function ({ type, target }) {
-    if (!target.matches(qualifier)) {
+    if (!(target.matches(qualifier) || (target = target.closest(qualifier)))) {
       return;
     }
     return updateHoverCard("mouseover" === type && target);
@@ -136,7 +146,7 @@ global.AvatarHover = function () {
   lastTarget = null;
 
   updateHoverCard = function (target = lastTarget) {
-    var boundsTarget, boundsWindow, isLarge, isShown, k, left, ref, size, top, v;
+    var boundsTarget, boundsWindow, imageUrl, isLarge, isShown, k, left, ref, ref1, size, top, v;
     lastTarget = target;
     isShown = settings.isShown || AsyncKeystate.key("Control");
     isLarge = settings.isLarge || AsyncKeystate.key("Shift");
@@ -154,9 +164,12 @@ global.AvatarHover = function () {
       left = boundsWindow.width - size;
     }
     top = size > boundsWindow.height ? (boundsWindow.height - size) / 2 : boundsTarget.bottom + size > boundsWindow.height ? boundsTarget.top - size : boundsTarget.bottom;
-    ref = {
+    if ("none" === (imageUrl = (((ref = target.querySelector("img")) != null ? ref.src : void 0) || target.src || getComputedStyle(target).backgroundImage.match(/^url\((["']?)(.+)\1\)$/)[2]).replace(/\?size=\d{3,4}\)?$/, `?size=${size}`))) {
+      return hoverCard.remove();
+    }
+    ref1 = {
       backgroundColor: settings.avatarBackgroundColor,
-      backgroundImage: ("IMG" === target.tagName && target.src || getComputedStyle(target).backgroundImage).replace(/\?size=\d{3,4}/, `?size=${size}`),
+      backgroundImage: `url(${imageUrl})`,
       borderColor: settings.avatarBorderColor,
       borderRadius: settings.avatarBorderRadius,
       borderWidth: settings.avatarBorderSize,
@@ -165,12 +178,9 @@ global.AvatarHover = function () {
       top: `${top}px`,
       left: `${left}px`
     };
-    for (k in ref) {
-      v = ref[k];
+    for (k in ref1) {
+      v = ref1[k];
       hoverCard.style[k] = v;
-    }
-    if ("none" === hoverCard.style.backgroundImage) {
-      return hoverCard.remove();
     }
     return document.body.appendChild(hoverCard);
   };
