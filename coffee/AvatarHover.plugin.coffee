@@ -47,7 +47,7 @@ class global.AvatarHover
       # friends list
       ".friendsTable-133bsv .avatarSmall--gkJKA" if settings.isHoverFriends
       # messages, embeds
-      ".headerCozy-2N9HOL .avatar-17mtNa, .embedAuthorIcon--1zR3L" if settings.isHoverChatMessages
+      ".headerCozy-2H1QuU .avatar-1BDn8e, .embedAuthorIcon--1zR3L" if settings.isHoverChatMessages
       # channel users
       ".member-3-YXUe .avatar-3uk_u9" if settings.isHoverChatUsers
     ].filter((s) -> s?).join ", "
