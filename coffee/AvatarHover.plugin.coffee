@@ -4,7 +4,7 @@ class global.AvatarHover
   getName: -> "Avatar Hover"
   getDescription: -> "When hovering, resize the avatar. Use Ctrl / Ctrl+Shift."
   getAuthor: -> "noVaLue, square"
-  getVersion: -> "0.6.1"
+  getVersion: -> "0.6.2"
 
   hoverCard = AsyncKeystate = null
 
