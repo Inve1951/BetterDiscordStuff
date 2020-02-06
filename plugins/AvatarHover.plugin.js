@@ -118,7 +118,7 @@ global.AvatarHover = function () {
     // friends list
     settings.isHoverFriends ? ".friendsTable-133bsv .avatarSmall--gkJKA" : void 0,
     // messages, embeds
-    settings.isHoverChatMessages ? ".headerCozy-2H1QuU .avatar-1BDn8e, .embedAuthorIcon--1zR3L" : void 0,
+    settings.isHoverChatMessages ? ".header-23xsNx .avatar-1BDn8e, .embedAuthorIcon--1zR3L" : void 0,
     // channel users
     settings.isHoverChatUsers ? ".member-3-YXUe .avatar-3uk_u9" : void 0].filter(function (s) {
       return s != null;
