@@ -16,7 +16,7 @@ global.AvatarHover = function () {
     }
 
     getVersion() {
-      return "0.6.2";
+      return "0.6.1";
     }
 
     load() {
@@ -119,7 +119,7 @@ global.AvatarHover = function () {
     // friends list
     settings.isHoverFriends ? ".userInfo-2zN2z8 .avatar-3W3CeO" : void 0,
     // messages, embeds
-    settings.isHoverChatMessages ? ".header-23xsNx .avatar-1BDn8e, .embedAuthorIcon--1zR3L" : void 0,
+    settings.isHoverChatMessages ? ".avatar-1BDn8e, .searchResultMessage-2VxO12 .header-23xsNx, .messagesPopout-24nkyi .header-23xsNx, .embedAuthorIcon--1zR3L, .displayAvatar-1wWlVM" : void 0,
     // channel users
     settings.isHoverChatUsers ? ".member-3-YXUe .avatar-3uk_u9" : void 0,
     // modals, profiles
@@ -156,7 +156,7 @@ global.AvatarHover = function () {
     if (!(isShown && target)) {
       return hoverCard.remove();
     }
-    size = isLarge && 256 || 128;
+    size = isLarge && 512 || 256;
     boundsTarget = target.getBoundingClientRect();
     boundsWindow = {
       width: window.innerWidth,
