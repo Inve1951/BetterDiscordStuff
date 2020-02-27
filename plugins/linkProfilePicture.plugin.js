@@ -3,7 +3,7 @@
 class linkProfilePicture {
   getName(){return "Link-Profile-Picture"}
   getDescription(){return "Lets you click users' avatars on their profile page to view a bigger version in your browser."}
-  getVersion(){return "1.0.4"}
+  getVersion(){return "1.0.5"}
   getAuthor(){return "square"}
 
   start(){}
@@ -23,6 +23,7 @@ class linkProfilePicture {
       a.rel = "noreferrer";
       wrapper.insertBefore(a, wrapper.firstChild);
       a.appendChild(a.nextSibling);
+      img.addClass("pointerEvents-2zdfdO");
     }
   }
 }
