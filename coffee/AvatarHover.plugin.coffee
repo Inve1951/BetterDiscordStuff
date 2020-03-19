@@ -3,8 +3,8 @@
 class global.AvatarHover
   getName: -> "Avatar Hover"
   getDescription: -> "When hovering, resize the avatar. Use Ctrl / Ctrl+Shift."
-  getAuthor: -> "noVaLue, square"
-  getVersion: -> "0.6.1"
+  getAuthor: -> "noVaLue, MurmursOnSARS, square, Green"
+  getVersion: -> "0.7.0"
 
   hoverCard = AsyncKeystate = null
 
@@ -45,11 +45,15 @@ class global.AvatarHover
       ".avatarContainer-2inGBK,
         .channel-2QD9_O .avatar-3uk_u9" if settings.isHoverChannels
       # friends list
-      ".friendsTable-133bsv .avatarSmall--gkJKA" if settings.isHoverFriends
+      ".userInfo-2zN2z8 .avatar-3W3CeO" if settings.isHoverFriends
       # messages, embeds
-      ".headerCozy-2N9HOL .avatar-17mtNa, .embedAuthorIcon--1zR3L" if settings.isHoverChatMessages
+      ".contents-2mQqc9 .avatar-1BDn8e, .embedAuthorIcon--1zR3L" if settings.isHoverChatMessages
       # channel users
       ".member-3-YXUe .avatar-3uk_u9" if settings.isHoverChatUsers
+      # DM call
+      ".callAvatarWrapper-3Ax_xH" if settings.isHoverCall
+      # modals, userpopout
+      ".header-QKLPzZ .avatar-3EQepX, .avatarWrapper-3H_478" if settings.isHoverProfile
     ].filter((s) -> s?).join ", "
 
   handleKeyUpDown = ({key}) ->
@@ -91,7 +95,7 @@ class global.AvatarHover
         getComputedStyle(target).backgroundImage.match(/^url\((["']?)(.+)\1\)$/)[2]
       ).replace /\?size=\d{3,4}\)?$/, "?size=#{size}"
 
-    hoverCard.style[k] = v for k, v of {
+    Object.assign hoverCard.style,
       backgroundColor: settings.avatarBackgroundColor
       backgroundImage: "url(#{imageUrl})"
       borderColor: settings.avatarBorderColor
@@ -101,7 +105,7 @@ class global.AvatarHover
       height: "#{size}px"
       top: "#{top}px"
       left: "#{left}px"
-    }
+
     document.body.appendChild hoverCard
 
   defaultSettings =
@@ -116,6 +120,8 @@ class global.AvatarHover
     isHoverFriends: yes
     isHoverChatMessages: yes
     isHoverChatUsers: yes
+    isHoverCall: yes
+    isHoverProfile: yes
 
   settings = null
   getSettings = ->
@@ -145,6 +151,8 @@ class global.AvatarHover
         isHoverFriends: "Friends list"
         isHoverChatMessages: "Chat messages"
         isHoverChatUsers: "Chat users"
+        isHoverCall: "Voice call users"
+        isHoverProfile: "Profiles and modals"
       }).join ""
     }</div>"""
 

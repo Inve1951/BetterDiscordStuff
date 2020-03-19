@@ -12,11 +12,11 @@ global.AvatarHover = function () {
     }
 
     getAuthor() {
-      return "noVaLue, square";
+      return "noVaLue, MurmursOnSARS, square, Green";
     }
 
     getVersion() {
-      return "0.6.1";
+      return "0.7.0";
     }
 
     load() {
@@ -92,7 +92,9 @@ global.AvatarHover = function () {
           isHoverChannels: "Channels / DM users",
           isHoverFriends: "Friends list",
           isHoverChatMessages: "Chat messages",
-          isHoverChatUsers: "Chat users"
+          isHoverChatUsers: "Chat users",
+          isHoverCall: "Voice call users",
+          isHoverProfile: "Profiles and modals"
         };
         results = [];
         for (k in ref) {
@@ -116,11 +118,15 @@ global.AvatarHover = function () {
     // voip, DM channels
     settings.isHoverChannels ? ".avatarContainer-2inGBK, .channel-2QD9_O .avatar-3uk_u9" : void 0,
     // friends list
-    settings.isHoverFriends ? ".friendsTable-133bsv .avatarSmall--gkJKA" : void 0,
+    settings.isHoverFriends ? ".userInfo-2zN2z8 .avatar-3W3CeO" : void 0,
     // messages, embeds
-    settings.isHoverChatMessages ? ".headerCozy-2N9HOL .avatar-17mtNa, .embedAuthorIcon--1zR3L" : void 0,
+    settings.isHoverChatMessages ? ".contents-2mQqc9 .avatar-1BDn8e, .embedAuthorIcon--1zR3L" : void 0,
     // channel users
-    settings.isHoverChatUsers ? ".member-3-YXUe .avatar-3uk_u9" : void 0].filter(function (s) {
+    settings.isHoverChatUsers ? ".member-3-YXUe .avatar-3uk_u9" : void 0,
+    // DM call
+    settings.isHoverCall ? ".callAvatarWrapper-3Ax_xH" : void 0,
+    // modals, userpopout
+    settings.isHoverProfile ? ".header-QKLPzZ .avatar-3EQepX, .avatarWrapper-3H_478" : void 0].filter(function (s) {
       return s != null;
     }).join(", ");
   };
@@ -146,7 +152,7 @@ global.AvatarHover = function () {
   lastTarget = null;
 
   updateHoverCard = function (target = lastTarget) {
-    var boundsTarget, boundsWindow, imageUrl, isLarge, isShown, k, left, ref, ref1, size, top, v;
+    var boundsTarget, boundsWindow, imageUrl, isLarge, isShown, left, ref, size, top;
     lastTarget = target;
     isShown = settings.isShown || AsyncKeystate.key("Control");
     isLarge = settings.isLarge || AsyncKeystate.key("Shift");
@@ -167,7 +173,7 @@ global.AvatarHover = function () {
     if ("none" === (imageUrl = (((ref = target.querySelector("img")) != null ? ref.src : void 0) || target.src || getComputedStyle(target).backgroundImage.match(/^url\((["']?)(.+)\1\)$/)[2]).replace(/\?size=\d{3,4}\)?$/, `?size=${size}`))) {
       return hoverCard.remove();
     }
-    ref1 = {
+    Object.assign(hoverCard.style, {
       backgroundColor: settings.avatarBackgroundColor,
       backgroundImage: `url(${imageUrl})`,
       borderColor: settings.avatarBorderColor,
@@ -177,11 +183,7 @@ global.AvatarHover = function () {
       height: `${size}px`,
       top: `${top}px`,
       left: `${left}px`
-    };
-    for (k in ref1) {
-      v = ref1[k];
-      hoverCard.style[k] = v;
-    }
+    });
     return document.body.appendChild(hoverCard);
   };
 
@@ -196,7 +198,9 @@ global.AvatarHover = function () {
     isHoverChannels: true,
     isHoverFriends: true,
     isHoverChatMessages: true,
-    isHoverChatUsers: true
+    isHoverChatUsers: true,
+    isHoverCall: true,
+    isHoverProfile: true
   };
 
   settings = null;
@@ -221,11 +225,21 @@ global.AvatarHover = function () {
       return "<br/>";
     }
     type = Boolean === defaultSettings[name].constructor && (isCheckbox = true) && "checkbox" || "text";
-    _default = isCheckbox ? settings[name] ? "checked" : "" : `placeholder="${defaultSettings[name]}" value="${settings[name]}"`;
+    _default = isCheckbox ? settings[name] ? "checked" : "" : `placeholder="${defaultSettings[name]}" value="${settings[name]}\"`;
     return `<label><input type="${type}" name="${name}" ${_default} onChange="AvatarHover.updateSettings()"/> ${label}</label><br/>`;
   };
 
-  css = "#AvatarHover {\n  background-size: cover;\n  border-style: solid;\n  display: block;\n  pointer-events: none;\n  position: fixed;\n  z-index: 99999;\n}\n#settings_AvatarHover {\n  color: #87909C;\n}";
+  css = `#AvatarHover {
+  background-size: cover;
+  border-style: solid;
+  display: block;
+  pointer-events: none;
+  position: fixed;
+  z-index: 99999;
+}
+#settings_AvatarHover {
+  color: #87909C;
+}`;
 
   return AvatarHover;
 }.call(this);
