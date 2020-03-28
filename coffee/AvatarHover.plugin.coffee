@@ -4,7 +4,7 @@ class global.AvatarHover
   getName: -> "Avatar Hover"
   getDescription: -> "When hovering, resize the avatar. Use Ctrl / Ctrl+Shift."
   getAuthor: -> "noVaLue, MurmursOnSARS, square, Green"
-  getVersion: -> "0.7.0"
+  getVersion: -> "0.7.1"
 
   hoverCard = AsyncKeystate = null
 
@@ -126,13 +126,13 @@ class global.AvatarHover
   settings = null
   getSettings = ->
     return if settings?
-    settings = bdPluginStorage.get("AvatarHover", "settings") ? {}
+    settings = BdApi.getData("AvatarHover", "settings") ? {}
     settings[k] ?= v for k, v of defaultSettings
 
   @updateSettings: ->
     for {name, type, value, checked} in document.querySelectorAll "#settings_AvatarHover input"
       settings[name] = if "checkbox" is type then checked else value or defaultSettings[name]
-    bdPluginStorage.set "AvatarHover", "settings", settings
+    BdApi.setData "AvatarHover", "settings", settings
     updateQualifier()
 
   getSettingsPanel: ->
