@@ -1,8 +1,6 @@
-//META{"name":"toggleYourStuff"}*//;
-var toggleYourStuff;
-
-toggleYourStuff = (function() {
-  var getSettings, listener, settings;
+//META{ "name": "toggleYourStuff", "website": "https://inve1951.github.io/BetterDiscordStuff/" }*//
+global.toggleYourStuff = function () {
+  var Plugins, Themes, listener, readSettings, settings;
 
   class toggleYourStuff {
     getName() {
@@ -14,7 +12,7 @@ toggleYourStuff = (function() {
     }
 
     getVersion() {
-      return "1.1.1";
+      return "1.2.0";
     }
 
     getAuthor() {
@@ -22,7 +20,8 @@ toggleYourStuff = (function() {
     }
 
     start() {
-      getSettings();
+      ({ Plugins, Themes } = BdApi);
+      readSettings();
       return document.body.addEventListener("keydown", listener, true);
     }
 
@@ -30,57 +29,101 @@ toggleYourStuff = (function() {
       return document.body.removeEventListener("keydown", listener, true);
     }
 
-    load() {}
-
     getSettingsPanel() {
-      var alt, ctrl, headerstyle, hotkey, keycode, plugin, ref, ref1, settingsPanel, shift, theme, x;
-      getSettings();
-      headerstyle = "text-transform:" + ((function() {
-        switch (0 | 4 * Math.random()) {
-          case 0:
-            return "none";
-          case 1:
-            return "capitalize";
-          case 2:
-            return "uppercase";
-          case 3:
-            return "lowercase";
-        }
-      })()) + ";filter:drop-shadow(0 0 30px rgb(" + ((function() {
+      var alt, ctrl, hotkey, j, keycode, l, len, len1, plugin, ref, ref1, ref2, ref3, settingsPanel, shift, theme, x;
+      readSettings();
+      settingsPanel = `<div id="tys_settings">
+  <style>
+  #tys_settings :not(input):not(button) {
+    color: #b0b6b9;
+  }
+  #tys_settings div {
+    margin-top: 10px !important;
+  }
+  #tys_settings span:first-of-type {
+    font-size: 2em;
+    text-decoration: none;
+    margin-top: -30px;
+  }
+  #tys_settings span {
+    display: block;
+    width: 90%;
+    margin: 0 auto;
+    text-align: center;
+    text-decoration: underline;
+    line-height: 5em;
+  }
+  #tys_settings h2 {
+    font-size: 1.1em;
+    font-weight: bold;
+    text-decoration: underline;
+  }
+  #tys_settings [id] > :-webkit-any(input, label) {
+    margin-top: 3px;
+  }
+  #tys_settings input:not([value=""]) {
+    background: rgb(32,196,64);
+  }
+  #tys_settings > div {
+    margin-bottom: 20px;
+  }
+  </style>`;
+      settingsPanel += `<span style="text-transform:${"none capitalize uppercase lowercase".split(" ")[0 | 4 * Math.random()]};filter:drop-shadow(0 0 30px rgb(${function () {
         var j, results;
         results = [];
         for (x = j = 0; j < 3; x = ++j) {
           results.push(0 | 256 * Math.random());
         }
         return results;
-      })()).join(",") + "));";
-      settingsPanel = "<div id=\"tys_settings\">\n  <style>\n  #tys_settings :not(input):not(button) {\n    color: #b0b6b9;\n  }\n  #tys_settings div {\n    margin-top: 10px !important;\n  }\n  #tys_settings span:first-of-type {\n    font-size: 2em;\n    text-decoration: none;\n    margin-top: -30px;\n  }\n  #tys_settings span {\n    display: block;\n    width: 90%;\n    margin: 0 auto;\n    text-align: center;\n    text-decoration: underline;\n    line-height: 5em;\n  }\n  #tys_settings h2 {\n    font-size: 1.1em;\n    font-weight: bold;\n    text-decoration: underline;\n  }\n  #tys_settings [id] > :-webkit-any(input, label) {\n    margin-top: 3px;\n  }\n  #tys_settings input:not([value=\"\"]) {\n    background: rgb(32,196,64);\n  }\n  #tys_settings > div {\n    margin-bottom: 20px;\n  }\n  </style>";
-      settingsPanel += `<span style=\"${headerstyle}\">tOgGLe-yOuR-sTufF</span>`;
-      settingsPanel += `<label><input name=\"cancelDefault\" type=\"checkbox\" onchange=\"toggleYourStuff.updateSettings()\"${(settings.cancelDefault ? " checked" : "")}>Cancel default. Prevents any actions which use the same hotkey. (don't kill your ctrl+comma)</label><br><br>`;
-      settingsPanel += `<label><input name=\"dontSave\" type=\"checkbox\" onchange=\"toggleYourStuff.updateSettings()\"${(settings.dontSave ? " checked" : "")}>Don't have BD save enabled-state after toggling. This is wonky.</label><br><br>`;
-      settingsPanel += "<span>Numpad doesn't work with Shift key.</span>" + "<div id=\"tys-plugin-hotkeys\"><h2>Plugins:</h2>";
-      for (plugin in bdplugins) {
-        ({hotkey, ctrl, shift, alt, keycode} = (ref = settings.plugins[plugin]) != null ? ref : {
+      }().join(",")}));">tOgGLe-yOuR-sTufF</span>`;
+      settingsPanel += `<label><input name="cancelDefault" type="checkbox" onchange="toggleYourStuff.updateSettings()"${settings.cancelDefault ? " checked" : ""}>Cancel default. Prevents any actions which use the same hotkey. (don't kill your ctrl+comma)</label><br><br>`;
+      settingsPanel += `<span>Numpad doesn't work with Shift key.</span>` + `<div id="tys-plugin-hotkeys"><h2>Plugins:</h2>`;
+      ref = Plugins.getAll();
+      for (j = 0, len = ref.length; j < len; j++) {
+        plugin = ref[j];
+        if (!(plugin = plugin.getName())) {
+          continue;
+        }
+        ({ hotkey, ctrl, shift, alt, keycode } = (ref1 = settings.plugins[plugin]) != null ? ref1 : {
           hotkey: "",
           ctrl: false,
           shift: false,
           alt: false,
           keycode: ""
         });
-        settingsPanel += `<div id=\"tys-${plugin}\">${plugin}<br>\n  <input name=\"hotkey\" type=\"text\" placeholder=\"Hotkey\" onkeydown=\"if('Shift'!==event.key && 'Control'!==event.key && 'Alt'!==event.key){this.value = event.code; this.parentNode.children[5].value = event.keyCode; toggleYourStuff.updateSettings();} event.preventDefault(); event.stopImmediatePropagation(); return false;\" value=\"${hotkey}\"></input>\n  <label><input name=\"ctrl\" type=\"checkbox\" onchange=\"toggleYourStuff.updateSettings()\"${(ctrl ? " checked" : "")}>Ctrl</label>\n  <label><input name=\"shift\" type=\"checkbox\" onchange=\"toggleYourStuff.updateSettings()\"${(shift ? " checked" : "")}>Shift</label>\n  <label><input name=\"alt\" type=\"checkbox\" onchange=\"toggleYourStuff.updateSettings()\"${(alt ? " checked" : "")}>Alt</label>\n  <input name=\"keycode\" type=\"hidden\" value=\"${keycode}\">\n  <button type=\"button\" onclick=\"this.parentNode.children[1].value = ''; toggleYourStuff.updateSettings()\">Clear</button>\n</div>`;
+        settingsPanel += `<div id="tys-${plugin}">${plugin}<br>
+  <input name="hotkey" type="text" placeholder="Hotkey" onkeydown="if('Shift'!==event.key && 'Control'!==event.key && 'Alt'!==event.key){this.value = event.code; this.parentNode.children[5].value = event.keyCode; toggleYourStuff.updateSettings();} event.preventDefault(); event.stopImmediatePropagation(); return false;" value="${hotkey}"></input>
+  <label><input name="ctrl" type="checkbox" onchange="toggleYourStuff.updateSettings()"${ctrl ? " checked" : ""}>Ctrl</label>
+  <label><input name="shift" type="checkbox" onchange="toggleYourStuff.updateSettings()"${shift ? " checked" : ""}>Shift</label>
+  <label><input name="alt" type="checkbox" onchange="toggleYourStuff.updateSettings()"${alt ? " checked" : ""}>Alt</label>
+  <input name="keycode" type="hidden" value="${keycode}">
+  <button type="button" onclick="this.parentNode.children[1].value = ''; toggleYourStuff.updateSettings()">Clear</button>
+</div>`;
       }
-      settingsPanel += "</div>" + "<div id=\"tys-theme-hotkeys\"><h2>Themes:</h2>";
-      for (theme in bdthemes) {
-        ({hotkey, ctrl, shift, alt, keycode} = (ref1 = settings.themes[theme]) != null ? ref1 : {
+      settingsPanel += `</div>` + `<div id="tys-theme-hotkeys"><h2>Themes:</h2>`;
+      ref2 = Themes.getAll();
+      for (l = 0, len1 = ref2.length; l < len1; l++) {
+        theme = ref2[l];
+        if (!(theme = theme.name)) {
+          continue;
+        }
+        ({ hotkey, ctrl, shift, alt, keycode } = (ref3 = settings.themes[theme]) != null ? ref3 : {
           hotkey: "",
           ctrl: false,
           shift: false,
           alt: false,
           keycode: ""
         });
-        settingsPanel += `<div id=\"tys-${theme}\">${theme}<br>\n  <input name=\"hotkey\" type=\"text\" placeholder=\"Hotkey\" onkeydown=\"if('Shift'!==event.key && 'Control'!==event.key && 'Alt'!==event.key){this.value = event.code; this.parentNode.children[5].value = event.keyCode; toggleYourStuff.updateSettings();} event.preventDefault(); event.stopImmediatePropagation(); return false;\" value=\"${hotkey}\"></input>\n  <label><input name=\"ctrl\" type=\"checkbox\" onchange=\"toggleYourStuff.updateSettings()\"${(ctrl ? " checked" : "")}>Ctrl</label>\n  <label><input name=\"shift\" type=\"checkbox\" onchange=\"toggleYourStuff.updateSettings()\"${(shift ? " checked" : "")}>Shift</label>\n  <label><input name=\"alt\" type=\"checkbox\" onchange=\"toggleYourStuff.updateSettings()\"${(alt ? " checked" : "")}>Alt</label>\n  <input name=\"keycode\" type=\"hidden\" value=\"${keycode}\">\n  <button type=\"button\" onclick=\"this.parentNode.children[1].value = ''; toggleYourStuff.updateSettings()\">Clear</button>\n</div>`;
+        settingsPanel += `<div id="tys-${theme}">${theme}<br>
+  <input name="hotkey" type="text" placeholder="Hotkey" onkeydown="if('Shift'!==event.key && 'Control'!==event.key && 'Alt'!==event.key){this.value = event.code; this.parentNode.children[5].value = event.keyCode; toggleYourStuff.updateSettings();} event.preventDefault(); event.stopImmediatePropagation(); return false;" value="${hotkey}"></input>
+  <label><input name="ctrl" type="checkbox" onchange="toggleYourStuff.updateSettings()"${ctrl ? " checked" : ""}>Ctrl</label>
+  <label><input name="shift" type="checkbox" onchange="toggleYourStuff.updateSettings()"${shift ? " checked" : ""}>Shift</label>
+  <label><input name="alt" type="checkbox" onchange="toggleYourStuff.updateSettings()"${alt ? " checked" : ""}>Alt</label>
+  <input name="keycode" type="hidden" value="${keycode}">
+  <button type="button" onclick="this.parentNode.children[1].value = ''; toggleYourStuff.updateSettings()">Clear</button>
+</div>`;
       }
-      return settingsPanel += "</div>" + "</div>";
+      return settingsPanel += `</div>` + "</div>";
     }
 
     static updateSettings() {
@@ -93,116 +136,88 @@ toggleYourStuff = (function() {
       ref = html.querySelector("#tys-plugin-hotkeys").children;
       for (i = j = 0, len = ref.length; j < len; i = ++j) {
         plugin = ref[i];
-        if (!(i)) {
+        if (!i) {
           continue;
         }
         id = plugin.id.slice(4);
-        hotkey = plugin.querySelector("input[name=\"hotkey\"]").value;
+        hotkey = plugin.querySelector(`input[name="hotkey"]`).value;
         if ("" === hotkey) {
           delete settings.plugins[id];
           continue;
         }
-        ctrl = plugin.querySelector("input[name=\"ctrl\"]").checked;
-        shift = plugin.querySelector("input[name=\"shift\"]").checked;
-        alt = plugin.querySelector("input[name=\"alt\"]").checked;
-        keycode = 0 | plugin.querySelector("input[name=\"keycode\"]").value;
-        settings.plugins[id] = {hotkey, ctrl, shift, alt, keycode};
+        ctrl = plugin.querySelector(`input[name="ctrl"]`).checked;
+        shift = plugin.querySelector(`input[name="shift"]`).checked;
+        alt = plugin.querySelector(`input[name="alt"]`).checked;
+        keycode = 0 | plugin.querySelector(`input[name="keycode"]`).value;
+        settings.plugins[id] = { hotkey, ctrl, shift, alt, keycode };
       }
       ref1 = html.querySelector("#tys-theme-hotkeys").children;
       for (i = l = 0, len1 = ref1.length; l < len1; i = ++l) {
         theme = ref1[i];
-        if (!(i)) {
+        if (!i) {
           continue;
         }
         id = theme.id.slice(4);
-        hotkey = theme.querySelector("input[name=\"hotkey\"]").value;
+        hotkey = theme.querySelector(`input[name="hotkey"]`).value;
         if ("" === hotkey) {
           delete settings.plugins[id];
           continue;
         }
-        ctrl = theme.querySelector("input[name=\"ctrl\"]").checked;
-        shift = theme.querySelector("input[name=\"shift\"]").checked;
-        alt = theme.querySelector("input[name=\"alt\"]").checked;
-        keycode = 0 | theme.querySelector("input[name=\"keycode\"]").value;
-        settings.themes[id] = {hotkey, ctrl, shift, alt, keycode};
+        ctrl = theme.querySelector(`input[name="ctrl"]`).checked;
+        shift = theme.querySelector(`input[name="shift"]`).checked;
+        alt = theme.querySelector(`input[name="alt"]`).checked;
+        keycode = 0 | theme.querySelector(`input[name="keycode"]`).value;
+        settings.themes[id] = { hotkey, ctrl, shift, alt, keycode };
       }
-      settings.cancelDefault = html.querySelector("input[name=\"cancelDefault\"]").checked;
-      settings.dontSave = html.querySelector("input[name=\"dontSave\"]").checked;
+      settings.cancelDefault = html.querySelector(`input[name="cancelDefault"]`).checked;
       settings._note = "The plugin uses the keycodes for detecting a match. The hotkeys are for display in settings only.";
-      return bdPluginStorage.set("toggleYourStuff", "settings", settings);
+      return BdApi.setData("toggleYourStuff", "settings", settings);
     }
 
   };
 
-  listener = function(ev) {
-    var alt, css, ctrl, enabled, evalt, evctrl, evkeycode, evshift, handledP, handledT, k, keycode, n, name, plugin, ref, ref1, ref2, shift;
-    evkeycode = ev.keyCode;
-    evctrl = ev.ctrlKey;
-    evshift = ev.shiftKey;
-    evalt = ev.altKey;
-    handledP = handledT = false;
+  Plugins = Themes = null;
+
+  listener = function (ev) {
+    var alt, ctrl, handled, keycode, modifiers, plugin, ref, ref1, shift, theme;
+    modifiers = [ev.keyCode, ev.ctrlKey, ev.shiftKey, ev.altKey];
+    handled = false;
     ref = settings.plugins;
-    for (k in ref) {
-      ({keycode, ctrl, shift, alt} = ref[k]);
-      if (!((bdplugins[k] != null) && keycode === evkeycode && ctrl === evctrl && shift === evshift && evalt === alt)) {
+    for (plugin in ref) {
+      ({ keycode, ctrl, shift, alt } = ref[plugin]);
+      if (!(Plugins.get(plugin) != null && [keycode, ctrl, shift, alt].every(function (x, i) {
+        return x === modifiers[i];
+      }))) {
         continue;
       }
-      ({plugin} = bdplugins[k]);
-      if (enabled = pluginCookie[k]) {
-        try {
-          plugin.stop();
-        } catch (error) {}
-      } else {
-        try {
-          plugin.start();
-        } catch (error) {}
-      }
-      pluginCookie[k] = !enabled;
-      handledP = true;
+      Plugins.toggle(plugin);
+      handled = true;
     }
     ref1 = settings.themes;
-    for (k in ref1) {
-      ({keycode, ctrl, shift, alt} = ref1[k]);
-      if (!((bdthemes[k] != null) && keycode === evkeycode && ctrl === evctrl && shift === evshift && evalt === alt)) {
+    for (theme in ref1) {
+      ({ keycode, ctrl, shift, alt } = ref1[theme]);
+      if (!(Themes.get(theme) != null && [keycode, ctrl, shift, alt].every(function (x, i) {
+        return x === modifiers[i];
+      }))) {
         continue;
       }
-      ({name, css} = bdthemes[k]);
-      if (enabled = themeCookie[k]) {
-        if ((ref2 = document.getElementById(`${k}`)) != null) {
-          ref2.remove();
-        }
-      } else {
-        n = document.createElement("style");
-        n.id = name;
-        n.innerHTML = unescape(css);
-        document.head.appendChild(n);
-      }
-      themeCookie[k] = !enabled;
-      handledT = true;
+      Themes.toggle(theme);
+      handled = true;
     }
-    if (!settings.dontSave) {
-      if (handledP) {
-        pluginModule.savePluginData();
-      }
-      if (handledT) {
-        themeModule.saveThemeData();
-      }
-    }
-    if ((handledP || handledT) && settings.cancelDefault) {
+    if (handled && settings.cancelDefault) {
       ev.preventDefault();
       ev.stopImmediatePropagation();
       return false;
     }
   };
 
-  settings = {};
+  settings = null;
 
-  getSettings = function() {
+  readSettings = function () {
     var k, ref, ref1, v;
-    settings = (ref = bdPluginStorage.get("toggleYourStuff", "settings")) != null ? ref : {};
+    settings = (ref = BdApi.getData("toggleYourStuff", "settings")) != null ? ref : {};
     ref1 = {
       cancelDefault: false,
-      dontSave: false,
       plugins: {},
       themes: {}
     };
@@ -215,7 +230,4 @@ toggleYourStuff = (function() {
   };
 
   return toggleYourStuff;
-
-})();
-
-window.toggleYourStuff = toggleYourStuff;
+}.call(this);

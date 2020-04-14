@@ -1,29 +1,22 @@
+#META{ "name": "toggleYourStuff", "website": "https://inve1951.github.io/BetterDiscordStuff/" }*//
 
-`//META{"name":"toggleYourStuff"}*//`
-
-
-class toggleYourStuff
+class global.toggleYourStuff
   getName: ->         "Toggle-Your-Stuff"
   getDescription: ->  "Toggle your plugins and themes using hotkeys."
-  getVersion: ->      "1.1.1"
+  getVersion: ->      "1.2.0"
   getAuthor: ->       "square"
 
+  Plugins = Themes = null
   start: ->
-    do getSettings
-    document.body.addEventListener "keydown", listener, true
+    { Plugins, Themes } = BdApi
+    readSettings()
+    document.body.addEventListener "keydown", listener, yes
 
   stop: ->
-    document.body.removeEventListener "keydown", listener, true
-
-  load: ->
+    document.body.removeEventListener "keydown", listener, yes
 
   getSettingsPanel: ->
-    do getSettings
-    headerstyle = "text-transform:" + (switch 0 | 4 * Math.random()
-      when 0 then "none"
-      when 1 then "capitalize"
-      when 2 then "uppercase"
-      when 3 then "lowercase") + ";filter:drop-shadow(0 0 30px rgb(" + (0|256*Math.random() for x in [0...3]).join(",") + "));"
+    readSettings()
     settingsPanel = """
       <div id="tys_settings">
         <style>
@@ -62,13 +55,12 @@ class toggleYourStuff
         }
         </style>
       """
-    settingsPanel += """<span style="#{headerstyle}">tOgGLe-yOuR-sTufF</span>"""
+    settingsPanel += """<span style="text-transform:#{"none capitalize uppercase lowercase".split(" ")[0 | 4 * Math.random()]};filter:drop-shadow(0 0 30px rgb(#{(0|256*Math.random() for x in [0...3]).join(",")}));">tOgGLe-yOuR-sTufF</span>"""
     settingsPanel += """<label><input name="cancelDefault" type="checkbox" onchange="toggleYourStuff.updateSettings()"#{if settings.cancelDefault then " checked" else ""}>Cancel default. Prevents any actions which use the same hotkey. (don't kill your ctrl+comma)</label><br><br>"""
-    settingsPanel += """<label><input name="dontSave" type="checkbox" onchange="toggleYourStuff.updateSettings()"#{if settings.dontSave then " checked" else ""}>Don't have BD save enabled-state after toggling. This is wonky.</label><br><br>"""
     settingsPanel += """<span>Numpad doesn't work with Shift key.</span>""" +
     """<div id="tys-plugin-hotkeys"><h2>Plugins:</h2>"""
-    for plugin of bdplugins
-      {hotkey, ctrl, shift, alt, keycode} = (settings.plugins[plugin] ? hotkey: "", ctrl: false, shift: false, alt: false, keycode: "")
+    for plugin in Plugins.getAll() when plugin = plugin.getName()
+      { hotkey, ctrl, shift, alt, keycode } = settings.plugins[plugin] ? hotkey: "", ctrl: no, shift: no, alt: no, keycode: ""
       settingsPanel += """
         <div id="tys-#{plugin}">#{plugin}<br>
           <input name="hotkey" type="text" placeholder="Hotkey" onkeydown="if('Shift'!==event.key && 'Control'!==event.key && 'Alt'!==event.key){this.value = event.code; this.parentNode.children[5].value = event.keyCode; toggleYourStuff.updateSettings();} event.preventDefault(); event.stopImmediatePropagation(); return false;" value="#{hotkey}"></input>
@@ -81,8 +73,8 @@ class toggleYourStuff
       """
     settingsPanel += """</div>""" +
     """<div id="tys-theme-hotkeys"><h2>Themes:</h2>"""
-    for theme of bdthemes
-      {hotkey, ctrl, shift, alt, keycode} = (settings.themes[theme] ? hotkey: "", ctrl: false, shift: false, alt: false, keycode: "")
+    for theme in Themes.getAll() when theme = theme.name
+      { hotkey, ctrl, shift, alt, keycode } = settings.themes[theme] ? hotkey: "", ctrl: no, shift: no, alt: no, keycode: ""
       settingsPanel += """
         <div id="tys-#{theme}">#{theme}<br>
           <input name="hotkey" type="text" placeholder="Hotkey" onkeydown="if('Shift'!==event.key && 'Control'!==event.key && 'Alt'!==event.key){this.value = event.code; this.parentNode.children[5].value = event.keyCode; toggleYourStuff.updateSettings();} event.preventDefault(); event.stopImmediatePropagation(); return false;" value="#{hotkey}"></input>
@@ -97,56 +89,34 @@ class toggleYourStuff
     "</div>"
 
   listener = (ev) ->
-    evkeycode = ev.keyCode
-    evctrl = ev.ctrlKey
-    evshift = ev.shiftKey
-    evalt = ev.altKey
-    handledP = handledT = false
+    modifiers = [ev.keyCode, ev.ctrlKey, ev.shiftKey, ev.altKey]
+    handled = no
 
-    for k, {keycode, ctrl, shift, alt} of settings.plugins when bdplugins[k]? and keycode is evkeycode and ctrl is evctrl and shift is evshift and evalt is alt
-      {plugin} = bdplugins[k]
-      if enabled = pluginCookie[k]
-        try plugin.stop()
-      else
-        try plugin.start()
-      pluginCookie[k] = !enabled
-      handledP = true
+    for plugin, {keycode, ctrl, shift, alt} of settings.plugins when Plugins.get(plugin)? and [keycode, ctrl, shift, alt].every (x, i) -> x is modifiers[i]
+      Plugins.toggle plugin
+      handled = yes
 
-    for k, {keycode, ctrl, shift, alt} of settings.themes when bdthemes[k]? and keycode is evkeycode and ctrl is evctrl and shift is evshift and evalt is alt
-      {name, css} = bdthemes[k]
-      if enabled = themeCookie[k]
-        document.getElementById("#{k}")?.remove()
-      else
-        n = document.createElement "style"
-        n.id = name
-        n.innerHTML = unescape css
-        document.head.appendChild n
-      themeCookie[k] = !enabled
-      handledT = true
+    for theme, {keycode, ctrl, shift, alt} of settings.themes when Themes.get(theme)? and [keycode, ctrl, shift, alt].every (x, i) -> x is modifiers[i]
+      Themes.toggle theme
+      handled = yes
 
-    if !settings.dontSave
-      do pluginModule.savePluginData if handledP
-      do themeModule.saveThemeData if handledT
-
-    if (handledP or handledT) and settings.cancelDefault
+    if handled and settings.cancelDefault
       ev.preventDefault()
       ev.stopImmediatePropagation()
-      return false
-    return
+      no
 
-  settings = {}
+  settings = null
 
-  getSettings = ->
-    settings = (bdPluginStorage.get "toggleYourStuff", "settings") ? {}
+  readSettings = ->
+    settings = (BdApi.getData "toggleYourStuff", "settings") ? {}
     settings[k] ?= v for k, v of {
-      cancelDefault: false
-      dontSave: false
+      cancelDefault: no
       plugins: {}
       themes: {}
     }
     return
 
-  @updateSettings: () ->
+  @updateSettings: ->
     html = document.getElementById "tys_settings"
     settings = plugins: {}, themes: {}
     for plugin, i in html.querySelector("#tys-plugin-hotkeys").children when i
@@ -176,10 +146,6 @@ class toggleYourStuff
       settings.themes[id] = {hotkey, ctrl, shift, alt, keycode}
 
     settings.cancelDefault = html.querySelector("""input[name="cancelDefault"]""").checked
-    settings.dontSave = html.querySelector("""input[name="dontSave"]""").checked
 
     settings._note = "The plugin uses the keycodes for detecting a match. The hotkeys are for display in settings only."
-    bdPluginStorage.set "toggleYourStuff", "settings", settings
-
-
-window.toggleYourStuff = toggleYourStuff
+    BdApi.setData "toggleYourStuff", "settings", settings
