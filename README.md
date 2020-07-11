@@ -3,7 +3,8 @@
 Made a simple site displaying my stuff in a better way than this readme ever could:<br/>
 [Inve1951.github.io/BetterDiscordStuff](https://Inve1951.github.io/BetterDiscordStuff)
 
-Want to buy me a coffee? Find my PayPal link on above site.
+~~Want to buy me a coffee? Find my PayPal link on above site.~~  
+**Safe your money.** PayPal randomly locked my account. They refuse to tell me why and refuse to restore my access to it.
 
 ------------------------
 
