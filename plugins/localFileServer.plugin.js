@@ -16,7 +16,7 @@ global.localFileServer = function () {
     }
 
     getVersion() {
-      return "1.1.2";
+      return "1.1.3";
     }
 
     load() {}
@@ -88,7 +88,7 @@ global.localFileServer = function () {
           }
         }
       }
-      bdPluginStorage.set("localFileServer", "settings", settings);
+      BdApi.setData("localFileServer", "settings", settings);
       if (oldPort !== settings.port) {
         stopServer();
         startServer();
@@ -115,7 +115,7 @@ global.localFileServer = function () {
 
   getSettings = function () {
     var k, ref, ref1, v;
-    settings = (ref = bdPluginStorage.get("localFileServer", "settings")) != null ? ref : {};
+    settings = (ref = BdApi.getData("localFileServer", "settings")) != null ? ref : {};
     ref1 = {
       folder: path.join(process.env[process.platform === "win32" ? "USERPROFILE" : "HOME"], "pictures"),
       port: 35724
