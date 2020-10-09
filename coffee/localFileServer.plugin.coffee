@@ -4,7 +4,7 @@ class global.localFileServer
   getName: -> "Local File Server"
   getDescription: -> "Hosts a selected folder so you can use local files in your theme. Has to restart discord first time enabling."
   getAuthor: -> "square"
-  getVersion: -> "1.1.2"
+  getVersion: -> "1.1.3"
 
   load: ->
 
@@ -29,7 +29,7 @@ class global.localFileServer
   settings = server = null
 
   getSettings = ->
-    settings = (bdPluginStorage.get "localFileServer", "settings") ? {}
+    settings = (BdApi.getData "localFileServer", "settings") ? {}
     settings[k] ?= v for k, v of {
       folder: path.join process.env[if process.platform is "win32" then "USERPROFILE" else "HOME"], "pictures"
       port: 35724
@@ -106,7 +106,7 @@ class global.localFileServer
       else
         input.className = "invalid"
         input.innerHTML = "invalid path" if name is "folder"
-    bdPluginStorage.set "localFileServer", "settings", settings
+    BdApi.setData "localFileServer", "settings", settings
     if oldPort isnt settings.port
       stopServer()
       startServer()
