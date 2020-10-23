@@ -1,4 +1,7 @@
-//META{ "name": "discordExperiments", "website": "https://inve1951.github.io/BetterDiscordStuff/" }*//
+/**
+ * @name discordExperiments
+ * @website https://inve1951.github.io/BetterDiscordStuff/
+ */
 
 var discordExperiments = (t => class {
 	getName(){ return "Discord Experiments" }
