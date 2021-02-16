@@ -3,7 +3,7 @@
 class global.toggleYourStuff
   getName: ->         "Toggle-Your-Stuff"
   getDescription: ->  "Toggle your plugins and themes using hotkeys."
-  getVersion: ->      "1.2.0"
+  getVersion: ->      "1.2.1"
   getAuthor: ->       "square"
 
   Plugins = Themes = null
@@ -59,7 +59,7 @@ class global.toggleYourStuff
     settingsPanel += """<label><input name="cancelDefault" type="checkbox" onchange="toggleYourStuff.updateSettings()"#{if settings.cancelDefault then " checked" else ""}>Cancel default. Prevents any actions which use the same hotkey. (don't kill your ctrl+comma)</label><br><br>"""
     settingsPanel += """<span>Numpad doesn't work with Shift key.</span>""" +
     """<div id="tys-plugin-hotkeys"><h2>Plugins:</h2>"""
-    for plugin in Plugins.getAll() when plugin = plugin.getName()
+    for plugin in Plugins.getAll() when plugin = plugin.getName?() ? plugin.name
       { hotkey, ctrl, shift, alt, keycode } = settings.plugins[plugin] ? hotkey: "", ctrl: no, shift: no, alt: no, keycode: ""
       settingsPanel += """
         <div id="tys-#{plugin}">#{plugin}<br>

@@ -12,7 +12,7 @@ global.toggleYourStuff = function () {
     }
 
     getVersion() {
-      return "1.2.0";
+      return "1.2.1";
     }
 
     getAuthor() {
@@ -20,7 +20,10 @@ global.toggleYourStuff = function () {
     }
 
     start() {
-      ({ Plugins, Themes } = BdApi);
+      ({
+        Plugins,
+        Themes
+      } = BdApi);
       readSettings();
       return document.body.addEventListener("keydown", listener, true);
     }
@@ -30,7 +33,7 @@ global.toggleYourStuff = function () {
     }
 
     getSettingsPanel() {
-      var alt, ctrl, hotkey, j, keycode, l, len, len1, plugin, ref, ref1, ref2, ref3, settingsPanel, shift, theme, x;
+      var alt, ctrl, hotkey, j, keycode, l, len, len1, plugin, ref, ref1, ref2, ref3, ref4, settingsPanel, shift, theme, x;
       readSettings();
       settingsPanel = `<div id="tys_settings">
   <style>
@@ -71,20 +74,31 @@ global.toggleYourStuff = function () {
       settingsPanel += `<span style="text-transform:${"none capitalize uppercase lowercase".split(" ")[0 | 4 * Math.random()]};filter:drop-shadow(0 0 30px rgb(${function () {
         var j, results;
         results = [];
+
         for (x = j = 0; j < 3; x = ++j) {
           results.push(0 | 256 * Math.random());
         }
+
         return results;
       }().join(",")}));">tOgGLe-yOuR-sTufF</span>`;
       settingsPanel += `<label><input name="cancelDefault" type="checkbox" onchange="toggleYourStuff.updateSettings()"${settings.cancelDefault ? " checked" : ""}>Cancel default. Prevents any actions which use the same hotkey. (don't kill your ctrl+comma)</label><br><br>`;
       settingsPanel += `<span>Numpad doesn't work with Shift key.</span>` + `<div id="tys-plugin-hotkeys"><h2>Plugins:</h2>`;
       ref = Plugins.getAll();
+
       for (j = 0, len = ref.length; j < len; j++) {
         plugin = ref[j];
-        if (!(plugin = plugin.getName())) {
+
+        if (!(plugin = (ref1 = typeof plugin.getName === "function" ? plugin.getName() : void 0) != null ? ref1 : plugin.name)) {
           continue;
         }
-        ({ hotkey, ctrl, shift, alt, keycode } = (ref1 = settings.plugins[plugin]) != null ? ref1 : {
+
+        ({
+          hotkey,
+          ctrl,
+          shift,
+          alt,
+          keycode
+        } = (ref2 = settings.plugins[plugin]) != null ? ref2 : {
           hotkey: "",
           ctrl: false,
           shift: false,
@@ -100,14 +114,24 @@ global.toggleYourStuff = function () {
   <button type="button" onclick="this.parentNode.children[1].value = ''; toggleYourStuff.updateSettings()">Clear</button>
 </div>`;
       }
+
       settingsPanel += `</div>` + `<div id="tys-theme-hotkeys"><h2>Themes:</h2>`;
-      ref2 = Themes.getAll();
-      for (l = 0, len1 = ref2.length; l < len1; l++) {
-        theme = ref2[l];
+      ref3 = Themes.getAll();
+
+      for (l = 0, len1 = ref3.length; l < len1; l++) {
+        theme = ref3[l];
+
         if (!(theme = theme.name)) {
           continue;
         }
-        ({ hotkey, ctrl, shift, alt, keycode } = (ref3 = settings.themes[theme]) != null ? ref3 : {
+
+        ({
+          hotkey,
+          ctrl,
+          shift,
+          alt,
+          keycode
+        } = (ref4 = settings.themes[theme]) != null ? ref4 : {
           hotkey: "",
           ctrl: false,
           shift: false,
@@ -123,6 +147,7 @@ global.toggleYourStuff = function () {
   <button type="button" onclick="this.parentNode.children[1].value = ''; toggleYourStuff.updateSettings()">Clear</button>
 </div>`;
       }
+
       return settingsPanel += `</div>` + "</div>";
     }
 
@@ -134,48 +159,73 @@ global.toggleYourStuff = function () {
         themes: {}
       };
       ref = html.querySelector("#tys-plugin-hotkeys").children;
+
       for (i = j = 0, len = ref.length; j < len; i = ++j) {
         plugin = ref[i];
+
         if (!i) {
           continue;
         }
+
         id = plugin.id.slice(4);
         hotkey = plugin.querySelector(`input[name="hotkey"]`).value;
+
         if ("" === hotkey) {
           delete settings.plugins[id];
           continue;
         }
+
         ctrl = plugin.querySelector(`input[name="ctrl"]`).checked;
         shift = plugin.querySelector(`input[name="shift"]`).checked;
         alt = plugin.querySelector(`input[name="alt"]`).checked;
         keycode = 0 | plugin.querySelector(`input[name="keycode"]`).value;
-        settings.plugins[id] = { hotkey, ctrl, shift, alt, keycode };
+        settings.plugins[id] = {
+          hotkey,
+          ctrl,
+          shift,
+          alt,
+          keycode
+        };
       }
+
       ref1 = html.querySelector("#tys-theme-hotkeys").children;
+
       for (i = l = 0, len1 = ref1.length; l < len1; i = ++l) {
         theme = ref1[i];
+
         if (!i) {
           continue;
         }
+
         id = theme.id.slice(4);
         hotkey = theme.querySelector(`input[name="hotkey"]`).value;
+
         if ("" === hotkey) {
           delete settings.plugins[id];
           continue;
         }
+
         ctrl = theme.querySelector(`input[name="ctrl"]`).checked;
         shift = theme.querySelector(`input[name="shift"]`).checked;
         alt = theme.querySelector(`input[name="alt"]`).checked;
         keycode = 0 | theme.querySelector(`input[name="keycode"]`).value;
-        settings.themes[id] = { hotkey, ctrl, shift, alt, keycode };
+        settings.themes[id] = {
+          hotkey,
+          ctrl,
+          shift,
+          alt,
+          keycode
+        };
       }
+
       settings.cancelDefault = html.querySelector(`input[name="cancelDefault"]`).checked;
       settings._note = "The plugin uses the keycodes for detecting a match. The hotkeys are for display in settings only.";
       return BdApi.setData("toggleYourStuff", "settings", settings);
     }
 
-  };
+  }
 
+  ;
   Plugins = Themes = null;
 
   listener = function (ev) {
@@ -183,27 +233,45 @@ global.toggleYourStuff = function () {
     modifiers = [ev.keyCode, ev.ctrlKey, ev.shiftKey, ev.altKey];
     handled = false;
     ref = settings.plugins;
+
     for (plugin in ref) {
-      ({ keycode, ctrl, shift, alt } = ref[plugin]);
+      ({
+        keycode,
+        ctrl,
+        shift,
+        alt
+      } = ref[plugin]);
+
       if (!(Plugins.get(plugin) != null && [keycode, ctrl, shift, alt].every(function (x, i) {
         return x === modifiers[i];
       }))) {
         continue;
       }
+
       Plugins.toggle(plugin);
       handled = true;
     }
+
     ref1 = settings.themes;
+
     for (theme in ref1) {
-      ({ keycode, ctrl, shift, alt } = ref1[theme]);
+      ({
+        keycode,
+        ctrl,
+        shift,
+        alt
+      } = ref1[theme]);
+
       if (!(Themes.get(theme) != null && [keycode, ctrl, shift, alt].every(function (x, i) {
         return x === modifiers[i];
       }))) {
         continue;
       }
+
       Themes.toggle(theme);
       handled = true;
     }
+
     if (handled && settings.cancelDefault) {
       ev.preventDefault();
       ev.stopImmediatePropagation();
@@ -221,8 +289,10 @@ global.toggleYourStuff = function () {
       plugins: {},
       themes: {}
     };
+
     for (k in ref1) {
       v = ref1[k];
+
       if (settings[k] == null) {
         settings[k] = v;
       }
