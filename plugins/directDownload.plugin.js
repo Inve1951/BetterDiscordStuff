@@ -16,7 +16,7 @@ global.directDownload = function () {
     }
 
     getVersion() {
-      return "0.4.2";
+      return "0.4.3";
     }
 
     start() {
@@ -579,7 +579,7 @@ global.directDownload = function () {
       }
 
       open() {
-        shell.openItem(this.filepath);
+        shell.openPath(this.filepath);
       }
 
       show() {
