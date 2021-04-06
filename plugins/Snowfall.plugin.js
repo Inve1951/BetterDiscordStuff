@@ -1,28 +1,27 @@
 //META { "name": "Snowfall" } *//
 
-var Snowfall = (function(CopleSnow, snow, bw, blur, focus){
+var Snowfall = (function(CopleSnow, snow, blur, focus){
 
   class Snowfall {
     getName(){return "Snowfall"}
     getDescription(){return "Let It Snow... Original code by Cople [https://cople.github.io/Snowfall.js]."}
     getAuthor(){return "square"}
-    getVersion(){return "1.0.0"}
+    getVersion(){return "1.1.0"}
 
     load(){}
     start(){
       BdApi.injectCSS("snowfall", CopleSnow.css);
       snow = new CopleSnow({autoplay: false});
-      bw = require("electron").remote.getCurrentWindow();
-      if(bw.isFocused()) snow.play();
-      bw.on("blur", blur =_=> snow.stop());
-      bw.on("focus", focus =_=> snow.play());
+      if(document.hasFocus()) snow.play();
+      window.addEventListener("blur", blur =_=> snow.stop());
+      window.addEventListener("focus", focus =_=> snow.play());
     }
     stop(){
       snow.stop();
       BdApi.clearCSS("snowfall");
       document.getElementById("snowfield").remove();
-      bw.removeListener("blur", blur);
-      bw.removeListener("focus", focus);
+      window.removeEventListener("blur", blur);
+      window.removeEventListener("focus", focus);
     }
   }
 
