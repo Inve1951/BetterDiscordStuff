@@ -22,10 +22,12 @@ SquareLib = function () {
 };
 
 (async function () {
-  var AsyncKeystate, React, ReactDom, _crypto, _fs, _keystates, _path, createElement, createReadOnlyObject, env, err, fs, generateMd5, getOwnerInstance, promise, promisify;
+  var AsyncKeystate, React, ReactDom, _crypto, _fs, _keystates, _path, createElement, createReadOnlyObject, env, err, fs, generateMd5, getOwnerInstance, promise, promisify, filename, dirname;
   _path = require("path");
   _fs = require("fs");
   _crypto = require("crypto");
+  filename = typeof __filename !== "undefined" && __filename || "";
+  dirname = typeof __dirname !== "undefined" && __dirname || "";
   createReadOnlyObject = function (obj) {
     var k, v;
     for (k in obj) {
@@ -39,7 +41,7 @@ SquareLib = function () {
     return Object.defineProperties(Object.create(null), obj);
   };
   env = createReadOnlyObject({
-    INSTALLED: __filename?.endsWith(".plugin.js")
+    INSTALLED: filename.endsWith(".plugin.js")
   });
   promisify = function (f, _this = null) {
     return function (...args) {
@@ -134,12 +136,6 @@ SquareLib = function () {
   };
   try {
     ({ React, ReactDom } = BdApi);
-    if (!(React && ReactDom)) {
-      ({
-        react: React,
-        reactDom: ReactDom
-      } = BDV2);
-    }
     ReactDom = Object.assign({}, ReactDom, {
       _internal: function () {
         var Events, _0, _1, _2, _3, _4, _5, _6, _7, _8, _9;
@@ -191,8 +187,8 @@ SquareLib = function () {
         alert("SquareLib is not supposed to be installed locally.\nPlugins which use it will load it in remotely.\nHaving an outdated version of this lib installed tends to cause plugin issues and breakage.\nFeel free to keep it anyway and enjoy this popup as a reminder.");
       }
     } catch (error) {}
-    if ("0circle.plugin.js" !== _path.basename(__filename)) {
-      return await fs.rename(__filename, _path.join(__dirname, "0circle.plugin.js"));
+    if ("0circle.plugin.js" !== _path.basename(filename)) {
+      return await fs.rename(filename, _path.join(dirname, "0circle.plugin.js"));
     }
   }
   if (promise && !(promise instanceof Promise && "function" === typeof promise.libLoaded && "string" === typeof promise.code)) {
