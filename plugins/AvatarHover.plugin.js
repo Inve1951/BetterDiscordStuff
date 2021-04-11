@@ -16,7 +16,7 @@ global.AvatarHover = function () {
     }
 
     getVersion() {
-      return "0.7.1";
+      return "0.7.2";
     }
 
     load() {
@@ -114,19 +114,19 @@ global.AvatarHover = function () {
   updateQualifier = function () {
     return qualifier = [
     // guilds
-    settings.isHoverGuilds ? ".wrapper-25eVIn" : void 0,
+    settings.isHoverGuilds ? ".wrapper-1BJsBx" : void 0,
     // voip, DM channels
-    settings.isHoverChannels ? ".avatarContainer-2inGBK, .channel-2QD9_O .avatar-3uk_u9" : void 0,
+    settings.isHoverChannels ? ".avatarContainer-28iYmV, .channel-2QD9_O .wrapper-3t9DeA" : void 0,
     // friends list
     settings.isHoverFriends ? ".userInfo-2zN2z8 .avatar-3W3CeO" : void 0,
     // messages, embeds
     settings.isHoverChatMessages ? ".contents-2mQqc9 .avatar-1BDn8e, .embedAuthorIcon--1zR3L" : void 0,
     // channel users
-    settings.isHoverChatUsers ? ".member-3-YXUe .avatar-3uk_u9" : void 0,
+    settings.isHoverChatUsers ? ".member-3-YXUe .wrapper-3t9DeA" : void 0,
     // DM call
-    settings.isHoverCall ? ".callAvatarWrapper-3Ax_xH" : void 0,
-    // modals, userpopout
-    settings.isHoverProfile ? ".header-QKLPzZ .avatar-3EQepX, .avatarWrapper-3H_478" : void 0].filter(function (s) {
+    settings.isHoverCall ? ".participant-1lOCsd .wrapper-2QE8vf" : void 0,
+    // user modal, user popout, mutual servers/friends
+    settings.isHoverProfile ? ".header-QKLPzZ .avatar-3EQepX, .avatarWrapper-3H_478 .wrapper-3t9DeA, .listAvatar-1NlAhb" : void 0].filter(function (s) {
       return s != null;
     }).join(", ");
   };
