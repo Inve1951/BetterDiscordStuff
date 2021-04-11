@@ -39,7 +39,7 @@ SquareLib = function () {
     return Object.defineProperties(Object.create(null), obj);
   };
   env = createReadOnlyObject({
-    INSTALLED: __filename.endsWith(".plugin.js")
+    INSTALLED: __filename?.endsWith(".plugin.js")
   });
   promisify = function (f, _this = null) {
     return function (...args) {
