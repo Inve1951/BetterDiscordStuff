@@ -32,6 +32,7 @@ class global.directDownload
     imageWrapper: "imageWrapper-2p5ogY"
     lfg: "lfg-3xoFkI"
     metadataDownload: "metadataDownload-1fk90V"
+
     embed: "embed-IeVjo6"
     embedVideo: "embedVideo-3nf0O9"
     videoControls: "controls-N9e_UM"
