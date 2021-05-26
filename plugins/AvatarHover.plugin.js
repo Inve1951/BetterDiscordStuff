@@ -16,7 +16,7 @@ global.AvatarHover = function () {
     }
 
     getVersion() {
-      return "0.7.2";
+      return "0.7.3";
     }
 
     load() {
@@ -126,7 +126,7 @@ global.AvatarHover = function () {
     // DM call
     settings.isHoverCall ? ".participant-1lOCsd .wrapper-2QE8vf" : void 0,
     // user modal, user popout, mutual servers/friends
-    settings.isHoverProfile ? ".header-QKLPzZ .avatar-3EQepX, .avatarWrapper-3H_478 .wrapper-3t9DeA, .listAvatar-1NlAhb" : void 0].filter(function (s) {
+    settings.isHoverProfile ? ".header-QKLPzZ .avatar-3EQepX, .wrapper-3t9DeA, .listAvatar-1NlAhb" : void 0].filter(function (s) {
       return s != null;
     }).join(", ");
   };
