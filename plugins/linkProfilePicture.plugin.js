@@ -1,32 +1,22 @@
-//META{"name":"linkProfilePicture","source":"https://github.com/Inve1951/BetterDiscordStuff/blob/master/plugins/linkProfilePicture.plugin.js","website":"https://Inve1951.github.io/BetterDiscordStuff"}*//
+/**
+ * @name Link-Profile-Picture
+ * @description Lets you click users' avatars on their profile page to view a bigger version in your browser.
+ * @version 1.2.0
+ * @author square
+ * @authorLink https://betterdiscord.app/developer/square
+ * @website https://betterdiscord.app/plugin/Link-Profile-Picture
+ * @source https://github.com/Inve1951/BetterDiscordStuff/blob/master/plugins/linkProfilePicture.plugin.js
+ * @updateUrl https://raw.githubusercontent.com/Inve1951/BetterDiscordStuff/master/plugins/linkProfilePicture.plugin.js
+ */
 
-class linkProfilePicture {
-  constructor() {
-    Object.assign(this, ...Object.entries({
-      getName: "Link-Profile-Picture",
-      getDescription: "Lets you click users' avatars on their profile page to view a bigger version in your browser.",
-      getVersion: "1.1.0",
-      getAuthor: "square"
-    }).map(([field, value]) => ({ [field]: _ => value })));
-  }
-
+module.exports = class linkProfilePicture {
   start() {
-    const { React } = BdApi;
-    const memoed = BdApi.findModuleByProps("AnimatedAvatar").AnimatedAvatar;
-    const AnimatedAvatar = memoed.type;
-    memoed.type = function LinkProfilePicture(props) {
-      try {
-        const vnode = AnimatedAvatar(props).type(props);
-        vnode.props.onClick = ev => ev.target.parentElement.classList.contains("header-QKLPzZ") &&
-          window.open(props.src.replace(/(?:\?size=\d{3,4})?$/, "?size=4096"), "_blank");
-        return vnode;
-      } catch {}
-      return React.createElement(AnimatedAvatar, props);
-    };
-    this.cancel = _ => memoed.type = AnimatedAvatar;
+    document.addEventListener("click", LinkProfilePicture, true);
+    this.stop = document.removeEventListener.bind(document, "click", LinkProfilePicture, true);
+    function LinkProfilePicture({ target }) {
+      if (target.classList.contains("avatar-3EQepX") && target.parentElement.classList.contains("header-QKLPzZ")) {
+        window.open(target.querySelector("img").src.replace(/(?:\?size=\d{3,4})?$/, "?size=4096"), "_blank");
+      }
+    }
   }
-
-  stop() {
-    this.cancel && this.cancel();
-  }
-}
+};
