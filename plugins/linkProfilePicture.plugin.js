@@ -1,7 +1,7 @@
 /**
  * @name Link-Profile-Picture
  * @description Lets you click users' avatars on their profile page to view a bigger version in your browser.
- * @version 1.2.0
+ * @version 1.2.1
  * @author square
  * @authorLink https://betterdiscord.app/developer/square
  * @website https://betterdiscord.app/plugin/Link-Profile-Picture
@@ -14,7 +14,7 @@ module.exports = class linkProfilePicture {
     document.addEventListener("click", LinkProfilePicture, true);
     this.stop = document.removeEventListener.bind(document, "click", LinkProfilePicture, true);
     function LinkProfilePicture({ target }) {
-      if (target.classList.contains("avatar-3EQepX") && target.parentElement.classList.contains("header-QKLPzZ")) {
+      if (target.classList.contains("avatar-AvHqJA") && target.parentElement.classList.contains("header-4zuFdR")) {
         window.open(target.querySelector("img").src.replace(/(?:\?size=\d{3,4})?$/, "?size=4096"), "_blank");
       }
     }
