@@ -85,6 +85,8 @@ global.AvatarHover = function () {
           avatarBorderRadius: "Border radius",
           avatarBorderSize: "Border size",
           avatarBorderColor: "Border color",
+		      smallSize: "Image size (small)",
+		      bigSize: "Image size (big)",
           spacer: null,
           isShown: "Force-show avatar",
           isLarge: "Force large avatar",
@@ -159,7 +161,7 @@ global.AvatarHover = function () {
     if (!(isShown && target)) {
       return hoverCard.remove();
     }
-    size = isLarge && 256 || 128;
+    size = isLarge && settings.bigSize || settings.smallSize;
     boundsTarget = target.getBoundingClientRect();
     boundsWindow = {
       width: window.innerWidth,
@@ -192,6 +194,8 @@ global.AvatarHover = function () {
     avatarBorderRadius: "4px",
     avatarBorderSize: "1px",
     avatarBorderColor: "black",
+	  smallSize: 128,
+	  bigSize: 256,
     isShown: false,
     isLarge: false,
     isHoverGuilds: false,
