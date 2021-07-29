@@ -2,12 +2,12 @@
 
 var minimizeShortcut = (function(){
   var win, globalShortcut, shortcut, minimizeToTray, listener;
-  
+
 // CONFIG
   shortcut = "CommandOrControl+D";            // have a look at this if your shortcut doesn't work: https://electron.atom.io/docs/api/accelerator/
   minimizeToTray = false;                     // true or false
 // CONFIG
-  
+
   class minimizeShortcut {
     getName(){return "Minimize-Shortcut"}
     getDescription(){return "Provides you with a shortcut to show/hide/minimize discord. Edit the file to configure the plugin."}
@@ -26,7 +26,7 @@ var minimizeShortcut = (function(){
       globalShortcut.unregister(shortcut);
     }
   }
-  
+
   listener = function() {
     if( win.isVisible() && !win.isMinimized() )
       minimizeToTray ? win.hide() : win.minimize();
@@ -35,6 +35,6 @@ var minimizeShortcut = (function(){
     else
       win.show() || win.focus();
   }
-  
+
   return minimizeShortcut;
 })()

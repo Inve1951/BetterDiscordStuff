@@ -114,4 +114,4 @@ gotDeletePermission = function (channel, message) {
 };
 
 return QuickDeleteMessages;
-}.call(this);  
+}.call(this);
