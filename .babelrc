@@ -1,0 +1,9 @@
+{
+  "compact": false,
+  "plugins": [
+    ["transform-react-jsx",
+      {"useBuiltIns":true}
+    ]
+  ],
+  "sourceType": "script"
+}
