@@ -22,7 +22,7 @@ SquareLib = function () {
 };
 
 (async function () {
-  var AsyncKeystate, React, ReactDom, _crypto, _fs, _keystates, _path, createElement, createReadOnlyObject, env, err, fs, generateMd5, getOwnerInstance, promise, promisify, filename, dirname;
+  var AsyncKeystate, React, ReactDOM, _crypto, _fs, _keystates, _path, createElement, createReadOnlyObject, env, err, fs, generateMd5, getOwnerInstance, promise, promisify, filename, dirname;
   _path = require("path");
   _fs = require("fs");
   _crypto = require("crypto");
@@ -79,7 +79,7 @@ SquareLib = function () {
     ({ stateNodeIsMandatory = true, ignoreHtml = true, ignoreSymbols = true, returnStateNode = true } = options);
     while (elem) {
       if (elem instanceof Node) {
-        elem = ReactDom._internal.ReactDOMComponentTree.getClosestInstanceFromNode(elem);
+        elem = ReactDOM._internal.ReactDOMComponentTree.getClosestInstanceFromNode(elem);
       }
       if (!(elem = elem.return)) {
         break;
@@ -135,11 +135,11 @@ SquareLib = function () {
     return elem;
   };
   try {
-    ({ React, ReactDom } = BdApi);
-    ReactDom = Object.assign({}, ReactDom, {
+    ({ React, ReactDOM } = BdApi);
+    ReactDOM = Object.assign({}, ReactDOM, {
       _internal: function () {
         var Events, _0, _1, _2, _3, _4, _5, _6, _7, _8, _9;
-        ({ Events } = ReactDom.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED);
+        ({ Events } = ReactDOM.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED);
         [_0, _1, _2, _3, _4, _5, _6, _7, _8, _9] = Events;
         return createReadOnlyObject({
           Events,
@@ -206,7 +206,7 @@ SquareLib = function () {
       generateMd5,
       AsyncKeystate,
       React,
-      ReactDom
+      ReactDOM
     })
   });
   return promise && promise.libLoaded(window.SuperSecretSquareStuff);
