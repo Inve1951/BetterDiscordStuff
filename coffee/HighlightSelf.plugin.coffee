@@ -1,12 +1,17 @@
-#META { "name": "HighlightSelf", "website": "https://inve1951.github.io/BetterDiscordStuff/" } *//
+###*
+# @name Highlight Self
+# @description Highlights your own username in message headers.
+# @version 1.2.0
+# @author square
+# @authorLink https://betterdiscord.app/developer/square
+# @website https://betterdiscord.app/plugin/Highlight%20Self
+# @source https://github.com/Inve1951/BetterDiscordStuff/blob/master/coffee/HighlightSelf.plugin.coffee
+# @updateUrl https://raw.githubusercontent.com/Inve1951/BetterDiscordStuff/master/plugins/HighlightSelf.plugin.js
+# @exports 42
+###
 
-class HighlightSelf
-  getName: -> "Highlight Self"
-  getDescription: -> "Highlights your own username in message headers."
-  getAuthor: -> "square"
-  getVersion: -> "1.1.0"
-
-  MessageComponents = UserStore = cancel = getOwnerInstance = null
+module.exports = class HighlightSelf
+  YouTellMe = UserStore = cancel = patchRender = null
 
   load: ->
     window.SuperSecretSquareStuff ?= new Promise (c, r) ->
@@ -16,34 +21,37 @@ class HighlightSelf
         `(0,eval)(body)`
 
   start: ->
-    {getOwnerInstance} = await SuperSecretSquareStuff
+    { patchRender } = await SuperSecretSquareStuff
     @onSwitch = install unless install()
     BdApi.injectCSS "css_highlightSelf", css
 
   stop: ->
+    delete @onSwitch
     if cancel
       cancel()
       cancel = null
     BdApi.clearCSS "css_highlightSelf"
 
   install = ->
-    MessageComponents or= BDV2.WebpackModules.find (m) -> m.MessageUsername
-    UserStore or= BDV2.WebpackModules.findByUniqueProperties ["getCurrentUser"]
+    YouTellMe or= BdApi.findModule (m) -> "function" is typeof m?.default and m.default.toString().includes "getGuildMemberAvatarURLSimple"
+    UserStore or= BdApi.findModuleByProps "getCurrentUser"
 
-    return no unless MessageComponents and UserStore
-    delete @onSwitch
+    return no unless YouTellMe and UserStore
+    delete @onSwitch unless this is window
 
-    cancel = Utils.monkeyPatch MessageComponents.MessageUsername.prototype, "render", after: ({returnValue, thisObject}) ->
-      {props} = returnValue.props.children
-      if UserStore.getCurrentUser() is thisObject.props.message.author and not props.className?.endsWith " highlight-self"
-        props.className = if props.className then props.className + " highlight-self" else "highlight-self"
-
-    try for n in document.querySelectorAll ".message-1PNnaP h2 > span"
-      getOwnerInstance(n).forceUpdate()
+    cancel = patchRender YouTellMe,
+      filter: (node, { message: { author } }) -> node.props?.renderPopout and UserStore.getCurrentUser() is author
+      touch: (node) ->
+        patchRender node.props, "children", touch: (node) ->
+          if not node.props?.className?.includes "highlight-self"
+            node.props.className = if node.props.className then node.props.className + " highlight-self" else "highlight-self"
+          return
+        return
 
     yes
 
   css = """
-    .highlight-self .username-_4ZSMR {
+    .highlight-self {
       text-decoration: underline;
-    }"""
+    }
+  """

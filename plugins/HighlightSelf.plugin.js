@@ -1,32 +1,27 @@
-//META { "name": "HighlightSelf", "website": "https://inve1951.github.io/BetterDiscordStuff/" } *//
+/**
+ * @name Highlight Self
+ * @description Highlights your own username in message headers.
+ * @version 1.2.0
+ * @author square
+ * @authorLink https://betterdiscord.app/developer/square
+ * @website https://betterdiscord.app/plugin/Highlight%20Self
+ * @source https://github.com/Inve1951/BetterDiscordStuff/blob/master/coffee/HighlightSelf.plugin.coffee
+ * @updateUrl https://raw.githubusercontent.com/Inve1951/BetterDiscordStuff/master/plugins/HighlightSelf.plugin.js
+ * @exports 42
+ */
 var HighlightSelf;
 
-HighlightSelf = function () {
-  var MessageComponents, UserStore, cancel, css, getOwnerInstance, install;
+module.exports = HighlightSelf = function () {
+  var UserStore, YouTellMe, cancel, css, install, patchRender;
 
   class HighlightSelf {
-    getName() {
-      return "Highlight Self";
-    }
-
-    getDescription() {
-      return "Highlights your own username in message headers.";
-    }
-
-    getAuthor() {
-      return "square";
-    }
-
-    getVersion() {
-      return "1.1.0";
-    }
-
     load() {
       return window.SuperSecretSquareStuff != null ? window.SuperSecretSquareStuff : window.SuperSecretSquareStuff = new Promise(function (c, r) {
         return require("request").get("https://raw.githubusercontent.com/Inve1951/BetterDiscordStuff/master/plugins/0circle.plugin.js", function (err, res, body) {
           if (err || 200 !== (res != null ? res.statusCode : void 0)) {
             return r(err != null ? err : res);
           }
+
           Object.defineProperties(window.SuperSecretSquareStuff, {
             libLoaded: {
               value: c
@@ -41,55 +36,73 @@ HighlightSelf = function () {
     }
 
     async start() {
-      ({ getOwnerInstance } = await SuperSecretSquareStuff);
+      ({
+        patchRender
+      } = await SuperSecretSquareStuff);
+
       if (!install()) {
         this.onSwitch = install;
       }
+
       return BdApi.injectCSS("css_highlightSelf", css);
     }
 
     stop() {
+      delete this.onSwitch;
+
       if (cancel) {
         cancel();
         cancel = null;
       }
+
       return BdApi.clearCSS("css_highlightSelf");
     }
 
-  };
+  }
 
-  MessageComponents = UserStore = cancel = getOwnerInstance = null;
+  ;
+  YouTellMe = UserStore = cancel = patchRender = null;
 
   install = function () {
-    var i, len, n, ref;
-    MessageComponents || (MessageComponents = BDV2.WebpackModules.find(function (m) {
-      return m.MessageUsername;
+    YouTellMe || (YouTellMe = BdApi.findModule(function (m) {
+      return "function" === typeof (m != null ? m.default : void 0) && m.default.toString().includes("getGuildMemberAvatarURLSimple");
     }));
-    UserStore || (UserStore = BDV2.WebpackModules.findByUniqueProperties(["getCurrentUser"]));
-    if (!(MessageComponents && UserStore)) {
+    UserStore || (UserStore = BdApi.findModuleByProps("getCurrentUser"));
+
+    if (!(YouTellMe && UserStore)) {
       return false;
     }
-    delete this.onSwitch;
-    cancel = Utils.monkeyPatch(MessageComponents.MessageUsername.prototype, "render", {
-      after: function ({ returnValue, thisObject }) {
-        var props, ref;
-        ({ props } = returnValue.props.children);
-        if (UserStore.getCurrentUser() === thisObject.props.message.author && !((ref = props.className) != null ? ref.endsWith(" highlight-self") : void 0)) {
-          return props.className = props.className ? props.className + " highlight-self" : "highlight-self";
+
+    if (this !== window) {
+      delete this.onSwitch;
+    }
+
+    cancel = patchRender(YouTellMe, {
+      filter: function (node, {
+        message: {
+          author
         }
+      }) {
+        var ref;
+        return ((ref = node.props) != null ? ref.renderPopout : void 0) && UserStore.getCurrentUser() === author;
+      },
+      touch: function (node) {
+        patchRender(node.props, "children", {
+          touch: function (node) {
+            var ref, ref1;
+
+            if (!((ref = node.props) != null ? (ref1 = ref.className) != null ? ref1.includes("highlight-self") : void 0 : void 0)) {
+              node.props.className = node.props.className ? node.props.className + " highlight-self" : "highlight-self";
+            }
+          }
+        });
       }
     });
-    try {
-      ref = document.querySelectorAll(".message-1PNnaP h2 > span");
-      for (i = 0, len = ref.length; i < len; i++) {
-        n = ref[i];
-        getOwnerInstance(n).forceUpdate();
-      }
-    } catch (error) {}
     return true;
   };
 
-  css = ".highlight-self .username-_4ZSMR {\n  text-decoration: underline;\n}";
-
+  css = `.highlight-self {
+  text-decoration: underline;
+}`;
   return HighlightSelf;
 }.call(this);
