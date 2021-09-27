@@ -170,7 +170,7 @@ global.AvatarHover = function () {
       left = boundsWindow.width - size;
     }
     top = size > boundsWindow.height ? (boundsWindow.height - size) / 2 : boundsTarget.bottom + size > boundsWindow.height ? boundsTarget.top - size : boundsTarget.bottom;
-    if ("none" === (imageUrl = (((ref = target.querySelector("img")) != null ? ref.src : void 0) || target.src || getComputedStyle(target).backgroundImage.match(/^url\((["']?)(.+)\1\)$/)[2]).replace(/\?size=\d{3,4}\)?$/, `?size=${size}`))) {
+    if ("none" === (imageUrl = (((ref = target.querySelector("img")) != null ? ref.src : void 0) || target.src || getComputedStyle(target).backgroundImage.match(/^url\((["']?)(.+)\1\)$/)[2]).replace(/\?size=\d{2,3}\)?$/, `?size=${size}`))) {
       return hoverCard.remove();
     }
     Object.assign(hoverCard.style, {
