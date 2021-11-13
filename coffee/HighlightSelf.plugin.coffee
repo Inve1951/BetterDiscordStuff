@@ -1,7 +1,7 @@
 ###*
 # @name Highlight Self
 # @description Highlights your own username in message headers.
-# @version 1.2.1
+# @version 1.2.2
 # @author square
 # @authorLink https://betterdiscord.app/developer/square
 # @website https://betterdiscord.app/plugin/Highlight%20Self
@@ -40,9 +40,9 @@ module.exports = class HighlightSelf
     delete @onSwitch unless this is window
 
     cancel = patchRender YouTellMe,
-      filter: (node, { message: { author } }) -> UserStore.getCurrentUser() is author and node.props.children?.some? (child) -> child.type is "h2"
+      filter: (node, { message: { author } }) -> UserStore.getCurrentUser() is author and node.props.children?.some? (child) -> child?.type is "h2"
       touch: (node) ->
-        node = node.props.children.find (child) -> child.type is "h2"
+        node = node.props.children.find (child) -> child?.type is "h2"
         if not node.props?.className?.includes "highlight-self"
           node.props.className = if node.props.className then node.props.className + " highlight-self" else "highlight-self"
           return
