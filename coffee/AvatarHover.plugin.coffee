@@ -3,8 +3,8 @@
 class global.AvatarHover
   getName: -> "Avatar Hover"
   getDescription: -> "When hovering, resize the avatar. Use Ctrl / Ctrl+Shift."
-  getAuthor: -> "noVaLue, MurmursOnSARS, square, Green"
-  getVersion: -> "0.7.1"
+  getAuthor: -> "square, noVaLue, MurmursOnSARS, Green"
+  getVersion: -> "0.7.2"
 
   hoverCard = AsyncKeystate = null
 
@@ -93,7 +93,7 @@ class global.AvatarHover
         target.querySelector("img")?.src or
         target.src or
         getComputedStyle(target).backgroundImage.match(/^url\((["']?)(.+)\1\)$/)[2]
-      ).replace /\?size=\d{3,4}\)?$/, "?size=#{size}"
+      ).replace /\?size=\d{2,4}\)?$/, "?size=#{size}"
 
     Object.assign hoverCard.style,
       backgroundColor: settings.avatarBackgroundColor

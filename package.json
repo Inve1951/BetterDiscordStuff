@@ -1,8 +1,12 @@
 {
   "name": "BetterDiscordStuff",
   "description": "square's BD plugins & themes, focused on enhancing user experience",
+  "author": "Inve1951 (square#3880)",
+  "license": "DSL",
+  "private": true,
   "scripts": {
-    "build": "coffee --no-header -o plugins/ -bct coffee/"
+    "build": "coffee --no-header -o plugins/ -bct coffee/",
+    "build:dev": "coffee --no-header -o plugins/ -bctM coffee/"
   },
   "repository": {
     "type": "git",
@@ -13,8 +17,6 @@
     "BD",
     "discord"
   ],
-  "author": "Inve1951 (square#3880)",
-  "license": "DSL",
   "bugs": {
     "url": "https://github.com/Inve1951/BetterDiscordStuff/issues"
   },
