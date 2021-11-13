@@ -1,7 +1,7 @@
 /**
  * @name Highlight Self
  * @description Highlights your own username in message headers.
- * @version 1.2.0
+ * @version 1.2.1
  * @author square
  * @authorLink https://betterdiscord.app/developer/square
  * @website https://betterdiscord.app/plugin/Highlight%20Self
@@ -84,18 +84,20 @@ module.exports = HighlightSelf = function () {
         }
       }) {
         var ref;
-        return ((ref = node.props) != null ? ref.renderPopout : void 0) && UserStore.getCurrentUser() === author;
+        return UserStore.getCurrentUser() === author && ((ref = node.props.children) != null ? typeof ref.some === "function" ? ref.some(function (child) {
+          return child.type === "h2";
+        }) : void 0 : void 0);
       },
       touch: function (node) {
-        patchRender(node.props, "children", {
-          touch: function (node) {
-            var ref, ref1;
-
-            if (!((ref = node.props) != null ? (ref1 = ref.className) != null ? ref1.includes("highlight-self") : void 0 : void 0)) {
-              node.props.className = node.props.className ? node.props.className + " highlight-self" : "highlight-self";
-            }
-          }
+        var ref, ref1;
+        node = node.props.children.find(function (child) {
+          return child.type === "h2";
         });
+
+        if (!((ref = node.props) != null ? (ref1 = ref.className) != null ? ref1.includes("highlight-self") : void 0 : void 0)) {
+          node.props.className = node.props.className ? node.props.className + " highlight-self" : "highlight-self";
+          return;
+        }
       }
     });
     return true;
