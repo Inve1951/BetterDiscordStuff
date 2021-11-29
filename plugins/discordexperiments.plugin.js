@@ -7,12 +7,12 @@ var discordExperiments = (t => class {
 	getName(){ return "Discord Experiments" }
 	getDescription(){ return "Enables the experiments tab in discord's settings." }
 	getAuthor(){ return "square" }
-	getVersion(){ return "1.2.3" }
+	getVersion(){ return "1.3.0" }
 
 	load(){}
 
 	start(){
-		t = BdApi.findModuleByProps(["isDeveloper"]);
+		t = BdApi.findModuleByProps("isDeveloper");
 		Object.defineProperty(t,"isDeveloper",{get:_=>1,set:_=>_,configurable:true});
 	}
 
