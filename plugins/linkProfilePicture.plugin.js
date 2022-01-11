@@ -1,7 +1,7 @@
 /**
  * @name Link-Profile-Picture
  * @description Lets you click users' avatars on their profile page to view a bigger version in your browser.
- * @version 1.3.1
+ * @version 1.3.2
  * @author square
  * @authorLink https://betterdiscord.app/developer/square
  * @website https://betterdiscord.app/plugin/Link-Profile-Picture
@@ -11,18 +11,18 @@
 
 module.exports = class linkProfilePicture {
   LinkProfilePicture({ target }) {
-    if (target.classList.contains("avatar-AvHqJA") && target.parentElement.classList.contains("header-4zuFdR")) {
+    if (target.className.startsWith("avatar") && target.parentElement.className.startsWith("header")) {
       window.open(target.querySelector("img").src.replace(/(?:\?size=\d{3,4})?$/, "?size=4096"), "_blank");
     }
   }
 
   start() {
-    document.addEventListener("click", this.LinkProfilePicture, true);
+    document.addEventListener("click", this.LinkProfilePicture);
     BdApi.injectCSS('linkProfilePicture', `
-      .header-4zuFdR > .avatar-AvHqJA {
+      [class^=header] > [class^=avatar] {
         cursor: pointer;
       }
-      .header-4zuFdR > .avatar-AvHqJA svg > foreignObject > div::after {
+      [class^=header] > [class^=avatar] svg > foreignObject > div::after {
         position: absolute;
         content: 'view in browser';
         box-sizing: border-box;
@@ -46,14 +46,14 @@ module.exports = class linkProfilePicture {
         opacity: 0;
         pointer-events: none;
       }
-      .header-4zuFdR > .avatar-AvHqJA:hover svg > foreignObject > div::after {
+      [class^=header] > [class^=avatar]:hover svg > foreignObject > div::after {
         opacity: 1;
       }
     `);
   }
 
   stop() {
-    document.removeEventListener("click", this.LinkProfilePicture, true);
+    document.removeEventListener("click", this.LinkProfilePicture);
     BdApi.clearCSS('linkProfilePicture');
   }
 };
