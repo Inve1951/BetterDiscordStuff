@@ -9,7 +9,7 @@
  * @updateUrl https://raw.githubusercontent.com/Inve1951/BetterDiscordStuff/master/plugins/linkProfilePicture.plugin.js
  */
 
- module.exports = class linkProfilePicture {
+module.exports = class linkProfilePicture {
   start() {
     document.addEventListener("click", LinkProfilePicture, true);
     this.stop = document.removeEventListener.bind(document, "click", LinkProfilePicture, true);
