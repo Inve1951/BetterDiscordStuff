@@ -1,28 +1,26 @@
 /**
  * @name discordExperiments
- * @website https://inve1951.github.io/BetterDiscordStuff/
+ * @website https://betterdiscord.app
+ * @description Enables the experiments tab in discord's settings.
+ * @author square
+ * @version 1.3.0
  */
 
-var discordExperiments = (t => class {
-	getName(){ return "Discord Experiments" }
-	getDescription(){ return "Enables the experiments tab in discord's settings." }
-	getAuthor(){ return "square" }
-	getVersion(){ return "1.2.3" }
+const storeExports = BdApi.findModule(m => Reflect.has(m?.default, "isDeveloper"));
+const original = storeExports.default;
 
-	load(){}
+module.exports = class {
+	getName(){ return "Discord Experiments"; }
 
-	start(){
-		t = BdApi.findModuleByProps(["isDeveloper"]);
-		Object.defineProperty(t,"isDeveloper",{get:_=>1,set:_=>_,configurable:true});
+	start() {
+    storeExports.default = new Proxy(original, {
+			get(_, key) {
+				return key === "isDeveloper" ? true : original[key];
+			}
+		});
 	}
 
 	stop(){
-		t && Object.defineProperty(t,"isDeveloper",{
-			get:_=>0,
-			set:_=>{
-				throw new Error("Username is not in the sudoers file. This incident will be reported");
-			},
-			configurable: true
-		});
+		storeExports.default = original;
 	}
-})();
+};
