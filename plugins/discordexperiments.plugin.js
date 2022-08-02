@@ -9,7 +9,7 @@
  */
 
 const settingsStore = BdApi.findModule(m => typeof m?.default?.isDeveloper !== "undefined");
-const userStore = BdApi.findModule(m => m?.exports?.default?.getUsers);
+const userStore = BdApi.findModule(m => m?.default?.getUsers);
 
 module.exports = class {
 	getName(){ return "Discord Experiments"; }
