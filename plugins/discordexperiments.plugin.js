@@ -15,16 +15,17 @@ module.exports = class {
 	getName(){ return "Discord Experiments"; }
 
 	start() {
+		const nodes = Object.values(settingsStore.default._dispatcher._dependencyGraph.nodes);
 		try {
-			settingsStore.default._dispatcher._orderedActionHandlers.CONNECTION_OPEN.find(x => x.name == "ExperimentStore").actionHandler({user: {flags: 1}, type: "CONNECTION_OPEN"})
+			nodes.find(x => x.name == "ExperimentStore").actionHandler["CONNECTION_OPEN"]({user: {flags: 1}, type: "CONNECTION_OPEN"})
 		} catch (e) {} // this will always intentionally throw
-		oldGetUser = userStore.default.__proto__.getCurrentUser;
+		const oldGetUser = userStore.default.__proto__.getCurrentUser;
 		userStore.default.__proto__.getCurrentUser = () => ({hasFlag: () => true})
-		settingsStore.default._dispatcher._orderedActionHandlers.CONNECTION_OPEN.find(x => x.name == "DeveloperExperimentStore").actionHandler()
+		nodes.find(x => x.name == "DeveloperExperimentStore").actionHandler["CONNECTION_OPEN"]()
 		userStore.default.__proto__.getCurrentUser = oldGetUser
 	}
 
 	stop(){
-		settingsStore.default._dispatcher._orderedActionHandlers.CONNECTION_OPEN.find(x => x.name == "DeveloperExperimentStore").actionHandler()
+		Object.values(settingsStore.default._dispatcher._dependencyGraph.nodes).find(x => x.name == "ExperimentStore").actionHandler["CONNECTION_OPEN"]({user: {flags: 0}, type: "CONNECTION_OPEN"})
 	}
 };
