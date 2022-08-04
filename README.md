@@ -60,12 +60,14 @@ Available source files:
   Adds your status to <body> class list so you can style with it.
   `.own-status-online`, `.own-status-dnd`, etc.
 
-**[Discord Experiments](plugins/discordexperiments.plugin.js)**  
-  Enables the experiments tab in discord's settings.
+**[Discord Experiments](plugins/discordexperiments.plugin.js)** _dead_  
+  ~~Enables the experiments tab in discord's settings.~~  
+  I dropped support for this. Reason being @discord repeatedly and intentionally breaking it over a short timespan.
 
-**[Enable React-Devtools](plugins/enableReactDevtools.plugin.js)**  
-  Automatically loads the React Devtools for you.
-  Requires [React-Devtools](https://chrome.google.com/webstore/detail/react-developer-tools/fmkadmapgofadopljbjfkapdkoienihi) being installed in your chrome browser.
+**[Enable React-Devtools](plugins/enableReactDevtools.plugin.js)** _obsolete_  
+  ~~Automatically loads the React Devtools for you.~~
+  ~~Requires [React-Devtools](https://chrome.google.com/webstore/detail/react-developer-tools/fmkadmapgofadopljbjfkapdkoienihi) being installed in your chrome browser.~~  
+  This has become part of BetterDiscord - you can enable it in the settings under _General > Developer_.
 
 **[Scroll-To-Last](plugins/scrollToLast.plugin.js)**  
   Always scroll to last message when entering a channel.
@@ -110,11 +112,11 @@ Available source files:
 
 **[Compact-User-List](/themes/compactUserList.theme.css)** _mini-theme_  
   Makes the user list look much like the server list.
-  Works great with [RadialStatus](https://github.com/rauenzi/BetterDiscordAddons/tree/master/Themes/RadialStatus).
+  Works great with [RadialStatus](https://github.com/DiscordStyles/RadialStatus#readme).
 
 **[Horizontal Serverlist](/themes/horizontalServerlist.theme.css)** _mini-theme_, _obsolete_  
   ~~Server Grid support can be enabled in the file.~~  
-  Discontinued in favor of [Gibbu's version](https://github.com/Gibbu/BetterDiscord-Themes/blob/master/HorizontalServerlist/zHorizontalServerlist.theme.css).
+  Discontinued in favor of [Gibbu's version](https://github.com/DiscordStyles/HorizontalServerList#readme).
 
 **[Ez Light](/themes/EzLight.theme.css)**  
-  Easy light theme. Should also work in combination with most dark themes. Relies on discord's dark mode.
+  Easy light theme. Should also work in combination with most dark themes. Born as a joke but not too bad.
