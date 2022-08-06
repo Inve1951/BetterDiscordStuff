@@ -1,10 +1,10 @@
 /**
  * @name discordExperiments
  * @description Enables the experiments tab in discord's settings.
- * @author square, AAGaming00
+ * @author square, AAGaming00, ImperiusFate750
  * @version 1.3.2
  * @website https://betterdiscord.app/plugin/Discord%20Experiments
- * @source https://github.com/Inve1951/BetterDiscordStuff/blob/master/plugins/discordexperiments.plugin.js
+ * @source https://github.com/ImperiusFate750/BetterDiscordStuff/edit/master/plugins/discordexperiments.plugin.js
  * @updateUrl https://betterdiscord.app/gh-redirect?id=206
  */
 
