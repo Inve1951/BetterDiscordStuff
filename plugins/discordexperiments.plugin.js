@@ -15,7 +15,7 @@
 	 getName(){ return "Discord Experiments"; }
  
 	 start() {
-		const nodes = Object.values(settingsStore.default._dispatcher._actionHandlers._dependencyGraph.nodes);
+		const nodes = Object.values(settingsStore.default._dispatcher._actionHandlers._dependencyGraph.nodes); // Fix by dav1312
 		 try {
 			 nodes.find(x => x.name == "ExperimentStore").actionHandler["OVERLAY_INITIALIZE"]({user: {flags: 1}, type: "CONNECTION_OPEN"})
 		 } catch (e) {} // this will always intentionally throw
