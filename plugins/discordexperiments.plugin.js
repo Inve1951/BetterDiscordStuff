@@ -1,7 +1,7 @@
 /**
  * @name discordExperiments
  * @description Enables the experiments tab in discord's settings.
- * @author square
+ * @author square, Aholicknight
  * @version 1.3.1
  * @website https://betterdiscord.app/plugin/Discord%20Experiments
  * @source https://github.com/Inve1951/BetterDiscordStuff/blob/master/plugins/discordexperiments.plugin.js
