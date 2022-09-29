@@ -17,7 +17,14 @@ module.exports = class {
 	start() {
 		const nodes = Object.values(settingsStore._dispatcher._actionHandlers._dependencyGraph.nodes);
 		try {
-			nodes.find(x => x.name == "ExperimentStore").actionHandler["OVERLAY_INITIALIZE"]({user: {flags: 1}, type: "CONNECTION_OPEN"})
+			nodes.find(x => x.name == "ExperimentStore").actionHandler["OVERLAY_INITIALIZE"]({
+				user: {flags: 1},
+				type: "CONNECTION_OPEN",
+				serializedExperimentStore: {
+					hasLoadedExperiments: true,
+					get trackedExposureExperiments() {throw true;}
+				}
+			})
 		} catch (e) {} // this will always intentionally throw
 		const oldGetUser = userStore.__proto__.getCurrentUser;
 		userStore.__proto__.getCurrentUser = () => ({hasFlag: () => true})
@@ -26,6 +33,14 @@ module.exports = class {
 	}
 
 	stop(){
-		Object.values(settingsStore._dispatcher._actionHandlers._dependencyGraph.nodes).find(x => x.name == "ExperimentStore").actionHandler["LOGOUT"]()
+		try {
+			Object.values(settingsStore._dispatcher._actionHandlers._dependencyGraph.nodes).find(x => x.name == "ExperimentStore").actionHandler["OVERLAY_INITIALIZE"]({
+				user: {flags: 0},
+				serializedExperimentStore: {
+					hasLoadedExperiments: false,
+					get trackedExposureExperiments() {throw true;}
+				}
+			})
+		} catch (e) {} // this will also intentionally throw
 	}
 };
