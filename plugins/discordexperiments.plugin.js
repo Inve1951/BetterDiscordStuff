@@ -26,12 +26,6 @@ module.exports = class {
 	}
 
 	stop(){
-		try {
-		    Object.values(settingsStore._dispatcher._actionHandlers._dependencyGraph.nodes).find(x => x.name == "ExperimentStore").actionHandler["OVERLAY_INITIALIZE"]({user: {flags: 0}, type: "CONNECTION_OPEN"})
-		} catch (e) {
-			if (e.message != "Cannot read property 'hasLoadedExperiments' of undefined") {
-				throw e;
-			}
-		}
+		Object.values(settingsStore._dispatcher._actionHandlers._dependencyGraph.nodes).find(x => x.name == "ExperimentStore").actionHandler["LOGOUT"]()
 	}
 };
