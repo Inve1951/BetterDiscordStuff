@@ -8,24 +8,39 @@
  * @updateUrl https://betterdiscord.app/gh-redirect?id=206
  */
 
-const settingsStore = BdApi.findModule(m => typeof m?.default?.isDeveloper !== "undefined");
-const userStore = BdApi.findModule(m => m?.default?.getUsers);
+const settingsStore = BdApi.findModule(m => typeof m?.isDeveloper !== "undefined");
+const userStore = BdApi.findModule(m => m?.getUsers && m?._version == undefined);
 
 module.exports = class {
 	getName(){ return "Discord Experiments"; }
 
 	start() {
-		const nodes = Object.values(settingsStore.default._dispatcher._dependencyGraph.nodes);
+		const nodes = Object.values(settingsStore._dispatcher._actionHandlers._dependencyGraph.nodes);
 		try {
-			nodes.find(x => x.name == "ExperimentStore").actionHandler["OVERLAY_INITIALIZE"]({user: {flags: 1}, type: "CONNECTION_OPEN"})
+			nodes.find(x => x.name == "ExperimentStore").actionHandler["OVERLAY_INITIALIZE"]({
+				user: {flags: 1},
+				type: "CONNECTION_OPEN",
+				serializedExperimentStore: {
+					hasLoadedExperiments: true,
+					get trackedExposureExperiments() {throw true;}
+				}
+			})
 		} catch (e) {} // this will always intentionally throw
-		const oldGetUser = userStore.default.__proto__.getCurrentUser;
-		userStore.default.__proto__.getCurrentUser = () => ({hasFlag: () => true})
+		const oldGetUser = userStore.__proto__.getCurrentUser;
+		userStore.__proto__.getCurrentUser = () => ({hasFlag: () => true})
 		nodes.find(x => x.name == "DeveloperExperimentStore").actionHandler["OVERLAY_INITIALIZE"]()
-		userStore.default.__proto__.getCurrentUser = oldGetUser
+		userStore.__proto__.getCurrentUser = oldGetUser
 	}
 
 	stop(){
-		Object.values(settingsStore.default._dispatcher._dependencyGraph.nodes).find(x => x.name == "ExperimentStore").actionHandler["OVERLAY_INITIALIZE"]({user: {flags: 0}, type: "CONNECTION_OPEN"})
+		try {
+			Object.values(settingsStore._dispatcher._actionHandlers._dependencyGraph.nodes).find(x => x.name == "ExperimentStore").actionHandler["OVERLAY_INITIALIZE"]({
+				user: {flags: 0},
+				serializedExperimentStore: {
+					hasLoadedExperiments: false,
+					get trackedExposureExperiments() {throw true;}
+				}
+			})
+		} catch (e) {} // this will also intentionally throw
 	}
 };
