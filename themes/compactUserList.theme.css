@@ -1,80 +1,89 @@
-/*//META{"name":"Compact-User-List","description":"Makes the user list look much like the server list.","author":"square","version":"1.0.1"}*//
+/*//META{"name":"Compact-User-List","description":"Makes the user list look much like the server list.","author":"square, LewsTherinTelescope","version":"1.1.0"}*//**/
 
 :root {
   --cul-transition-duration: 200ms;
-  --cul-transition-timing-function: ease-out;
-  --cul-slide-transition: transform var(--cul-transition-duration) var(--cul-transition-timing-function);
-  --cul-fade-transition: opacity var(--cul-transition-duration) var(--cul-transition-timing-function);
-  --cul-size-transition: font-size var(--cul-transition-duration) var(--cul-transition-timing-function);
+  
+  --cul-avatar-scale-collapsed: 1;
+  --cul-avatar-scale-expanded: 1;
+  
+  --cul-sidebar-padding: 16px;
+  --cul-slideout-width: 240px;
+  
+  /** these are not meant to be played with, they're just put in variables so they're not as confusing to follow as if they were stuffed in one **/
+  --cul-internal-row-padding: calc(1px + 16px * (var(--cul-avatar-scale-collapsed) - 1));
+  --cul-internal-avatar-size: calc(32px * var(--cul-avatar-scale-collapsed));
+  --cul-internal-sidebar-padding: calc(var(--cul-sidebar-padding) * 2 * var(--cul-avatar-scale-collapsed));
+  --cul-internal-sidebar-width: calc(var(--cul-internal-sidebar-padding) + var(--cul-internal-avatar-size));
 }
- 
+
 /* Sidebar itself */
 .membersWrap-3NUR2t {
-  min-width: 100px;
-  width: 100px;
   height: 100%;
+  min-width: initial;
+  width: var(--cul-internal-sidebar-width);
+  /* makes width transition go right-to-left instead of left-to-right */
+  text-align: right;
 }
 
-/** Goes funky on server channel screens without this **/
-.hiddenMembers-8kpYM0 {
-  transform: translateX(50%);
-}
-
-/* Members list container */
+/* User list */
 .members-3WRCEx {
-  transition: var(--cul-slide-transition);
-  width: 200px;
+  /* don't _actually_ want to force text-align right */
+  text-align: initial;
+  position: absolute;
+  right: 0;
+  height: 100%;
+  width: var(--cul-internal-sidebar-width);
+  transition: width var(--cul-transition-duration) linear;
 }
 
-.members-3WRCEx:hover {
-  width: 240px;
-  transform: translateX(-50%);
+.membersWrap-3NUR2t:hover .members-3WRCEx {
+  width: var(--cul-slideout-width);
 }
 
-/* Role grouping headers */
+/* Role header */
 .membersGroup-2eiWxl {
-  transition: var(--cul-size-transition);
   font-size: 10px;
 }
 
-.members-3WRCEx:hover .membersGroup-2eiWxl {
+.membersWrap-3NUR2t:hover .membersGroup-2eiWxl {
   font-size: 12px;
 }
 
-/** Role grouping header icons **/
+/** Role header icons **/
 .members-3WRCEx .roleIcon-3-WL_I {
-  transition: var(--cul-fade-transition);
   display: none;
-  opacity: 0;
 }
 
 .members-3WRCEx:hover .roleIcon-3-WL_I {
   display: inline;
-  opacity: 1;
 }
 
 /* Member rows */
-.member-2gU6Ar {
-  padding-top: 6px;
-  padding-bottom: 6px;
+.layout-1qmrhw {
+  padding: var(--cul-internal-row-padding) 0;
 }
 
-/** Member usernames **/
+/* Username, status, etc */
 .content-1U25dZ {
-  transition: var(--cul-fade-transition);
-  opacity: 0;
+  /* prevents text from affecting layout in collapsed mode, since display:none can't have a transition-delay */
+  flex: 0;
+  /* cuts down on the visible jank of the previous line a bit by making the margins change only at the end */
+  transition: flex var(--cul-transition-duration) ease-in;
 }
 
-.members-3WRCEx:hover .content-1U25dZ {
-  opacity: 1;
+.membersWrap-3NUR2t:hover .content-1U25dZ {
+  flex: 1 1 auto;
 }
 
-/** Member avatars **/
+/* Profile picture */
 .avatar-6qzftW {
-  transition: var(--cul-slide-transition);
-  transform: translateX(50%) scale(1.5);
+  margin-left: auto;
+  margin-right: auto;
+  transform: scale(var(--cul-avatar-scale-collapsed));
 }
 
-.members-3WRCEx:hover .avatar-6qzftW {
-  transform: translateX(0) scale(1.2);
+.membersWrap-3NUR2t:hover .avatar-6qzftW {
+  margin-left: var(--cul-sidebar-padding);
+  margin-right: 12px;
+  transform: scale(var(--cul-avatar-scale-expanded));
 }
