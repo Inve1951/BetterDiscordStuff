@@ -1,31 +1,80 @@
 /*//META{"name":"Compact-User-List","description":"Makes the user list look much like the server list.","author":"square","version":"1.0.1"}*//
 
-.channel-members-wrap {
-    min-width: initial;
+:root {
+  --cul-transition-duration: 200ms;
+  --cul-transition-timing-function: ease-out;
+  --cul-slide-transition: transform var(--cul-transition-duration) var(--cul-transition-timing-function);
+  --cul-fade-transition: opacity var(--cul-transition-duration) var(--cul-transition-timing-function);
+  --cul-size-transition: font-size var(--cul-transition-duration) var(--cul-transition-timing-function);
 }
-.channel-members-wrap .channel-members {
-    width: 78px;
-    padding: 0 0 18px 10px;
-}
-.channel-members h2 {
-    padding: 0;
-    margin: 9px 0 1px 0;
-    text-align: center;
-    word-wrap: break-word;
-}
-.member.member-status {
-    padding: 0 4px;
-    padding-top: 8px;
-}
-.member.member-status .avatar-small {
-    width: 50px;
-    height: 50px;
-    background-size: 50px 50px;
-}
-.member.member-status .member-inner {
-    display: none;
+ 
+/* Sidebar itself */
+.membersWrap-3NUR2t {
+  min-width: 100px;
+  width: 100px;
+  height: 100%;
 }
 
-.channel-members::-webkit-scrollbar {
-  max-width: 10px;
+/** Goes funky on server channel screens without this **/
+.hiddenMembers-8kpYM0 {
+  transform: translateX(50%);
+}
+
+/* Members list container */
+.members-3WRCEx {
+  transition: var(--cul-slide-transition);
+  width: 200px;
+}
+
+.members-3WRCEx:hover {
+  width: 240px;
+  transform: translateX(-50%);
+}
+
+/* Role grouping headers */
+.membersGroup-2eiWxl {
+  transition: var(--cul-size-transition);
+  font-size: 10px;
+}
+
+.members-3WRCEx:hover .membersGroup-2eiWxl {
+  font-size: 12px;
+}
+
+/** Role grouping header icons **/
+.members-3WRCEx .roleIcon-3-WL_I {
+  transition: var(--cul-fade-transition);
+  display: none;
+  opacity: 0;
+}
+
+.members-3WRCEx:hover .roleIcon-3-WL_I {
+  display: inline;
+  opacity: 1;
+}
+
+/* Member rows */
+.member-2gU6Ar {
+  padding-top: 6px;
+  padding-bottom: 6px;
+}
+
+/** Member usernames **/
+.content-1U25dZ {
+  transition: var(--cul-fade-transition);
+  opacity: 0;
+}
+
+.members-3WRCEx:hover .content-1U25dZ {
+  opacity: 1;
+}
+
+/** Member avatars **/
+.avatar-6qzftW {
+  transition: var(--cul-slide-transition);
+  transform: translateX(50%) scale(1.5);
+}
+
+.members-3WRCEx:hover .avatar-6qzftW {
+  transform: translateX(0) scale(1.2);
 }
