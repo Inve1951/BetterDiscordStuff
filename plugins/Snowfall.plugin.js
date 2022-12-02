@@ -1,14 +1,12 @@
-//META { "name": "Snowfall" } *//
+/**
+ * @name Snowfall
+ * @description Let It Snow... Original code by Cople [https://cople.github.io/Snowfall.js].
+ * @author square
+ * @version 1.1.1
+ */
 
-var Snowfall = (function(CopleSnow, snow, blur, focus){
-
+module.exports = (function(CopleSnow, snow, blur, focus){
   class Snowfall {
-    getName(){return "Snowfall"}
-    getDescription(){return "Let It Snow... Original code by Cople [https://cople.github.io/Snowfall.js]."}
-    getAuthor(){return "square"}
-    getVersion(){return "1.1.0"}
-
-    load(){}
     start(){
       BdApi.injectCSS("snowfall", CopleSnow.css);
       snow = new CopleSnow({autoplay: false});
