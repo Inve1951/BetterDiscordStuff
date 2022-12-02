@@ -1,8 +1,11 @@
 /**
  * @name Snowfall
  * @description Let It Snow... Original code by Cople [https://cople.github.io/Snowfall.js].
- * @author square
  * @version 1.1.1
+ * @author square
+ * @authorLink https://betterdiscord.app/developer/square
+ * @website https://betterdiscord.app/plugin/Snowfall
+ * @source https://github.com/Inve1951/BetterDiscordStuff/blob/master/plugins/Snowfall.plugin.js
  */
 
 module.exports = (function(CopleSnow, snow, blur, focus){
