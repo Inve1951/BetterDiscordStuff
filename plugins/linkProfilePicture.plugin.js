@@ -1,7 +1,7 @@
 /**
  * @name Link-Profile-Picture
  * @description Lets you click users' avatars on their profile page to view a bigger version in your browser.
- * @version 1.2.6
+ * @version 1.2.7
  * @author square
  * @authorLink https://betterdiscord.app/developer/square
  * @website https://betterdiscord.app/plugin/Link-Profile-Picture
