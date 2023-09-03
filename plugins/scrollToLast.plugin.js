@@ -1,5 +1,5 @@
 /**
- * @name ScrollToLast
+ * @name ScrollToLatest
  * @author square,imafrogowo
  */
 
