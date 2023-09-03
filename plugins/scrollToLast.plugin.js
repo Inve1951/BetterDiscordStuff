@@ -1,31 +1,42 @@
-//META { "name": "scrollToLast" } *//
+/**
+ * @name ScrollToLast
+ * @author square,imafrogowo
+ */
 
-var scrollToLast = function() {
+const {
+  findModuleByProps,
+  Patcher,
+  Webpack: { getModule },
+} = BdApi;
 
-  var Keybinds, onSwitch, cancels = [];
+class ScrollToLatest {
+  constructor() {
+    this.Name = ScrollToLatest.name;
+    this.Keybinds = findModuleByProps("MARK_CHANNEL_READ");
+    this.FluxDispatch = getModule(
+      (e) => e.dispatch && !e.emitter && !e.commands
+    );
 
-  Keybinds = BdApi.findModuleByProps("MARK_CHANNEL_READ");
+    this.onSwitch = this.onSwitch.bind(this);
+  }
 
-  onSwitch = (ev) => {
-    if(("CHANNEL_SELECT" === ev.type || "GUILD_SELECT" === ev.type) && /^\/channels\/(?:@me|\d+)\/\d+$/.test(window.location.pathname))
-      Keybinds.MARK_CHANNEL_READ.action();
-  };
-
-  return {
-    getName: () => "Scroll-To-Last",
-    getDescription: () => "When entering any text channel, scrolls to the bottom and marks it as read.",
-    getAuthor: () => "square",
-    getVersion: () => "1.0.2",
-
-    start: () => {
-      var _ = BdApi.findModuleByProps("_orderedActionHandlers");
-      _.subscribe("CHANNEL_SELECT", onSwitch); cancels.push(_.unsubscribe.bind(_, "CHANNEL_SELECT", onSwitch));
-      _.subscribe("GUILD_SELECT", onSwitch); cancels.push(_.unsubscribe.bind(_, "GUILD_SELECT", onSwitch));
-    },
-
-    stop: () => {
-      cancels.forEach(c => c());
-      cancels = [];
+  onSwitch(Gullible) {
+    // HAHAH LOSER
+    console.log(Gullible);
+    if (Gullible != undefined) {
+      this.Keybinds.MARK_CHANNEL_READ.action({ target: Gullible });
     }
-  };
-};
+  }
+
+  start() {
+    this.FluxDispatch.subscribe("CHANNEL_SELECT", this.onSwitch);
+    this.FluxDispatch.subscribe("GUILD_SELECT", this.onSwitch);
+  }
+
+  stop() {
+    this.FluxDispatch.unsubscribe("CHANNEL_SELECT", this.onSwitch);
+    this.FluxDispatch.unsubscribe("GUILD_SELECT", this.onSwitch);
+  }
+}
+
+module.exports = ScrollToLatest;
