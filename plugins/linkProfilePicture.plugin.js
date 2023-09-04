@@ -16,7 +16,17 @@ module.exports = class linkProfilePicture {
     this.stop = document.removeEventListener.bind(document, "click", LinkProfilePicture, true);
     function LinkProfilePicture({ target }) {
       if (target.classList.contains("avatar-3QF_VA") && target.parentElement?.parentElement?.classList.contains("header-S26rhB")) {
-        window.open(target.querySelector("img").src.replace(/(?:\?size=\d{2,4})?$/, "&size=4096"), "_blank");
+        const imgSrc = target.querySelector("img").src;
+		const newSize = "size=4096";
+		let newSrc = imgSrc;
+
+		if (imgSrc.includes("?size=")) {
+			newSrc = imgSrc.replace(/(\?|&)size=\d{2,4}/, `?${newSize}`);
+		} else {
+			newSrc = imgSrc.includes("?") ? `${imgSrc}&${newSize}` : `${imgSrc}?${newSize}`;
+		}
+
+		window.open(newSrc, "_blank");
       }
     }
   }
