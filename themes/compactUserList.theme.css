@@ -17,7 +17,7 @@
 }
 
 /* Sidebar itself */
-.membersWrap-3NUR2t {
+.membersWrap-3GwLFp {
   height: 100%;
   min-width: initial;
   width: var(--cul-internal-sidebar-width);
@@ -26,7 +26,7 @@
 }
 
 /* User list */
-.members-3WRCEx {
+.members-2y1nVj {
   /* don't _actually_ want to force text-align right */
   text-align: initial;
   position: absolute;
@@ -36,25 +36,25 @@
   transition: width var(--cul-transition-duration) linear;
 }
 
-.membersWrap-3NUR2t:hover .members-3WRCEx {
+.membersWrap-3GwLFp:hover .members-2y1nVj {
   width: var(--cul-slideout-width);
 }
 
 /* Role header */
-.membersGroup-2eiWxl {
+.membersGroup-2YoqY- {
   font-size: 10px;
 }
 
-.membersWrap-3NUR2t:hover .membersGroup-2eiWxl {
+.membersWrap-3GwLFp:hover .membersGroup-2YoqY- {
   font-size: 12px;
 }
 
 /** Role header icons **/
-.members-3WRCEx .roleIcon-3-WL_I {
+.members-2y1nVj .roleIcon-3-WL_I {
   display: none;
 }
 
-.members-3WRCEx:hover .roleIcon-3-WL_I {
+.members-2y1nVj:hover .roleIcon-3-WL_I {
   display: inline;
 }
 
@@ -71,7 +71,7 @@
   transition: flex var(--cul-transition-duration) ease-in;
 }
 
-.membersWrap-3NUR2t:hover .content-1U25dZ {
+.membersWrap-3GwLFp:hover .content-1U25dZ {
   flex: 1 1 auto;
 }
 
@@ -82,7 +82,7 @@
   transform: scale(var(--cul-avatar-scale-collapsed));
 }
 
-.membersWrap-3NUR2t:hover .avatar-6qzftW {
+.membersWrap-3GwLFp:hover .avatar-6qzftW {
   margin-left: var(--cul-sidebar-padding);
   margin-right: 12px;
   transform: scale(var(--cul-avatar-scale-expanded));
