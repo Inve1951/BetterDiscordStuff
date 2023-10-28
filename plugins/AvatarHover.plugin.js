@@ -12,11 +12,11 @@ global.AvatarHover = function () {
     }
 
     getAuthor() {
-      return "square, noVaLue, MurmursOnSARS, Green";
+      return "noVaLue, MurmursOnSARS, square, Green";
     }
 
     getVersion() {
-      return "0.7.2";
+      return "0.7.3";
     }
 
     load() {
@@ -25,7 +25,6 @@ global.AvatarHover = function () {
           if (err || 200 !== (res != null ? res.statusCode : void 0)) {
             return r(err != null ? err : res);
           }
-
           Object.defineProperties(window.SuperSecretSquareStuff, {
             libLoaded: {
               value: c
@@ -41,10 +40,7 @@ global.AvatarHover = function () {
 
     async start() {
       var createElement;
-      ({
-        AsyncKeystate,
-        createElement
-      } = await SuperSecretSquareStuff);
+      ({ AsyncKeystate, createElement } = await SuperSecretSquareStuff);
       getSettings();
       updateQualifier();
       BdApi.injectCSS("css-AvatarHover", css);
@@ -71,17 +67,10 @@ global.AvatarHover = function () {
     static updateSettings() {
       var checked, i, len, name, ref, type, value;
       ref = document.querySelectorAll("#settings_AvatarHover input");
-
       for (i = 0, len = ref.length; i < len; i++) {
-        ({
-          name,
-          type,
-          value,
-          checked
-        } = ref[i]);
+        ({ name, type, value, checked } = ref[i]);
         settings[name] = "checkbox" === type ? checked : value || defaultSettings[name];
       }
-
       BdApi.setData("AvatarHover", "settings", settings);
       return updateQualifier();
     }
@@ -108,42 +97,44 @@ global.AvatarHover = function () {
           isHoverProfile: "Profiles and modals"
         };
         results = [];
-
         for (k in ref) {
           v = ref[k];
           results.push(makeInput(k, v));
         }
-
         return results;
       }().join("")}</div>`;
     }
 
-  }
+  };
 
-  ;
   hoverCard = AsyncKeystate = null;
+
   qualifier = null;
 
   updateQualifier = function () {
-    return qualifier = [// guilds
-    settings.isHoverGuilds ? ".wrapper-25eVIn" : void 0, // voip, DM channels
-    settings.isHoverChannels ? ".avatarContainer-2inGBK, .channel-2QD9_O .avatar-3uk_u9" : void 0, // friends list
-    settings.isHoverFriends ? ".userInfo-2zN2z8 .avatar-3W3CeO" : void 0, // messages, embeds
-    settings.isHoverChatMessages ? ".contents-2mQqc9 .avatar-1BDn8e, .embedAuthorIcon--1zR3L" : void 0, // channel users
-    settings.isHoverChatUsers ? ".member-3-YXUe .avatar-3uk_u9" : void 0, // DM call
-    settings.isHoverCall ? ".callAvatarWrapper-3Ax_xH" : void 0, // modals, userpopout
-    settings.isHoverProfile ? ".header-QKLPzZ .avatar-3EQepX, .avatarWrapper-3H_478" : void 0].filter(function (s) {
+    return qualifier = [
+    // guilds
+    settings.isHoverGuilds ? ".wrapper-3kah-n" : void 0, //doesn't work still???
+    // voip, DM channels
+    settings.isHoverChannels ? ".avatarContainer-3FF_Km, .channel-1Shao0 .wrapper-1VLyxH" : void 0, //fixed
+    // friends list
+    settings.isHoverFriends ? ".userInfo-2WpsYG .avatar-2MSPKk" : void 0, //fixed
+    // messages, embeds
+    settings.isHoverChatMessages ? ".contents-2MsGLg .avatar-2e8lTP, .embedAuthorIcon-3pnkS4" : void 0, //fixed
+    // channel users
+    settings.isHoverChatUsers ? ".avatar-6qzftW .wrapper-1VLyxH" : void 0, //fixed??
+    // DM call
+    settings.isHoverCall ? ".participant-1l6khj .wrapper-3mYmFS" : void 0,  //fixed
+    // user modal, user popout, mutual servers/friends
+    settings.isHoverProfile ? ".header-S26rhB .avatar-3QF_VA, .wrapper-1VLyxH, .listAvatar-2bU5Uh" : void 0].filter(function (s) {  //fixed
       return s != null;
     }).join(", ");
   };
 
-  handleKeyUpDown = function ({
-    key
-  }) {
+  handleKeyUpDown = function ({ key }) {
     if (key !== "Control" && key !== "Shift") {
       return;
     }
-
     return updateHoverCard();
   };
 
@@ -151,14 +142,10 @@ global.AvatarHover = function () {
     return updateHoverCard();
   };
 
-  handleMouseOverOut = function ({
-    type,
-    target
-  }) {
+  handleMouseOverOut = function ({ type, target }) {
     if (!(target.matches(qualifier) || (target = target.closest(qualifier)))) {
       return;
     }
-
     return updateHoverCard("mouseover" === type && target);
   };
 
@@ -169,11 +156,9 @@ global.AvatarHover = function () {
     lastTarget = target;
     isShown = settings.isShown || AsyncKeystate.key("Control");
     isLarge = settings.isLarge || AsyncKeystate.key("Shift");
-
     if (!(isShown && target)) {
       return hoverCard.remove();
     }
-
     size = isLarge && 256 || 128;
     boundsTarget = target.getBoundingClientRect();
     boundsWindow = {
@@ -181,17 +166,13 @@ global.AvatarHover = function () {
       height: window.innerHeight
     };
     left = Math.max(0, boundsTarget.left + (boundsTarget.width - size) / 2);
-
     if (left + size > boundsWindow.width) {
       left = boundsWindow.width - size;
     }
-
     top = size > boundsWindow.height ? (boundsWindow.height - size) / 2 : boundsTarget.bottom + size > boundsWindow.height ? boundsTarget.top - size : boundsTarget.bottom;
-
-    if ("none" === (imageUrl = (((ref = target.querySelector("img")) != null ? ref.src : void 0) || target.src || getComputedStyle(target).backgroundImage.match(/^url\((["']?)(.+)\1\)$/)[2]).replace(/\?size=\d{2,4}\)?$/, `?size=${size}`))) {
+    if ("none" === (imageUrl = (((ref = target.querySelector("img")) != null ? ref.src : void 0) || target.src || getComputedStyle(target).backgroundImage.match(/^url\((["']?)(.+)\1\)$/)[2]).replace(/\?size=\d{3,4}\)?$/, `?size=${size}`))) {
       return hoverCard.remove();
     }
-
     Object.assign(hoverCard.style, {
       backgroundColor: settings.avatarBackgroundColor,
       backgroundImage: `url(${imageUrl})`,
@@ -221,33 +202,28 @@ global.AvatarHover = function () {
     isHoverCall: true,
     isHoverProfile: true
   };
+
   settings = null;
 
   getSettings = function () {
     var k, ref, results, v;
-
     if (settings != null) {
       return;
     }
-
     settings = (ref = BdApi.getData("AvatarHover", "settings")) != null ? ref : {};
     results = [];
-
     for (k in defaultSettings) {
       v = defaultSettings[k];
       results.push(settings[k] != null ? settings[k] : settings[k] = v);
     }
-
     return results;
   };
 
   makeInput = function (name, label) {
     var _default, isCheckbox, type;
-
     if (label == null) {
       return "<br/>";
     }
-
     type = Boolean === defaultSettings[name].constructor && (isCheckbox = true) && "checkbox" || "text";
     _default = isCheckbox ? settings[name] ? "checked" : "" : `placeholder="${defaultSettings[name]}" value="${settings[name]}\"`;
     return `<label><input type="${type}" name="${name}" ${_default} onChange="AvatarHover.updateSettings()"/> ${label}</label><br/>`;
@@ -264,5 +240,6 @@ global.AvatarHover = function () {
 #settings_AvatarHover {
   color: #87909C;
 }`;
+
   return AvatarHover;
 }.call(this);
