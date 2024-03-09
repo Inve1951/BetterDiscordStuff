@@ -1,5 +1,7 @@
 /**
  * @name ScrollToLatest
+ * @version 1.0.0
+ * @description Allows you to automatically scroll down to the most recent messages in the current channel.
  * @author square,imafrogowo
  */
 
@@ -21,8 +23,6 @@ class ScrollToLatest {
   }
 
   onSwitch(Gullible) {
-    // HAHAH LOSER
-    console.log(Gullible);
     if (Gullible != undefined) {
       this.Keybinds.MARK_CHANNEL_READ.action({ target: Gullible });
     }
