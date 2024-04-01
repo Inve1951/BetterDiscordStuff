@@ -15,7 +15,7 @@ module.exports = class linkProfilePicture {
     document.addEventListener("click", LinkProfilePicture, true);
     this.stop = document.removeEventListener.bind(document, "click", LinkProfilePicture, true);
     function LinkProfilePicture({ target }) {
-      if (target.classList.contains("avatar__445f3") && target.parentElement?.parentElement?.classList.contains("header__7da4f")) {
+      if (target.classList.contains("avatar__445f3") && target.parentElement?.parentElement?.classList.contains("header_dda341")) {
         window.open(target.querySelector("img").src.replace(/\?.*$/, "?quality=lossless&size=4096"), "_blank");
       }
     }
