@@ -1,31 +1,95 @@
-/*//META{"name":"Compact-User-List","description":"Makes the user list look much like the server list.","author":"square","version":"1.0.1"}*//
+/**
+ * @name Compact-User-List
+ * @description Makes the user list look much like the server list.
+ * @author square, LewsTherinTelescope
+ * @version 1.1.0
+ */
 
-.channel-members-wrap {
-    min-width: initial;
-}
-.channel-members-wrap .channel-members {
-    width: 78px;
-    padding: 0 0 18px 10px;
-}
-.channel-members h2 {
-    padding: 0;
-    margin: 9px 0 1px 0;
-    text-align: center;
-    word-wrap: break-word;
-}
-.member.member-status {
-    padding: 0 4px;
-    padding-top: 8px;
-}
-.member.member-status .avatar-small {
-    width: 50px;
-    height: 50px;
-    background-size: 50px 50px;
-}
-.member.member-status .member-inner {
-    display: none;
+:root {
+  --cul-transition-duration: 200ms;
+  
+  --cul-avatar-scale-collapsed: 1;
+  --cul-avatar-scale-expanded: 1;
+  
+  --cul-sidebar-padding: 16px;
+  --cul-slideout-width: 240px;
+  
+  /** these are not meant to be played with, they're just put in variables so they're not as confusing to follow as if they were stuffed in one **/
+  --cul-internal-row-padding: calc(1px + 16px * (var(--cul-avatar-scale-collapsed) - 1));
+  --cul-internal-avatar-size: calc(32px * var(--cul-avatar-scale-collapsed));
+  --cul-internal-sidebar-padding: calc(var(--cul-sidebar-padding) * 2 * var(--cul-avatar-scale-collapsed));
+  --cul-internal-sidebar-width: calc(var(--cul-internal-sidebar-padding) + var(--cul-internal-avatar-size));
 }
 
-.channel-members::-webkit-scrollbar {
-  max-width: 10px;
+/* Sidebar itself */
+.membersWrap__5ca6b {
+  height: 100%;
+  min-width: initial;
+  width: var(--cul-internal-sidebar-width);
+  /* makes width transition go right-to-left instead of left-to-right */
+  text-align: right;
+}
+
+/* User list */
+.members__573eb, .membersListNotices_a4cb13 {
+  /* don't _actually_ want to force text-align right */
+  text-align: initial;
+  position: absolute;
+  right: 0;
+  height: 100%;
+  width: var(--cul-internal-sidebar-width);
+  transition: width var(--cul-transition-duration) linear;
+}
+
+/* I don't actually know what this second thing is because I haven't ever seen it have content, but it doesn't work unless I do that */
+.membersWrap__5ca6b:hover .members__573eb, .membersWrap__5ca6b:hover .membersListNotices_a4cb13 {
+  width: var(--cul-slideout-width);
+}
+
+/* Role header */
+.membersGroup__cad095 {
+  font-size: 10px;
+}
+
+.membersWrap__5ca6b:hover .membersGroup__cad095 {
+  font-size: 12px;
+}
+
+/** Role header icons **/
+.members__573eb .roleIcon__92480 {
+  display: none;
+}
+
+.members__573eb:hover .roleIcon__92480 {
+  display: inline;
+}
+
+/* Member rows */
+.memberInner__4dac6 {
+  padding: var(--cul-internal-row-padding) 0;
+}
+
+/* Username, status, etc */
+.content_e8a0d1 {
+  /* prevents text from affecting layout in collapsed mode, since display:none can't have a transition-delay */
+  flex: 0;
+  /* cuts down on the visible jank of the previous line a bit by making the margins change only at the end */
+  transition: flex var(--cul-transition-duration) ease-in;
+}
+
+.membersWrap__5ca6b:hover .content_e8a0d1 {
+  flex: 1 1 auto;
+}
+
+/* Profile picture */
+.avatar__6337f {
+  margin-left: auto;
+  margin-right: auto;
+  transform: scale(var(--cul-avatar-scale-collapsed));
+}
+
+.membersWrap__5ca6b:hover .avatar__6337f {
+  margin-left: var(--cul-sidebar-padding);
+  margin-right: 12px;
+  transform: scale(var(--cul-avatar-scale-expanded));
 }
