@@ -1,4 +1,9 @@
-/*//META{"name":"Compact-User-List","description":"Makes the user list look much like the server list.","author":"square, LewsTherinTelescope","version":"1.1.0"}*//**/
+/**
+ * @name Compact-User-List
+ * @description Makes the user list look much like the server list.
+ * @author square, LewsTherinTelescope
+ * @version 1.1.0
+ */
 
 :root {
   --cul-transition-duration: 200ms;
