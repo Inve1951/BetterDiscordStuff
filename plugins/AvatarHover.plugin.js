@@ -16,7 +16,7 @@ global.AvatarHover = function () {
     }
 
     getVersion() {
-      return "0.7.2";
+      return "0.7.3";
     }
 
     load() {
@@ -125,14 +125,21 @@ global.AvatarHover = function () {
   qualifier = null;
 
   updateQualifier = function () {
-    return qualifier = [// guilds
-    settings.isHoverGuilds ? ".wrapper-25eVIn" : void 0, // voip, DM channels
-    settings.isHoverChannels ? ".avatarContainer-2inGBK, .channel-2QD9_O .avatar-3uk_u9" : void 0, // friends list
-    settings.isHoverFriends ? ".userInfo-2zN2z8 .avatar-3W3CeO" : void 0, // messages, embeds
-    settings.isHoverChatMessages ? ".contents-2mQqc9 .avatar-1BDn8e, .embedAuthorIcon--1zR3L" : void 0, // channel users
-    settings.isHoverChatUsers ? ".member-3-YXUe .avatar-3uk_u9" : void 0, // DM call
-    settings.isHoverCall ? ".callAvatarWrapper-3Ax_xH" : void 0, // modals, userpopout
-    settings.isHoverProfile ? ".header-QKLPzZ .avatar-3EQepX, .avatarWrapper-3H_478" : void 0].filter(function (s) {
+    return qualifier = [
+    // guilds
+    settings.isHoverGuilds ? ".wrapper-28eC3z" : void 0,
+    // voip, DM channels
+    settings.isHoverChannels ? ".avatarContainer-3FF_Km, .channel-1Shao0 .avatar-1HDIsL" : void 0,
+    // friends list
+    settings.isHoverFriends ? ".userInfo-2WpsYG .avatar-2MSPKk" : void 0,
+    // messages, embeds
+    settings.isHoverChatMessages ? ".contents-2MsGLg .avatar-2e8lTP, .embedAuthorIcon-3pnkS4" : void 0,
+    // channel users
+    settings.isHoverChatUsers ? ".member-2gU6Ar" : void 0,
+    // DM call
+    settings.isHoverCall ? ".voiceCallWrapper-3UtDiC" : void 0,
+    // modals, userpopout
+    settings.isHoverProfile ? ".header-S26rhB .avatar-3QF_VA, .avatarWrapper-eenWra" : void 0].filter(function (s) {
       return s != null;
     }).join(", ");
   };
