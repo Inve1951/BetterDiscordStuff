@@ -2,7 +2,7 @@
  * @name Compact-User-List
  * @description Makes the user list look much like the server list.
  * @author square, LewsTherinTelescope
- * @version 1.1.0
+ * @version 1.1.1
  */
 
 :root {
@@ -22,7 +22,7 @@
 }
 
 /* Sidebar itself */
-.membersWrap__5ca6b {
+.membersWrap_cbd271 {
   height: 100%;
   min-width: initial;
   width: var(--cul-internal-sidebar-width);
@@ -31,7 +31,7 @@
 }
 
 /* User list */
-.members__573eb, .membersListNotices_a4cb13 {
+.members_cbd271, .membersListNotices__0bcb6 {
   /* don't _actually_ want to force text-align right */
   text-align: initial;
   position: absolute;
@@ -42,7 +42,7 @@
 }
 
 /* I don't actually know what this second thing is because I haven't ever seen it have content, but it doesn't work unless I do that */
-.membersWrap__5ca6b:hover .members__573eb, .membersWrap__5ca6b:hover .membersListNotices_a4cb13 {
+.membersWrap_cbd271:hover .members_cbd271, .membersWrap_cbd271:hover .membersListNotices__0bcb6 {
   width: var(--cul-slideout-width);
 }
 
@@ -51,44 +51,44 @@
   font-size: 10px;
 }
 
-.membersWrap__5ca6b:hover .membersGroup__cad095 {
+.membersWrap_cbd271:hover .membersGroup__cad095 {
   font-size: 12px;
 }
 
 /** Role header icons **/
-.members__573eb .roleIcon__92480 {
+.members_cbd271 .roleIcon_d5100b {
   display: none;
 }
 
-.members__573eb:hover .roleIcon__92480 {
+.members_cbd271:hover .roleIcon_d5100b {
   display: inline;
 }
 
 /* Member rows */
-.memberInner__4dac6 {
+.memberInner_a31c43 {
   padding: var(--cul-internal-row-padding) 0;
 }
 
 /* Username, status, etc */
-.content_e8a0d1 {
+.content_e9f61e {
   /* prevents text from affecting layout in collapsed mode, since display:none can't have a transition-delay */
   flex: 0;
   /* cuts down on the visible jank of the previous line a bit by making the margins change only at the end */
   transition: flex var(--cul-transition-duration) ease-in;
 }
 
-.membersWrap__5ca6b:hover .content_e8a0d1 {
+.membersWrap_cbd271:hover .content_e9f61e {
   flex: 1 1 auto;
 }
 
 /* Profile picture */
-.avatar__6337f {
+.avatar_e9f61e {
   margin-left: auto;
   margin-right: auto;
   transform: scale(var(--cul-avatar-scale-collapsed));
 }
 
-.membersWrap__5ca6b:hover .avatar__6337f {
+.membersWrap_cbd271:hover .avatar_e9f61e {
   margin-left: var(--cul-sidebar-padding);
   margin-right: 12px;
   transform: scale(var(--cul-avatar-scale-expanded));
