@@ -1,7 +1,7 @@
 /**
  * @name Snowfall
  * @description Let It Snow... Original code by Cople [https://cople.github.io/Snowfall.js].
- * @version 1.1.1
+ * @version 1.1.2
  * @author square
  * @authorLink https://betterdiscord.app/developer/square
  * @website https://betterdiscord.app/plugin/Snowfall
@@ -11,7 +11,7 @@
 module.exports = (function(CopleSnow, snow, blur, focus){
   class Snowfall {
     start(){
-      BdApi.injectCSS("snowfall", CopleSnow.css);
+      BdApi.DOM.addStyle("snowfall", CopleSnow.css);
       snow = new CopleSnow({autoplay: false});
       if(document.hasFocus()) snow.play();
       window.addEventListener("blur", blur =_=> snow.stop());
@@ -19,7 +19,7 @@ module.exports = (function(CopleSnow, snow, blur, focus){
     }
     stop(){
       snow.stop();
-      BdApi.clearCSS("snowfall");
+      BdApi.DOM.removeStyle("snowfall");
       document.getElementById("snowfield").remove();
       window.removeEventListener("blur", blur);
       window.removeEventListener("focus", focus);
