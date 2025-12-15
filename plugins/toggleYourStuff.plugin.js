@@ -1,24 +1,17 @@
-//META{ "name": "toggleYourStuff", "website": "https://inve1951.github.io/BetterDiscordStuff/" }*//
-global.toggleYourStuff = function () {
+/**
+ * @name Toggle-Your-Stuff
+ * @description Toggle your plugins and themes using hotkeys.
+ * @version 1.2.2
+ * @author square
+ * @authorLink https://betterdiscord.app/developer/square
+ * @website https://betterdiscord.app/plugin/Toggle%20Your%20Stuff
+ * @source https://github.com/Inve1951/BetterDiscordStuff/blob/master/coffee/toggleYourStuff.plugin.coffee
+ * @exports 42
+ */
+var toggleYourStuff;
+module.exports = toggleYourStuff = function () {
   var Plugins, Themes, listener, readSettings, settings;
-
   class toggleYourStuff {
-    getName() {
-      return "Toggle-Your-Stuff";
-    }
-
-    getDescription() {
-      return "Toggle your plugins and themes using hotkeys.";
-    }
-
-    getVersion() {
-      return "1.2.1";
-    }
-
-    getAuthor() {
-      return "square";
-    }
-
     start() {
       ({
         Plugins,
@@ -27,11 +20,9 @@ global.toggleYourStuff = function () {
       readSettings();
       return document.body.addEventListener("keydown", listener, true);
     }
-
     stop() {
       return document.body.removeEventListener("keydown", listener, true);
     }
-
     getSettingsPanel() {
       var alt, ctrl, hotkey, j, keycode, l, len, len1, plugin, ref, ref1, ref2, ref3, ref4, settingsPanel, shift, theme, x;
       readSettings();
@@ -74,24 +65,19 @@ global.toggleYourStuff = function () {
       settingsPanel += `<span style="text-transform:${"none capitalize uppercase lowercase".split(" ")[0 | 4 * Math.random()]};filter:drop-shadow(0 0 30px rgb(${function () {
         var j, results;
         results = [];
-
         for (x = j = 0; j < 3; x = ++j) {
           results.push(0 | 256 * Math.random());
         }
-
         return results;
       }().join(",")}));">tOgGLe-yOuR-sTufF</span>`;
       settingsPanel += `<label><input name="cancelDefault" type="checkbox" onchange="toggleYourStuff.updateSettings()"${settings.cancelDefault ? " checked" : ""}>Cancel default. Prevents any actions which use the same hotkey. (don't kill your ctrl+comma)</label><br><br>`;
       settingsPanel += `<span>Numpad doesn't work with Shift key.</span>` + `<div id="tys-plugin-hotkeys"><h2>Plugins:</h2>`;
       ref = Plugins.getAll();
-
       for (j = 0, len = ref.length; j < len; j++) {
         plugin = ref[j];
-
         if (!(plugin = (ref1 = typeof plugin.getName === "function" ? plugin.getName() : void 0) != null ? ref1 : plugin.name)) {
           continue;
         }
-
         ({
           hotkey,
           ctrl,
@@ -114,17 +100,13 @@ global.toggleYourStuff = function () {
   <button type="button" onclick="this.parentNode.children[1].value = ''; toggleYourStuff.updateSettings()">Clear</button>
 </div>`;
       }
-
       settingsPanel += `</div>` + `<div id="tys-theme-hotkeys"><h2>Themes:</h2>`;
       ref3 = Themes.getAll();
-
       for (l = 0, len1 = ref3.length; l < len1; l++) {
         theme = ref3[l];
-
         if (!(theme = theme.name)) {
           continue;
         }
-
         ({
           hotkey,
           ctrl,
@@ -147,10 +129,8 @@ global.toggleYourStuff = function () {
   <button type="button" onclick="this.parentNode.children[1].value = ''; toggleYourStuff.updateSettings()">Clear</button>
 </div>`;
       }
-
       return settingsPanel += `</div>` + "</div>";
     }
-
     static updateSettings() {
       var alt, ctrl, hotkey, html, i, id, j, keycode, l, len, len1, plugin, ref, ref1, shift, theme;
       html = document.getElementById("tys_settings");
@@ -159,22 +139,17 @@ global.toggleYourStuff = function () {
         themes: {}
       };
       ref = html.querySelector("#tys-plugin-hotkeys").children;
-
       for (i = j = 0, len = ref.length; j < len; i = ++j) {
         plugin = ref[i];
-
         if (!i) {
           continue;
         }
-
         id = plugin.id.slice(4);
         hotkey = plugin.querySelector(`input[name="hotkey"]`).value;
-
         if ("" === hotkey) {
           delete settings.plugins[id];
           continue;
         }
-
         ctrl = plugin.querySelector(`input[name="ctrl"]`).checked;
         shift = plugin.querySelector(`input[name="shift"]`).checked;
         alt = plugin.querySelector(`input[name="alt"]`).checked;
@@ -187,24 +162,18 @@ global.toggleYourStuff = function () {
           keycode
         };
       }
-
       ref1 = html.querySelector("#tys-theme-hotkeys").children;
-
       for (i = l = 0, len1 = ref1.length; l < len1; i = ++l) {
         theme = ref1[i];
-
         if (!i) {
           continue;
         }
-
         id = theme.id.slice(4);
         hotkey = theme.querySelector(`input[name="hotkey"]`).value;
-
         if ("" === hotkey) {
           delete settings.plugins[id];
           continue;
         }
-
         ctrl = theme.querySelector(`input[name="ctrl"]`).checked;
         shift = theme.querySelector(`input[name="shift"]`).checked;
         alt = theme.querySelector(`input[name="alt"]`).checked;
@@ -217,23 +186,18 @@ global.toggleYourStuff = function () {
           keycode
         };
       }
-
       settings.cancelDefault = html.querySelector(`input[name="cancelDefault"]`).checked;
       settings._note = "The plugin uses the keycodes for detecting a match. The hotkeys are for display in settings only.";
       return BdApi.setData("toggleYourStuff", "settings", settings);
     }
-
   }
-
   ;
   Plugins = Themes = null;
-
   listener = function (ev) {
     var alt, ctrl, handled, keycode, modifiers, plugin, ref, ref1, shift, theme;
     modifiers = [ev.keyCode, ev.ctrlKey, ev.shiftKey, ev.altKey];
     handled = false;
     ref = settings.plugins;
-
     for (plugin in ref) {
       ({
         keycode,
@@ -241,19 +205,15 @@ global.toggleYourStuff = function () {
         shift,
         alt
       } = ref[plugin]);
-
       if (!(Plugins.get(plugin) != null && [keycode, ctrl, shift, alt].every(function (x, i) {
         return x === modifiers[i];
       }))) {
         continue;
       }
-
       Plugins.toggle(plugin);
       handled = true;
     }
-
     ref1 = settings.themes;
-
     for (theme in ref1) {
       ({
         keycode,
@@ -261,26 +221,21 @@ global.toggleYourStuff = function () {
         shift,
         alt
       } = ref1[theme]);
-
       if (!(Themes.get(theme) != null && [keycode, ctrl, shift, alt].every(function (x, i) {
         return x === modifiers[i];
       }))) {
         continue;
       }
-
       Themes.toggle(theme);
       handled = true;
     }
-
     if (handled && settings.cancelDefault) {
       ev.preventDefault();
       ev.stopImmediatePropagation();
       return false;
     }
   };
-
   settings = null;
-
   readSettings = function () {
     var k, ref, ref1, v;
     settings = (ref = BdApi.getData("toggleYourStuff", "settings")) != null ? ref : {};
@@ -289,15 +244,12 @@ global.toggleYourStuff = function () {
       plugins: {},
       themes: {}
     };
-
     for (k in ref1) {
       v = ref1[k];
-
       if (settings[k] == null) {
         settings[k] = v;
       }
     }
   };
-
   return toggleYourStuff;
 }.call(this);

@@ -1,11 +1,15 @@
-#META{ "name": "toggleYourStuff", "website": "https://inve1951.github.io/BetterDiscordStuff/" }*//
+###*
+# @name Toggle-Your-Stuff
+# @description Toggle your plugins and themes using hotkeys.
+# @version 1.2.2
+# @author square
+# @authorLink https://betterdiscord.app/developer/square
+# @website https://betterdiscord.app/plugin/Toggle%20Your%20Stuff
+# @source https://github.com/Inve1951/BetterDiscordStuff/blob/master/coffee/toggleYourStuff.plugin.coffee
+# @exports 42
+###
 
-class global.toggleYourStuff
-  getName: ->         "Toggle-Your-Stuff"
-  getDescription: ->  "Toggle your plugins and themes using hotkeys."
-  getVersion: ->      "1.2.1"
-  getAuthor: ->       "square"
-
+module.exports = class toggleYourStuff
   Plugins = Themes = null
   start: ->
     { Plugins, Themes } = BdApi

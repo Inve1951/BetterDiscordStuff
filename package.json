@@ -22,8 +22,8 @@
   },
   "homepage": "https://github.com/Inve1951/BetterDiscordStuff#readme",
   "devDependencies": {
-    "@babel/core": "^7.15.5",
+    "@babel/core": "^7.28.5",
     "babel-plugin-transform-react-jsx": "^6.24.1",
-    "coffeescript": "^2.5.1"
+    "coffeescript": "^2.7.0"
   }
 }
