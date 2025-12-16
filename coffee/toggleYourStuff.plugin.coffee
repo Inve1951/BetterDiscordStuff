@@ -1,7 +1,7 @@
 ###*
 # @name Toggle-Your-Stuff
 # @description Toggle your plugins and themes using hotkeys.
-# @version 1.2.2
+# @version 1.2.3
 # @author square
 # @authorLink https://betterdiscord.app/developer/square
 # @website https://betterdiscord.app/plugin/Toggle%20Your%20Stuff
@@ -10,9 +10,9 @@
 ###
 
 module.exports = class toggleYourStuff
-  Plugins = Themes = null
+  Plugins = Themes = Data = null
   start: ->
-    { Plugins, Themes } = BdApi
+    { Plugins, Themes, Data } = BdApi
     readSettings()
     document.body.addEventListener "keydown", listener, yes
 
@@ -63,7 +63,7 @@ module.exports = class toggleYourStuff
     settingsPanel += """<label><input name="cancelDefault" type="checkbox" onchange="toggleYourStuff.updateSettings()"#{if settings.cancelDefault then " checked" else ""}>Cancel default. Prevents any actions which use the same hotkey. (don't kill your ctrl+comma)</label><br><br>"""
     settingsPanel += """<span>Numpad doesn't work with Shift key.</span>""" +
     """<div id="tys-plugin-hotkeys"><h2>Plugins:</h2>"""
-    for plugin in Plugins.getAll() when plugin = plugin.getName?() ? plugin.name
+    for plugin in Plugins.getAll() when plugin = plugin.name
       { hotkey, ctrl, shift, alt, keycode } = settings.plugins[plugin] ? hotkey: "", ctrl: no, shift: no, alt: no, keycode: ""
       settingsPanel += """
         <div id="tys-#{plugin}">#{plugin}<br>
@@ -112,7 +112,7 @@ module.exports = class toggleYourStuff
   settings = null
 
   readSettings = ->
-    settings = (BdApi.getData "toggleYourStuff", "settings") ? {}
+    settings = (Data.load "toggleYourStuff", "settings") ? {}
     settings[k] ?= v for k, v of {
       cancelDefault: no
       plugins: {}
@@ -152,4 +152,4 @@ module.exports = class toggleYourStuff
     settings.cancelDefault = html.querySelector("""input[name="cancelDefault"]""").checked
 
     settings._note = "The plugin uses the keycodes for detecting a match. The hotkeys are for display in settings only."
-    BdApi.setData "toggleYourStuff", "settings", settings
+    Data.save "toggleYourStuff", "settings", settings

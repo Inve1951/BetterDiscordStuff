@@ -1,7 +1,7 @@
 /**
  * @name Toggle-Your-Stuff
  * @description Toggle your plugins and themes using hotkeys.
- * @version 1.2.2
+ * @version 1.2.3
  * @author square
  * @authorLink https://betterdiscord.app/developer/square
  * @website https://betterdiscord.app/plugin/Toggle%20Your%20Stuff
@@ -10,12 +10,13 @@
  */
 var toggleYourStuff;
 module.exports = toggleYourStuff = function () {
-  var Plugins, Themes, listener, readSettings, settings;
+  var Data, Plugins, Themes, listener, readSettings, settings;
   class toggleYourStuff {
     start() {
       ({
         Plugins,
-        Themes
+        Themes,
+        Data
       } = BdApi);
       readSettings();
       return document.body.addEventListener("keydown", listener, true);
@@ -24,7 +25,7 @@ module.exports = toggleYourStuff = function () {
       return document.body.removeEventListener("keydown", listener, true);
     }
     getSettingsPanel() {
-      var alt, ctrl, hotkey, j, keycode, l, len, len1, plugin, ref, ref1, ref2, ref3, ref4, settingsPanel, shift, theme, x;
+      var alt, ctrl, hotkey, j, keycode, l, len, len1, plugin, ref, ref1, ref2, ref3, settingsPanel, shift, theme, x;
       readSettings();
       settingsPanel = `<div id="tys_settings">
   <style>
@@ -75,7 +76,7 @@ module.exports = toggleYourStuff = function () {
       ref = Plugins.getAll();
       for (j = 0, len = ref.length; j < len; j++) {
         plugin = ref[j];
-        if (!(plugin = (ref1 = typeof plugin.getName === "function" ? plugin.getName() : void 0) != null ? ref1 : plugin.name)) {
+        if (!(plugin = plugin.name)) {
           continue;
         }
         ({
@@ -84,7 +85,7 @@ module.exports = toggleYourStuff = function () {
           shift,
           alt,
           keycode
-        } = (ref2 = settings.plugins[plugin]) != null ? ref2 : {
+        } = (ref1 = settings.plugins[plugin]) != null ? ref1 : {
           hotkey: "",
           ctrl: false,
           shift: false,
@@ -101,9 +102,9 @@ module.exports = toggleYourStuff = function () {
 </div>`;
       }
       settingsPanel += `</div>` + `<div id="tys-theme-hotkeys"><h2>Themes:</h2>`;
-      ref3 = Themes.getAll();
-      for (l = 0, len1 = ref3.length; l < len1; l++) {
-        theme = ref3[l];
+      ref2 = Themes.getAll();
+      for (l = 0, len1 = ref2.length; l < len1; l++) {
+        theme = ref2[l];
         if (!(theme = theme.name)) {
           continue;
         }
@@ -113,7 +114,7 @@ module.exports = toggleYourStuff = function () {
           shift,
           alt,
           keycode
-        } = (ref4 = settings.themes[theme]) != null ? ref4 : {
+        } = (ref3 = settings.themes[theme]) != null ? ref3 : {
           hotkey: "",
           ctrl: false,
           shift: false,
@@ -188,11 +189,11 @@ module.exports = toggleYourStuff = function () {
       }
       settings.cancelDefault = html.querySelector(`input[name="cancelDefault"]`).checked;
       settings._note = "The plugin uses the keycodes for detecting a match. The hotkeys are for display in settings only.";
-      return BdApi.setData("toggleYourStuff", "settings", settings);
+      return Data.save("toggleYourStuff", "settings", settings);
     }
   }
   ;
-  Plugins = Themes = null;
+  Plugins = Themes = Data = null;
   listener = function (ev) {
     var alt, ctrl, handled, keycode, modifiers, plugin, ref, ref1, shift, theme;
     modifiers = [ev.keyCode, ev.ctrlKey, ev.shiftKey, ev.altKey];
@@ -238,7 +239,7 @@ module.exports = toggleYourStuff = function () {
   settings = null;
   readSettings = function () {
     var k, ref, ref1, v;
-    settings = (ref = BdApi.getData("toggleYourStuff", "settings")) != null ? ref : {};
+    settings = (ref = Data.load("toggleYourStuff", "settings")) != null ? ref : {};
     ref1 = {
       cancelDefault: false,
       plugins: {},
