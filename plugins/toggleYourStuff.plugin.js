@@ -1,15 +1,14 @@
 /**
  * @name Toggle-Your-Stuff
  * @description Toggle your plugins and themes using hotkeys.
- * @version 1.2.3
+ * @version 1.2.4
  * @author square
  * @authorLink https://betterdiscord.app/developer/square
  * @website https://betterdiscord.app/plugin/Toggle%20Your%20Stuff
  * @source https://github.com/Inve1951/BetterDiscordStuff/blob/master/coffee/toggleYourStuff.plugin.coffee
  * @exports 42
  */
-var toggleYourStuff;
-module.exports = toggleYourStuff = function () {
+module.exports = this.toggleYourStuff = function () {
   var Data, Plugins, Themes, listener, readSettings, settings;
   class toggleYourStuff {
     start() {

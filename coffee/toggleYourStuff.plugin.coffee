@@ -1,7 +1,7 @@
 ###*
 # @name Toggle-Your-Stuff
 # @description Toggle your plugins and themes using hotkeys.
-# @version 1.2.3
+# @version 1.2.4
 # @author square
 # @authorLink https://betterdiscord.app/developer/square
 # @website https://betterdiscord.app/plugin/Toggle%20Your%20Stuff
@@ -9,7 +9,7 @@
 # @exports 42
 ###
 
-module.exports = class toggleYourStuff
+module.exports = class @toggleYourStuff
   Plugins = Themes = Data = null
   start: ->
     { Plugins, Themes, Data } = BdApi
